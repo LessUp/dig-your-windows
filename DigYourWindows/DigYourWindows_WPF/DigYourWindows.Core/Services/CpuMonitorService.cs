@@ -3,13 +3,20 @@ using LibreHardwareMonitor.Hardware;
 
 namespace DigYourWindows.Core.Services;
 
-public class CpuMonitorService : IDisposable
+public interface ICpuMonitorService : IDisposable
+{
+    CpuInfoData GetCpuInfo();
+}
+
+public class CpuMonitorService : ICpuMonitorService
 {
     private readonly Computer _computer;
+    private readonly ILogService _log;
     private bool _disposed;
 
-    public CpuMonitorService()
+    public CpuMonitorService(ILogService log)
     {
+        _log = log;
         _computer = new Computer
         {
             IsCpuEnabled = true
@@ -58,8 +65,9 @@ public class CpuMonitorService : IDisposable
                 Clock = clock
             };
         }
-        catch
+        catch (Exception ex)
         {
+            _log.Warn($"获取CPU信息失败: {ex.Message}");
             return new CpuInfoData();
         }
     }

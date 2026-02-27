@@ -2,7 +2,12 @@ using System.Net.NetworkInformation;
 
 namespace DigYourWindows.Core.Services;
 
-public sealed class NetworkMonitorService
+public interface INetworkMonitorService
+{
+    (long BytesReceived, long BytesSent) GetTotalBytes();
+}
+
+public sealed class NetworkMonitorService : INetworkMonitorService
 {
     public (long BytesReceived, long BytesSent) GetTotalBytes()
     {

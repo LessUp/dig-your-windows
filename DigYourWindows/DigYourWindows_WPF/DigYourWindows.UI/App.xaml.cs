@@ -42,16 +42,17 @@ public partial class App : Application
         services.AddSingleton<MainViewModel>();
 
         services.AddSingleton<ILogService, FileLogService>();
-        services.AddSingleton<ReportService>();
-        services.AddSingleton<DiagnosticCollectorService>();
+        services.AddSingleton<IReportService, ReportService>();
+        services.AddSingleton<IDiagnosticCollectorService, DiagnosticCollectorService>();
 
-        services.AddSingleton<CpuMonitorService>();
-        services.AddSingleton<NetworkMonitorService>();
-        services.AddSingleton<GpuMonitorService>();
-        services.AddSingleton<DiskSmartService>();
-        services.AddSingleton<HardwareService>();
-        services.AddSingleton<ReliabilityService>();
-        services.AddSingleton<EventLogService>();
-        services.AddSingleton<PerformanceService>();
+        services.AddSingleton<ICpuMonitorService, CpuMonitorService>();
+        services.AddSingleton<INetworkMonitorService, NetworkMonitorService>();
+        services.AddSingleton<IGpuMonitorService, GpuMonitorService>();
+        services.AddSingleton<IDiskSmartService, DiskSmartService>();
+        services.AddSingleton<IHardwareService, HardwareService>();
+        services.AddSingleton<IReliabilityService, ReliabilityService>();
+        services.AddSingleton<IEventLogService, EventLogService>();
+        services.AddSingleton<ISystemInfoProvider, WmiSystemInfoProvider>();
+        services.AddSingleton<IPerformanceService, PerformanceService>();
     }
 }

@@ -2,19 +2,27 @@ using DigYourWindows.Core.Models;
 
 namespace DigYourWindows.Core.Services;
 
-public class DiagnosticCollectorService
+public interface IDiagnosticCollectorService
 {
-    private readonly HardwareService _hardwareService;
-    private readonly ReliabilityService _reliabilityService;
-    private readonly EventLogService _eventLogService;
-    private readonly PerformanceService _performanceService;
+    Task<DiagnosticCollectionResult> CollectAsync(
+        int daysBack,
+        IProgress<DiagnosticCollectionProgress>? progress = null,
+        CancellationToken cancellationToken = default);
+}
+
+public class DiagnosticCollectorService : IDiagnosticCollectorService
+{
+    private readonly IHardwareService _hardwareService;
+    private readonly IReliabilityService _reliabilityService;
+    private readonly IEventLogService _eventLogService;
+    private readonly IPerformanceService _performanceService;
     private readonly ILogService _log;
 
     public DiagnosticCollectorService(
-        HardwareService hardwareService,
-        ReliabilityService reliabilityService,
-        EventLogService eventLogService,
-        PerformanceService performanceService,
+        IHardwareService hardwareService,
+        IReliabilityService reliabilityService,
+        IEventLogService eventLogService,
+        IPerformanceService performanceService,
         ILogService log)
     {
         _hardwareService = hardwareService;

@@ -15,10 +15,10 @@ namespace DigYourWindows.UI.ViewModels;
 
 public partial class MainViewModel : ObservableObject, IDisposable
 {
-    private readonly DiagnosticCollectorService _collectorService;
-    private readonly ReportService _reportService;
-    private readonly CpuMonitorService _cpuMonitorService;
-    private readonly NetworkMonitorService _networkMonitorService;
+    private readonly IDiagnosticCollectorService _collectorService;
+    private readonly IReportService _reportService;
+    private readonly ICpuMonitorService _cpuMonitorService;
+    private readonly INetworkMonitorService _networkMonitorService;
     private readonly ILogService _log;
     private readonly DispatcherTimer _cpuMonitorTimer;
     private CancellationTokenSource? _loadCts;
@@ -29,9 +29,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private long? _lastNetworkBytesReceived;
     private long? _lastNetworkBytesSent;
     private DateTimeOffset? _lastNetworkSampleTime;
-    private readonly List<DateTime> _networkHistoryTimes = new();
-    private readonly List<double> _networkHistoryDownload = new();
-    private readonly List<double> _networkHistoryUpload = new();
+    private readonly Queue<DateTime> _networkHistoryTimes = new();
+    private readonly Queue<double> _networkHistoryDownload = new();
+    private readonly Queue<double> _networkHistoryUpload = new();
 
     [ObservableProperty]
     private HardwareData? _hardwareInfo;
@@ -73,10 +73,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
     public WpfPlot NetworkTrafficPlot { get; } = new();
 
     public MainViewModel(
-        DiagnosticCollectorService collectorService,
-        ReportService reportService,
-        CpuMonitorService cpuMonitorService,
-        NetworkMonitorService networkMonitorService,
+        IDiagnosticCollectorService collectorService,
+        IReportService reportService,
+        ICpuMonitorService cpuMonitorService,
+        INetworkMonitorService networkMonitorService,
         ILogService log)
     {
         _collectorService = collectorService;
@@ -163,15 +163,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void AppendNetworkHistory(DateTime time, double downloadMBps, double uploadMBps)
     {
-        _networkHistoryTimes.Add(time);
-        _networkHistoryDownload.Add(downloadMBps);
-        _networkHistoryUpload.Add(uploadMBps);
+        _networkHistoryTimes.Enqueue(time);
+        _networkHistoryDownload.Enqueue(downloadMBps);
+        _networkHistoryUpload.Enqueue(uploadMBps);
 
         while (_networkHistoryTimes.Count > NetworkHistoryCapacity)
         {
-            _networkHistoryTimes.RemoveAt(0);
-            _networkHistoryDownload.RemoveAt(0);
-            _networkHistoryUpload.RemoveAt(0);
+            _networkHistoryTimes.Dequeue();
+            _networkHistoryDownload.Dequeue();
+            _networkHistoryUpload.Dequeue();
         }
     }
 

@@ -3,8 +3,20 @@ using DigYourWindows.Core.Models;
 
 namespace DigYourWindows.Core.Services;
 
-public class DiskSmartService
+public interface IDiskSmartService
 {
+    List<DiskSmartData> GetDiskSmart();
+}
+
+public class DiskSmartService : IDiskSmartService
+{
+    private readonly ILogService _log;
+
+    public DiskSmartService(ILogService log)
+    {
+        _log = log;
+    }
+
     public List<DiskSmartData> GetDiskSmart()
     {
         var result = new List<DiskSmartData>();
@@ -60,8 +72,9 @@ public class DiskSmartService
                 }
             }
         }
-        catch
+        catch (Exception ex)
         {
+            _log.Warn($"获取磁盘SMART信息失败: {ex.Message}");
         }
 
         return result;

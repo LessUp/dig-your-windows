@@ -3,15 +3,22 @@ using DigYourWindows.Core.Models;
 
 namespace DigYourWindows.Core.Services;
 
-public class HardwareService
+public interface IHardwareService
 {
-    private readonly GpuMonitorService _gpuMonitor;
-    private readonly DiskSmartService _diskSmartService;
+    HardwareData GetHardwareInfo();
+}
 
-    public HardwareService(GpuMonitorService gpuMonitor, DiskSmartService diskSmartService)
+public class HardwareService : IHardwareService
+{
+    private readonly IGpuMonitorService _gpuMonitor;
+    private readonly IDiskSmartService _diskSmartService;
+    private readonly ILogService _log;
+
+    public HardwareService(IGpuMonitorService gpuMonitor, IDiskSmartService diskSmartService, ILogService log)
     {
         _gpuMonitor = gpuMonitor;
         _diskSmartService = diskSmartService;
+        _log = log;
     }
 
     public HardwareData GetHardwareInfo()
@@ -42,7 +49,10 @@ public class HardwareService
                 return obj["Name"]?.ToString()?.Trim() ?? "Unknown";
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _log.Warn($"获取CPU名称失败: {ex.Message}");
+        }
         return "Unknown CPU";
     }
 
@@ -56,7 +66,10 @@ public class HardwareService
                 return Convert.ToUInt64(obj["TotalPhysicalMemory"] ?? 0UL);
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _log.Warn($"获取总内存失败: {ex.Message}");
+        }
         return 0UL;
     }
 
@@ -81,7 +94,10 @@ public class HardwareService
                 });
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _log.Warn($"获取磁盘信息失败: {ex.Message}");
+        }
         return disks;
     }
 
@@ -104,7 +120,10 @@ public class HardwareService
                 });
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _log.Warn($"获取网络适配器失败: {ex.Message}");
+        }
         return adapters;
     }
 
@@ -127,7 +146,10 @@ public class HardwareService
                 });
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _log.Warn($"获取USB设备失败: {ex.Message}");
+        }
         return devices;
     }
 
@@ -159,7 +181,10 @@ public class HardwareService
                 });
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _log.Warn($"获取USB控制器失败: {ex.Message}");
+        }
         return controllers;
     }
 }

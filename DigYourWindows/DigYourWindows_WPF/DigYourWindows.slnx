@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="DigYourWindows.Core/DigYourWindows.Core.csproj" />
   <Project Path="DigYourWindows.UI/DigYourWindows.UI.csproj" />
+  <Project Path="DigYourWindows.Tests/DigYourWindows.Tests.csproj" />
 </Solution>

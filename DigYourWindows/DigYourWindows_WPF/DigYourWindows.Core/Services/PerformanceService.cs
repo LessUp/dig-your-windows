@@ -4,8 +4,51 @@ using DigYourWindows.Core.Models;
 
 namespace DigYourWindows.Core.Services;
 
-public class PerformanceService
+public interface ISystemInfoProvider
 {
+    double? GetSystemUptimeDays();
+}
+
+public class WmiSystemInfoProvider : ISystemInfoProvider
+{
+    public double? GetSystemUptimeDays()
+    {
+        try
+        {
+            using var searcher = new ManagementObjectSearcher("SELECT LastBootUpTime FROM Win32_OperatingSystem");
+            foreach (var obj in searcher.Get())
+            {
+                var lastBoot = ManagementDateTimeConverter.ToDateTime(obj["LastBootUpTime"]?.ToString() ?? string.Empty);
+                var uptime = DateTime.Now - lastBoot;
+                return uptime.TotalDays;
+            }
+        }
+        catch
+        {
+        }
+        return null;
+    }
+}
+
+public interface IPerformanceService
+{
+    PerformanceAnalysisData AnalyzeSystemPerformance(
+        HardwareData hardware,
+        List<LogEventData> events,
+        List<ReliabilityRecordData> reliability);
+}
+
+public class PerformanceService : IPerformanceService
+{
+    private static readonly HashSet<uint> CriticalEventIds = new() { 41, 55, 57, 1003, 1073, 6008, 7034, 7036 };
+
+    private readonly ISystemInfoProvider _systemInfo;
+
+    public PerformanceService(ISystemInfoProvider systemInfo)
+    {
+        _systemInfo = systemInfo;
+    }
+
     /// <summary>
     /// 分析系统性能和健康状况
     /// </summary>
@@ -31,7 +74,7 @@ public class PerformanceService
         var diskHealthScore = CalculateDiskScore(hardware.Disks, recommendations);
 
         // 获取系统运行时间（天数）
-        var systemUptimeDays = GetSystemUptimeDays();
+        var systemUptimeDays = _systemInfo.GetSystemUptimeDays();
         
         // 计算系统稳定性评分
         var stabilityScore = CalculateStabilityScore(
@@ -81,28 +124,6 @@ public class PerformanceService
             HealthGrade = healthGrade,
             HealthColor = healthColor
         };
-    }
-
-    /// <summary>
-    /// 获取系统运行时间（天数）
-    /// </summary>
-    private double? GetSystemUptimeDays()
-    {
-        try
-        {
-            using var searcher = new ManagementObjectSearcher("SELECT LastBootUpTime FROM Win32_OperatingSystem");
-            foreach (var obj in searcher.Get())
-            {
-                var lastBoot = ManagementDateTimeConverter.ToDateTime(obj["LastBootUpTime"]?.ToString() ?? string.Empty);
-                var uptime = DateTime.Now - lastBoot;
-                return uptime.TotalDays;
-            }
-        }
-        catch
-        {
-            // 如果无法获取，返回 null
-        }
-        return null;
     }
 
     /// <summary>
@@ -334,14 +355,12 @@ public class PerformanceService
     /// <summary>
     /// 判断是否为关键错误
     /// </summary>
-    private bool IsCriticalError(LogEventData evt)
+    private static bool IsCriticalError(LogEventData evt)
     {
-        var criticalEventIds = new uint[] { 41, 55, 57, 1003, 1073, 6008, 7034, 7036 };
-
-        return criticalEventIds.Contains(evt.EventId) ||
-               evt.SourceName.ToLowerInvariant().Contains("bugcheck") ||
-               evt.Message.ToLowerInvariant().Contains("critical") ||
-               evt.Message.ToLowerInvariant().Contains("fatal");
+        return CriticalEventIds.Contains(evt.EventId) ||
+               evt.SourceName.Contains("bugcheck", StringComparison.OrdinalIgnoreCase) ||
+               evt.Message.Contains("critical", StringComparison.OrdinalIgnoreCase) ||
+               evt.Message.Contains("fatal", StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>

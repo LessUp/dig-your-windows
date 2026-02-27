@@ -3,8 +3,20 @@ using DigYourWindows.Core.Models;
 
 namespace DigYourWindows.Core.Services;
 
-public class ReliabilityService
+public interface IReliabilityService
 {
+    ReliabilityRecordData[] GetReliabilityRecords(int daysBack = 7);
+}
+
+public class ReliabilityService : IReliabilityService
+{
+    private readonly ILogService _log;
+
+    public ReliabilityService(ILogService log)
+    {
+        _log = log;
+    }
+
     public ReliabilityRecordData[] GetReliabilityRecords(int daysBack = 7)
     {
         var records = new List<ReliabilityRecordData>();
@@ -48,24 +60,16 @@ public class ReliabilityService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"获取可靠性记录失败: {ex.Message}");
+            _log.Error("获取可靠性记录失败", ex);
         }
         return records.OrderByDescending(r => r.Timestamp).ToArray();
     }
 
-    private DateTime ParseWmiDateTime(string wmiDateTime)
+    private static DateTime ParseWmiDateTime(string wmiDateTime)
     {
         try
         {
-            // Format: yyyyMMddHHmmss.ffffff+UUU
-            var year = int.Parse(wmiDateTime.Substring(0, 4));
-            var month = int.Parse(wmiDateTime.Substring(4, 2));
-            var day = int.Parse(wmiDateTime.Substring(6, 2));
-            var hour = int.Parse(wmiDateTime.Substring(8, 2));
-            var minute = int.Parse(wmiDateTime.Substring(10, 2));
-            var second = int.Parse(wmiDateTime.Substring(12, 2));
-            
-            return new DateTime(year, month, day, hour, minute, second);
+            return ManagementDateTimeConverter.ToDateTime(wmiDateTime);
         }
         catch
         {

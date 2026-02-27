@@ -3,13 +3,20 @@ using LibreHardwareMonitor.Hardware;
 
 namespace DigYourWindows.Core.Services;
 
-public class GpuMonitorService : IDisposable
+public interface IGpuMonitorService : IDisposable
+{
+    List<GpuInfoData> GetGpuInfo();
+}
+
+public class GpuMonitorService : IGpuMonitorService
 {
     private readonly Computer _computer;
+    private readonly ILogService _log;
     private bool _disposed;
 
-    public GpuMonitorService()
+    public GpuMonitorService(ILogService log)
     {
+        _log = log;
         _computer = new Computer
         {
             IsGpuEnabled = true
@@ -52,7 +59,7 @@ public class GpuMonitorService : IDisposable
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"获取GPU信息失败: {ex.Message}");
+            _log.Error("获取GPU信息失败", ex);
         }
 
         return gpuList;
@@ -68,8 +75,9 @@ public class GpuMonitorService : IDisposable
 
             return sensor?.Value ?? 0f;
         }
-        catch
+        catch (Exception ex)
         {
+            _log.Warn($"读取GPU传感器失败: {ex.Message}");
             return 0f;
         }
     }

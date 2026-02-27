@@ -1,24 +1,51 @@
 using System.Text;
 using System.Text.Json;
+using DigYourWindows.Core.Exceptions;
 using DigYourWindows.Core.Models;
 
 namespace DigYourWindows.Core.Services;
 
-public class ReportService
+public interface IReportService
+{
+    string SerializeToJson(DiagnosticData data, bool indented = true);
+    DiagnosticData? DeserializeFromJson(string json);
+    string GenerateHtmlReport(DiagnosticData data, int daysBackForEvents, int maxEvents = 100);
+}
+
+public class ReportService : IReportService
 {
     public string SerializeToJson(DiagnosticData data, bool indented = true)
     {
-        return JsonSerializer.Serialize(
-            data,
-            new JsonSerializerOptions
-            {
-                WriteIndented = indented
-            });
+        try
+        {
+            return JsonSerializer.Serialize(
+                data,
+                new JsonSerializerOptions
+                {
+                    WriteIndented = indented
+                });
+        }
+        catch (JsonException ex)
+        {
+            throw ReportException.Serialization(ex.Message);
+        }
     }
 
     public DiagnosticData? DeserializeFromJson(string json)
     {
-        return JsonSerializer.Deserialize<DiagnosticData>(json);
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            throw ReportException.InvalidData("JSON 内容为空");
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<DiagnosticData>(json);
+        }
+        catch (JsonException ex)
+        {
+            throw ReportException.Serialization(ex.Message);
+        }
     }
 
     public string GenerateHtmlReport(DiagnosticData data, int daysBackForEvents, int maxEvents = 100)
@@ -30,11 +57,33 @@ public class ReportService
         sb.AppendLine("    <meta charset='UTF-8'>");
         sb.AppendLine("    <meta name='viewport' content='width=device-width, initial-scale=1.0'>");
         sb.AppendLine("    <title>DigYourWindows 诊断报告</title>");
-        sb.AppendLine("    <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet'>");
         sb.AppendLine("    <style>");
-        sb.AppendLine("        body { padding: 20px; background: #f5f5f5; }");
-        sb.AppendLine("        .card { margin-bottom: 20px; }");
+        sb.AppendLine("        *, *::before, *::after { box-sizing: border-box; }");
+        sb.AppendLine("        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px; background: #f5f5f5; color: #212529; line-height: 1.5; }");
+        sb.AppendLine("        h1, h3, h5 { margin-top: 0; }");
+        sb.AppendLine("        .row { display: flex; flex-wrap: wrap; margin: 0 -8px; }");
+        sb.AppendLine("        .col-md-3 { flex: 0 0 25%; max-width: 25%; padding: 0 8px; }");
+        sb.AppendLine("        .card { background: #fff; border: 1px solid #dee2e6; border-radius: 8px; margin-bottom: 20px; }");
+        sb.AppendLine("        .card-header { padding: 12px 16px; background: #f8f9fa; border-bottom: 1px solid #dee2e6; border-radius: 8px 8px 0 0; }");
+        sb.AppendLine("        .card-body { padding: 16px; }");
+        sb.AppendLine("        .text-center { text-align: center; }");
+        sb.AppendLine("        .p-3 { padding: 1rem; }");
+        sb.AppendLine("        .mb-3 { margin-bottom: 1rem; }");
+        sb.AppendLine("        .mb-4 { margin-bottom: 1.5rem; }");
+        sb.AppendLine("        .mt-4 { margin-top: 1.5rem; }");
         sb.AppendLine("        .metric { font-size: 1.5rem; font-weight: bold; }");
+        sb.AppendLine("        .text-danger { color: #dc3545; }");
+        sb.AppendLine("        .text-warning { color: #ffc107; }");
+        sb.AppendLine("        .badge { display: inline-block; padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; }");
+        sb.AppendLine("        .bg-secondary { background: #6c757d; color: #fff; }");
+        sb.AppendLine("        table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }");
+        sb.AppendLine("        th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #dee2e6; }");
+        sb.AppendLine("        thead th { background: #f8f9fa; font-weight: 600; }");
+        sb.AppendLine("        .table-sm th, .table-sm td { padding: 4px 8px; }");
+        sb.AppendLine("        .table-striped tbody tr:nth-child(odd) { background: #f8f9fa; }");
+        sb.AppendLine("        ul { padding-left: 1.5rem; }");
+        sb.AppendLine("        li { margin-bottom: 4px; }");
+        sb.AppendLine("        @media (max-width: 768px) { .col-md-3 { flex: 0 0 50%; max-width: 50%; } }");
         sb.AppendLine("    </style>");
         sb.AppendLine("</head>");
         sb.AppendLine("<body>");

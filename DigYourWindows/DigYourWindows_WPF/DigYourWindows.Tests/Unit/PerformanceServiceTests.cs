@@ -5,6 +5,12 @@ namespace DigYourWindows.Tests.Unit;
 
 public class PerformanceServiceTests
 {
+    private sealed class StubSystemInfoProvider : ISystemInfoProvider
+    {
+        public double? UptimeDays { get; set; } = 1.0;
+        public double? GetSystemUptimeDays() => UptimeDays;
+    }
+
     [Fact]
     public void AnalyzeSystemPerformance_PoorSystem_ShouldReturnLowGradeAndRecommendations()
     {
@@ -50,7 +56,7 @@ public class PerformanceServiceTests
             })
             .ToList();
 
-        var service = new PerformanceService();
+        var service = new PerformanceService(new StubSystemInfoProvider());
         var analysis = service.AnalyzeSystemPerformance(hardware, events, reliability);
 
         Assert.InRange(analysis.SystemHealthScore, 0d, 100d);
@@ -89,7 +95,7 @@ public class PerformanceServiceTests
             }
         };
 
-        var service = new PerformanceService();
+        var service = new PerformanceService(new StubSystemInfoProvider());
         var analysis = service.AnalyzeSystemPerformance(hardware, new List<LogEventData>(), new List<ReliabilityRecordData>());
 
         Assert.True(analysis.SystemHealthScore >= 90d);

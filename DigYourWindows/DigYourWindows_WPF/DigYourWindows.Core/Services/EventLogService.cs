@@ -4,8 +4,19 @@ using SysEventLogEntry = System.Diagnostics.EventLogEntry;
 
 namespace DigYourWindows.Core.Services;
 
-public class EventLogService
+public interface IEventLogService
 {
+    List<LogEventData> GetErrorEvents(int daysBack = 3);
+}
+
+public class EventLogService : IEventLogService
+{
+    private readonly ILogService _log;
+
+    public EventLogService(ILogService log)
+    {
+        _log = log;
+    }
     public List<LogEventData> GetErrorEvents(int daysBack = 3)
     {
         var events = new List<LogEventData>();
@@ -21,7 +32,7 @@ public class EventLogService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"读取事件日志失败: {ex.Message}");
+            _log.Error("读取事件日志失败", ex);
         }
 
         return events.OrderByDescending(e => e.TimeGenerated).ToList();
@@ -57,7 +68,10 @@ public class EventLogService
                 });
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _log.Error($"读取事件日志 '{logName}' 失败", ex);
+        }
 
         return entries;
     }

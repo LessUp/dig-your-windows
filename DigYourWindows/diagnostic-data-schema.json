@@ -103,6 +103,12 @@
                     "items": {
                         "$ref": "#/definitions/GpuInfo"
                     }
+                },
+                "diskSmart": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/DiskSmartInfo"
+                    }
                 }
             }
         },
@@ -278,6 +284,112 @@
                     ],
                     "minimum": 0,
                     "description": "Video memory in bytes"
+                },
+                "temperature": {
+                    "type": "number",
+                    "description": "GPU core temperature in Celsius"
+                },
+                "load": {
+                    "type": "number",
+                    "description": "GPU core load percentage"
+                },
+                "memoryUsed": {
+                    "type": "number",
+                    "description": "GPU memory used in MB"
+                },
+                "memoryTotal": {
+                    "type": "number",
+                    "description": "GPU total memory in MB"
+                },
+                "coreClock": {
+                    "type": "number",
+                    "description": "GPU core clock in MHz"
+                },
+                "memoryClock": {
+                    "type": "number",
+                    "description": "GPU memory clock in MHz"
+                },
+                "fanSpeed": {
+                    "type": "number",
+                    "description": "GPU fan speed percentage"
+                },
+                "power": {
+                    "type": "number",
+                    "description": "GPU power consumption in Watts"
+                }
+            }
+        },
+        "DiskSmartInfo": {
+            "type": "object",
+            "required": [
+                "deviceId",
+                "friendlyName"
+            ],
+            "properties": {
+                "deviceId": {
+                    "type": "string",
+                    "description": "Disk device ID"
+                },
+                "friendlyName": {
+                    "type": "string",
+                    "description": "Disk friendly name"
+                },
+                "serialNumber": {
+                    "type": ["string", "null"],
+                    "description": "Disk serial number"
+                },
+                "busType": {
+                    "type": ["integer", "null"],
+                    "description": "Bus type code (e.g., 11=SATA, 17=NVMe)"
+                },
+                "mediaType": {
+                    "type": ["integer", "null"],
+                    "description": "Media type code (e.g., 3=HDD, 4=SSD)"
+                },
+                "size": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Disk size in bytes"
+                },
+                "healthStatus": {
+                    "type": ["integer", "null"],
+                    "description": "Health status code (1=Healthy, 2=Warning, 3=Unhealthy)"
+                },
+                "temperature": {
+                    "type": ["integer", "null"],
+                    "description": "Temperature in Celsius"
+                },
+                "wear": {
+                    "type": ["integer", "null"],
+                    "description": "Wear percentage"
+                },
+                "powerOnHours": {
+                    "type": ["integer", "null"],
+                    "description": "Power on hours"
+                }
+            }
+        },
+        "CpuInfo": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "CPU name"
+                },
+                "temperature": {
+                    "type": "number",
+                    "description": "CPU temperature in Celsius"
+                },
+                "load": {
+                    "type": "number",
+                    "description": "CPU load percentage"
+                },
+                "clock": {
+                    "type": "number",
+                    "description": "CPU clock speed in MHz"
                 }
             }
         },
@@ -360,7 +472,8 @@
                 "warningsCount",
                 "recommendations",
                 "healthGrade",
-                "healthColor"
+                "healthColor",
+                "systemUptimeDays"
             ],
             "properties": {
                 "systemHealthScore": {
