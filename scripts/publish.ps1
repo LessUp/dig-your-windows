@@ -6,7 +6,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$projectPath = Join-Path $repoRoot "DigYourWindows.UI\DigYourWindows.UI.csproj"
+$projectPath = Join-Path $repoRoot "src\DigYourWindows.UI\DigYourWindows.UI.csproj"
 
 if (-not (Test-Path $projectPath))
 {

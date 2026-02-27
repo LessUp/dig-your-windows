@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DigYourWindows.Core\DigYourWindows.Core.csproj" />
+    <ProjectReference Include="..\..\src\DigYourWindows.Core\DigYourWindows.Core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/DigYourWindows.Core/DigYourWindows.Core.csproj" />
+  <Project Path="src/DigYourWindows.UI/DigYourWindows.UI.csproj" />
+  <Project Path="tests/DigYourWindows.Tests/DigYourWindows.Tests.csproj" />
+</Solution>

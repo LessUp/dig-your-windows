@@ -8,7 +8,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$projectPath = Join-Path $repoRoot "DigYourWindows.UI\DigYourWindows.UI.csproj"
+$projectPath = Join-Path $repoRoot "src\DigYourWindows.UI\DigYourWindows.UI.csproj"
 $issPath = Join-Path $repoRoot "installer\DigYourWindows.iss"
 
 if (-not (Test-Path $projectPath))
