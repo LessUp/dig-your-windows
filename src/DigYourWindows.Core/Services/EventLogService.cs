@@ -56,7 +56,6 @@ public class EventLogService : IEventLogService
                     entry.EntryType != EventLogEntryType.Warning)
                     continue;
 
-                var instanceId = entry.InstanceId;
                 entries.Add(new LogEventData
                 {
                     TimeGenerated = entry.TimeGenerated,
@@ -64,7 +63,9 @@ public class EventLogService : IEventLogService
                     Message = entry.Message,
                     EventType = entry.EntryType.ToString(),
                     LogFile = logName,
-                    EventId = instanceId < 0 ? 0u : (uint)Math.Min((ulong)instanceId, uint.MaxValue)
+                    EventId = entry.InstanceId is >= 0 and <= uint.MaxValue
+                        ? (uint)entry.InstanceId
+                        : 0u
                 });
             }
         }

@@ -218,6 +218,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         _cpuMonitorTimer.Stop();
         _cpuMonitorTimer.Tick -= CpuMonitorTimer_Tick;
+        _loadCts?.Cancel();
+        _loadCts?.Dispose();
     }
 
     partial void OnSelectedDaysBackChanged(int value)

@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using DigYourWindows.Core.Exceptions;
@@ -93,9 +94,9 @@ public class ReportService : IReportService
         sb.AppendLine("        <div class='card-header'><h3>系统概览</h3></div>");
         sb.AppendLine("        <div class='card-body'>");
         sb.AppendLine("            <div class='row'>");
-        sb.AppendLine($"                <div class='col-md-3'><strong>计算机名:</strong> {data.Hardware.ComputerName}</div>");
-        sb.AppendLine($"                <div class='col-md-3'><strong>操作系统:</strong> {data.Hardware.OsVersion}</div>");
-        sb.AppendLine($"                <div class='col-md-3'><strong>CPU:</strong> {data.Hardware.CpuName}</div>");
+        sb.AppendLine($"                <div class='col-md-3'><strong>计算机名:</strong> {WebUtility.HtmlEncode(data.Hardware.ComputerName)}</div>");
+        sb.AppendLine($"                <div class='col-md-3'><strong>操作系统:</strong> {WebUtility.HtmlEncode(data.Hardware.OsVersion)}</div>");
+        sb.AppendLine($"                <div class='col-md-3'><strong>CPU:</strong> {WebUtility.HtmlEncode(data.Hardware.CpuName)}</div>");
         sb.AppendLine($"                <div class='col-md-3'><strong>内存:</strong> {data.Hardware.TotalMemoryMB} MB</div>");
         sb.AppendLine("            </div>");
         sb.AppendLine("        </div>");
@@ -187,7 +188,7 @@ public class ReportService : IReportService
             sb.AppendLine("                <tbody>");
             foreach (var gpu in data.Hardware.Gpus)
             {
-                sb.AppendLine($"                    <tr><td>{gpu.Name}</td><td>{gpu.Temperature:F1}°C</td><td>{gpu.Load:F1}%</td><td>{gpu.MemoryUsed:F0}/{gpu.MemoryTotal:F0} MB</td><td>{gpu.CoreClock:F0} MHz</td><td>{gpu.Power:F1} W</td></tr>");
+                sb.AppendLine($"                    <tr><td>{WebUtility.HtmlEncode(gpu.Name)}</td><td>{gpu.Temperature:F1}°C</td><td>{gpu.Load:F1}%</td><td>{gpu.MemoryUsed:F0}/{gpu.MemoryTotal:F0} MB</td><td>{gpu.CoreClock:F0} MHz</td><td>{gpu.Power:F1} W</td></tr>");
             }
             sb.AppendLine("                </tbody>");
             sb.AppendLine("            </table>");
@@ -206,10 +207,10 @@ public class ReportService : IReportService
             var msg = evt.Message;
             if (msg.Length > 100)
             {
-                msg = msg.Substring(0, 100);
+                msg = msg[..100];
             }
 
-            sb.AppendLine($"                    <tr><td>{evt.TimeGenerated:yyyy-MM-dd HH:mm}</td><td>{evt.SourceName}</td><td>{evt.EventType}</td><td>{evt.EventId}</td><td>{msg}</td></tr>");
+            sb.AppendLine($"                    <tr><td>{evt.TimeGenerated:yyyy-MM-dd HH:mm}</td><td>{WebUtility.HtmlEncode(evt.SourceName)}</td><td>{WebUtility.HtmlEncode(evt.EventType)}</td><td>{evt.EventId}</td><td>{WebUtility.HtmlEncode(msg)}</td></tr>");
         }
         sb.AppendLine("                </tbody>");
         sb.AppendLine("            </table>");

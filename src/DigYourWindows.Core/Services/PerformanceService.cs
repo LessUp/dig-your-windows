@@ -18,9 +18,12 @@ public class WmiSystemInfoProvider : ISystemInfoProvider
             using var searcher = new ManagementObjectSearcher("SELECT LastBootUpTime FROM Win32_OperatingSystem");
             foreach (var obj in searcher.Get())
             {
-                var lastBoot = ManagementDateTimeConverter.ToDateTime(obj["LastBootUpTime"]?.ToString() ?? string.Empty);
-                var uptime = DateTime.Now - lastBoot;
-                return uptime.TotalDays;
+                using (obj)
+                {
+                    var lastBoot = ManagementDateTimeConverter.ToDateTime(obj["LastBootUpTime"]?.ToString() ?? string.Empty);
+                    var uptime = DateTime.Now - lastBoot;
+                    return uptime.TotalDays;
+                }
             }
         }
         catch

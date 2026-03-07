@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
 
         <!-- Title Bar -->
-        <ui:TitleBar Grid.Row="0" Title="DigYourWindows" Icon="pack://application:,,,/Assets/icon.ico">
+        <ui:TitleBar Grid.Row="0" Title="DigYourWindows">
             <ui:TitleBar.Header>
                 <StackPanel Orientation="Horizontal" Margin="10,0">
                     <TextBlock Text="时间范围:" VerticalAlignment="Center" Margin="0,0,5,0"/>
@@ -125,7 +125,7 @@
                                     <TextBlock FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,5">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
-                                                <Setter Property="Foreground" Value="{Binding PerformanceAnalysis.HealthColor}"/>
+                                                <Setter Property="Foreground" Value="{Binding PerformanceAnalysis.HealthColor, Converter={StaticResource StringToBrushConverter}}"/>
                                             </Style>
                                         </TextBlock.Style>
                                         <Run Text="{Binding PerformanceAnalysis.SystemHealthScore, StringFormat='{}{0:F0}'}"/>

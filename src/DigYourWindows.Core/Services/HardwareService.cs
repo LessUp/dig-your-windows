@@ -46,7 +46,10 @@ public class HardwareService : IHardwareService
             using var searcher = new ManagementObjectSearcher("SELECT Name FROM Win32_Processor");
             foreach (var obj in searcher.Get())
             {
-                return obj["Name"]?.ToString()?.Trim() ?? "Unknown";
+                using (obj)
+                {
+                    return obj["Name"]?.ToString()?.Trim() ?? "Unknown";
+                }
             }
         }
         catch (Exception ex)
@@ -63,7 +66,10 @@ public class HardwareService : IHardwareService
             using var searcher = new ManagementObjectSearcher("SELECT TotalPhysicalMemory FROM Win32_ComputerSystem");
             foreach (var obj in searcher.Get())
             {
-                return Convert.ToUInt64(obj["TotalPhysicalMemory"] ?? 0UL);
+                using (obj)
+                {
+                    return Convert.ToUInt64(obj["TotalPhysicalMemory"] ?? 0UL);
+                }
             }
         }
         catch (Exception ex)
@@ -82,16 +88,19 @@ public class HardwareService : IHardwareService
                 "SELECT Name, FileSystem, Size, FreeSpace FROM Win32_LogicalDisk WHERE DriveType = 3");
             foreach (ManagementObject obj in searcher.Get())
             {
-                var size = Convert.ToUInt64(obj["Size"] ?? 0UL);
-                var freeSpace = Convert.ToUInt64(obj["FreeSpace"] ?? 0UL);
-
-                disks.Add(new DiskInfoData
+                using (obj)
                 {
-                    Name = obj["Name"]?.ToString() ?? "",
-                    FileSystem = obj["FileSystem"]?.ToString() ?? "",
-                    TotalSpace = size,
-                    AvailableSpace = freeSpace
-                });
+                    var size = Convert.ToUInt64(obj["Size"] ?? 0UL);
+                    var freeSpace = Convert.ToUInt64(obj["FreeSpace"] ?? 0UL);
+
+                    disks.Add(new DiskInfoData
+                    {
+                        Name = obj["Name"]?.ToString() ?? "",
+                        FileSystem = obj["FileSystem"]?.ToString() ?? "",
+                        TotalSpace = size,
+                        AvailableSpace = freeSpace
+                    });
+                }
             }
         }
         catch (Exception ex)
@@ -111,13 +120,16 @@ public class HardwareService : IHardwareService
 
             foreach (ManagementObject obj in searcher.Get())
             {
-                var ipAddresses = obj["IPAddress"] as string[];
-                adapters.Add(new NetworkAdapterData
+                using (obj)
                 {
-                    Name = obj["Description"]?.ToString() ?? "",
-                    MacAddress = obj["MACAddress"]?.ToString() ?? "",
-                    IpAddresses = ipAddresses?.ToList() ?? new List<string>()
-                });
+                    var ipAddresses = obj["IPAddress"] as string[];
+                    adapters.Add(new NetworkAdapterData
+                    {
+                        Name = obj["Description"]?.ToString() ?? "",
+                        MacAddress = obj["MACAddress"]?.ToString() ?? "",
+                        IpAddresses = ipAddresses?.ToList() ?? new List<string>()
+                    });
+                }
             }
         }
         catch (Exception ex)
@@ -137,13 +149,16 @@ public class HardwareService : IHardwareService
 
             foreach (ManagementObject obj in searcher.Get())
             {
-                devices.Add(new UsbDeviceData
+                using (obj)
                 {
-                    DeviceId = obj["DeviceID"]?.ToString() ?? "",
-                    Name = obj["Name"]?.ToString(),
-                    Description = obj["Description"]?.ToString(),
-                    Manufacturer = obj["Manufacturer"]?.ToString()
-                });
+                    devices.Add(new UsbDeviceData
+                    {
+                        DeviceId = obj["DeviceID"]?.ToString() ?? "",
+                        Name = obj["Name"]?.ToString(),
+                        Description = obj["Description"]?.ToString(),
+                        Manufacturer = obj["Manufacturer"]?.ToString()
+                    });
+                }
             }
         }
         catch (Exception ex)
@@ -163,22 +178,25 @@ public class HardwareService : IHardwareService
 
             foreach (ManagementObject obj in searcher.Get())
             {
-                var caption = obj["Caption"]?.ToString() ?? "";
-                var protocol = caption.Contains("3.0") || caption.Contains("3.1") || caption.Contains("xHCI") 
-                    ? "USB 3.x" 
-                    : "USB 2.0";
-
-                var deviceId = obj["DeviceID"]?.ToString();
-                var name = obj["Name"]?.ToString();
-
-                controllers.Add(new UsbControllerData
+                using (obj)
                 {
-                    DeviceId = string.IsNullOrWhiteSpace(deviceId) ? (name ?? string.Empty) : deviceId,
-                    Name = name,
-                    Manufacturer = obj["Manufacturer"]?.ToString(),
-                    Caption = caption,
-                    ProtocolVersion = protocol
-                });
+                    var caption = obj["Caption"]?.ToString() ?? "";
+                    var protocol = caption.Contains("3.0") || caption.Contains("3.1") || caption.Contains("xHCI") 
+                        ? "USB 3.x" 
+                        : "USB 2.0";
+
+                    var deviceId = obj["DeviceID"]?.ToString();
+                    var name = obj["Name"]?.ToString();
+
+                    controllers.Add(new UsbControllerData
+                    {
+                        DeviceId = string.IsNullOrWhiteSpace(deviceId) ? (name ?? string.Empty) : deviceId,
+                        Name = name,
+                        Manufacturer = obj["Manufacturer"]?.ToString(),
+                        Caption = caption,
+                        ProtocolVersion = protocol
+                    });
+                }
             }
         }
         catch (Exception ex)

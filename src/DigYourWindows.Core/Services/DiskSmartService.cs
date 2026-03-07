@@ -34,16 +34,19 @@ public class DiskSmartService : IDiskSmartService
             {
                 foreach (ManagementObject counter in reliabilitySearcher.Get())
                 {
-                    var deviceId = counter["DeviceId"]?.ToString();
-                    if (string.IsNullOrWhiteSpace(deviceId))
+                    using (counter)
                     {
-                        continue;
-                    }
+                        var deviceId = counter["DeviceId"]?.ToString();
+                        if (string.IsNullOrWhiteSpace(deviceId))
+                        {
+                            continue;
+                        }
 
-                    reliability[deviceId] = (
-                        Temperature: TryGetUShort(counter["Temperature"]),
-                        Wear: TryGetUShort(counter["Wear"]),
-                        PowerOnHours: TryGetUInt(counter["PowerOnHours"]));
+                        reliability[deviceId] = (
+                            Temperature: TryGetUShort(counter["Temperature"]),
+                            Wear: TryGetUShort(counter["Wear"]),
+                            PowerOnHours: TryGetUInt(counter["PowerOnHours"]));
+                    }
                 }
             }
 
@@ -53,22 +56,25 @@ public class DiskSmartService : IDiskSmartService
             {
                 foreach (ManagementObject disk in diskSearcher.Get())
                 {
-                    var deviceId = disk["DeviceId"]?.ToString() ?? string.Empty;
-                    reliability.TryGetValue(deviceId, out var rel);
-
-                    result.Add(new DiskSmartData
+                    using (disk)
                     {
-                        DeviceId = deviceId,
-                        FriendlyName = disk["FriendlyName"]?.ToString() ?? string.Empty,
-                        SerialNumber = disk["SerialNumber"]?.ToString(),
-                        BusType = TryGetUShort(disk["BusType"]),
-                        MediaType = TryGetUShort(disk["MediaType"]),
-                        Size = TryGetULong(disk["Size"]),
-                        HealthStatus = TryGetUShort(disk["HealthStatus"]),
-                        Temperature = rel.Temperature,
-                        Wear = rel.Wear,
-                        PowerOnHours = rel.PowerOnHours
-                    });
+                        var deviceId = disk["DeviceId"]?.ToString() ?? string.Empty;
+                        reliability.TryGetValue(deviceId, out var rel);
+
+                        result.Add(new DiskSmartData
+                        {
+                            DeviceId = deviceId,
+                            FriendlyName = disk["FriendlyName"]?.ToString() ?? string.Empty,
+                            SerialNumber = disk["SerialNumber"]?.ToString(),
+                            BusType = TryGetUShort(disk["BusType"]),
+                            MediaType = TryGetUShort(disk["MediaType"]),
+                            Size = TryGetULong(disk["Size"]),
+                            HealthStatus = TryGetUShort(disk["HealthStatus"]),
+                            Temperature = rel.Temperature,
+                            Wear = rel.Wear,
+                            PowerOnHours = rel.PowerOnHours
+                        });
+                    }
                 }
             }
         }

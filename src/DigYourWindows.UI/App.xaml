@@ -17,6 +17,9 @@
             
             <!-- 添加 CountToVisibility 转换器 -->
             <conv:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+            
+            <!-- 添加 StringToBrush 转换器 -->
+            <conv:StringToBrushConverter x:Key="StringToBrushConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
