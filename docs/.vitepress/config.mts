@@ -8,6 +8,17 @@ export default defineConfig({
   // GitHub Pages 部署：base 需要与仓库名一致
   base: '/dig-your-windows/',
 
+  cleanUrls: true,
+
+  head: [
+    ['meta', { name: 'theme-color', content: '#0078d4' }],
+    ['meta', { name: 'og:type', content: 'website' }],
+    ['meta', { name: 'og:title', content: 'DigYourWindows' }],
+    ['meta', { name: 'og:description', content: 'Windows 深度诊断工具 — 一键采集硬件信息、事件日志、可靠性记录，生成系统健康评分与优化建议' }],
+    ['meta', { name: 'og:url', content: 'https://lessup.github.io/dig-your-windows/' }],
+    ['meta', { name: 'keywords', content: 'Windows,诊断,硬件信息,事件日志,SMART,WPF,.NET,系统健康' }],
+  ],
+
   // 排除非文档文件
   srcExclude: [
     'diagnostic-data-schema.json',
@@ -31,6 +42,7 @@ export default defineConfig({
           { text: '数据 Schema', link: '/reference/data-schema' },
         ],
       },
+      { text: '变更日志', link: '/changelog' },
     ],
 
     sidebar: [
@@ -46,6 +58,12 @@ export default defineConfig({
         text: '参考',
         items: [
           { text: '数据 Schema', link: '/reference/data-schema' },
+        ],
+      },
+      {
+        text: '变更日志',
+        items: [
+          { text: '总览', link: '/changelog' },
         ],
       },
     ],
