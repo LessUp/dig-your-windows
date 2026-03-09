@@ -111,8 +111,8 @@ public class ReportService : IReportService
             sb.AppendLine("                <div class='col-md-3'>");
             sb.AppendLine("                    <div class='card text-center p-3'>");
             sb.AppendLine("                        <h5>系统健康评分</h5>");
-            sb.AppendLine($"                        <div class='metric' style='color: {data.Performance.HealthColor}'>{data.Performance.SystemHealthScore:F0}/100</div>");
-            sb.AppendLine($"                        <span class='badge bg-secondary'>{data.Performance.HealthGrade}</span>");
+            sb.AppendLine($"                        <div class='metric' style='color: {WebUtility.HtmlEncode(data.Performance.HealthColor)}'>{data.Performance.SystemHealthScore:F0}/100</div>");
+            sb.AppendLine($"                        <span class='badge bg-secondary'>{WebUtility.HtmlEncode(data.Performance.HealthGrade)}</span>");
             sb.AppendLine("                    </div>");
             sb.AppendLine("                </div>");
             sb.AppendLine("                <div class='col-md-3'>");
@@ -168,7 +168,7 @@ public class ReportService : IReportService
                 sb.AppendLine("                <ul>");
                 foreach (var recommendation in data.Performance.Recommendations)
                 {
-                    sb.AppendLine($"                    <li>{recommendation}</li>");
+                    sb.AppendLine($"                    <li>{WebUtility.HtmlEncode(recommendation)}</li>");
                 }
                 sb.AppendLine("                </ul>");
                 sb.AppendLine("            </div>");

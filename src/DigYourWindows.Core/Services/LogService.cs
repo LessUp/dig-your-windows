@@ -9,17 +9,23 @@ public interface ILogService
     void Error(string message, Exception? exception = null);
 }
 
-public sealed class FileLogService : ILogService
+public sealed class FileLogService : ILogService, IDisposable
 {
     private readonly object _lock = new();
-    private readonly string _logFilePath;
+    private readonly StreamWriter _writer;
+    private bool _disposed;
 
     public FileLogService()
     {
         var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         var logDir = Path.Combine(appData, "DigYourWindows", "logs");
         Directory.CreateDirectory(logDir);
-        _logFilePath = Path.Combine(logDir, "digyourwindows.log");
+        var logFilePath = Path.Combine(logDir, "digyourwindows.log");
+
+        _writer = new StreamWriter(logFilePath, append: true, System.Text.Encoding.UTF8)
+        {
+            AutoFlush = true
+        };
     }
 
     public void Info(string message) => Write("INFO", message, null);
@@ -42,13 +48,25 @@ public sealed class FileLogService : ILogService
 
             lock (_lock)
             {
-                File.AppendAllText(_logFilePath, line + Environment.NewLine);
+                _writer.WriteLine(line);
             }
 
             Debug.WriteLine(line);
         }
         catch
         {
+        }
+    }
+
+    public void Dispose()
+    {
+        if (!_disposed)
+        {
+            lock (_lock)
+            {
+                _writer.Dispose();
+            }
+            _disposed = true;
         }
     }
 }

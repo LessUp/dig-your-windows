@@ -1,6 +1,5 @@
-using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using DigYourWindows.Core.Models;
-using SysEventLogEntry = System.Diagnostics.EventLogEntry;
 
 namespace DigYourWindows.Core.Services;
 
@@ -17,16 +16,17 @@ public class EventLogService : IEventLogService
     {
         _log = log;
     }
+
     public List<LogEventData> GetErrorEvents(int daysBack = 3)
     {
         var events = new List<LogEventData>();
-        var cutoffDate = DateTime.Now.AddDays(-daysBack);
+        var cutoffDate = DateTime.UtcNow.AddDays(-daysBack);
 
         try
         {
             // System Log
             events.AddRange(ReadEventLog("System", cutoffDate));
-            
+
             // Application Log
             events.AddRange(ReadEventLog("Application", cutoffDate));
         }
@@ -38,35 +38,44 @@ public class EventLogService : IEventLogService
         return events.OrderByDescending(e => e.TimeGenerated).ToList();
     }
 
-    private List<LogEventData> ReadEventLog(string logName, DateTime cutoffDate)
+    private List<LogEventData> ReadEventLog(string logName, DateTime cutoffDateUtc)
     {
         var entries = new List<LogEventData>();
-        
+
         try
         {
-            using var eventLog = new EventLog(logName);
-            
-            foreach (SysEventLogEntry entry in eventLog.Entries)
+            // Use structured XML query for efficient server-side filtering:
+            //   Level 2 = Error, Level 3 = Warning
+            var cutoffStr = cutoffDateUtc.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ");
+            var queryXml = $"<QueryList><Query Id='0' Path='{logName}'>" +
+                           $"<Select Path='{logName}'>*[System[(Level=2 or Level=3) and " +
+                           $"TimeCreated[@SystemTime&gt;='{cutoffStr}']]]</Select>" +
+                           "</Query></QueryList>";
+
+            using var reader = new EventLogReader(new EventLogQuery(logName, PathType.LogName, queryXml));
+
+            EventRecord? record;
+            while ((record = reader.ReadEvent()) is not null)
             {
-                if (entry.TimeGenerated < cutoffDate)
-                    continue;
-
-                // Only Error and Warning
-                if (entry.EntryType != EventLogEntryType.Error && 
-                    entry.EntryType != EventLogEntryType.Warning)
-                    continue;
-
-                entries.Add(new LogEventData
+                using (record)
                 {
-                    TimeGenerated = entry.TimeGenerated,
-                    SourceName = entry.Source,
-                    Message = entry.Message,
-                    EventType = entry.EntryType.ToString(),
-                    LogFile = logName,
-                    EventId = entry.InstanceId is >= 0 and <= uint.MaxValue
-                        ? (uint)entry.InstanceId
-                        : 0u
-                });
+                    var eventType = record.Level switch
+                    {
+                        2 => "Error",       // StandardEventLevel.Error
+                        3 => "Warning",     // StandardEventLevel.Warning
+                        _ => "Information"
+                    };
+
+                    entries.Add(new LogEventData
+                    {
+                        TimeGenerated = record.TimeCreated?.ToLocalTime() ?? DateTime.MinValue,
+                        SourceName = record.ProviderName ?? string.Empty,
+                        Message = GetEventMessage(record),
+                        EventType = eventType,
+                        LogFile = logName,
+                        EventId = (uint)(record.Id >= 0 ? record.Id : 0)
+                    });
+                }
             }
         }
         catch (Exception ex)
@@ -75,5 +84,18 @@ public class EventLogService : IEventLogService
         }
 
         return entries;
+    }
+
+    private static string GetEventMessage(EventRecord record)
+    {
+        try
+        {
+            return record.FormatDescription() ?? string.Empty;
+        }
+        catch
+        {
+            // FormatDescription may fail if the provider DLL is not available
+            return string.Empty;
+        }
     }
 }

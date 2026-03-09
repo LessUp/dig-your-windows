@@ -3,25 +3,20 @@ using LibreHardwareMonitor.Hardware;
 
 namespace DigYourWindows.Core.Services;
 
-public interface IGpuMonitorService : IDisposable
+public interface IGpuMonitorService
 {
     List<GpuInfoData> GetGpuInfo();
 }
 
 public class GpuMonitorService : IGpuMonitorService
 {
-    private readonly Computer _computer;
+    private readonly IHardwareMonitorProvider _provider;
     private readonly ILogService _log;
-    private bool _disposed;
 
-    public GpuMonitorService(ILogService log)
+    public GpuMonitorService(IHardwareMonitorProvider provider, ILogService log)
     {
+        _provider = provider;
         _log = log;
-        _computer = new Computer
-        {
-            IsGpuEnabled = true
-        };
-        _computer.Open();
     }
 
     public List<GpuInfoData> GetGpuInfo()
@@ -30,7 +25,7 @@ public class GpuMonitorService : IGpuMonitorService
 
         try
         {
-            foreach (var hardware in _computer.Hardware)
+            foreach (var hardware in _provider.Computer.Hardware)
             {
                 if (hardware.HardwareType == HardwareType.GpuNvidia ||
                     hardware.HardwareType == HardwareType.GpuAmd ||
@@ -82,13 +77,4 @@ public class GpuMonitorService : IGpuMonitorService
         }
     }
 
-    public void Dispose()
-    {
-        if (!_disposed)
-        {
-            _computer?.Close();
-            _disposed = true;
-        }
-        GC.SuppressFinalize(this);
-    }
 }

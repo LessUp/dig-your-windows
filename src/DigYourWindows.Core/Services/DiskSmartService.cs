@@ -43,9 +43,9 @@ public class DiskSmartService : IDiskSmartService
                         }
 
                         reliability[deviceId] = (
-                            Temperature: TryGetUShort(counter["Temperature"]),
-                            Wear: TryGetUShort(counter["Wear"]),
-                            PowerOnHours: TryGetUInt(counter["PowerOnHours"]));
+                            Temperature: TryConvert<ushort>(counter["Temperature"]),
+                            Wear: TryConvert<ushort>(counter["Wear"]),
+                            PowerOnHours: TryConvert<uint>(counter["PowerOnHours"]));
                     }
                 }
             }
@@ -66,10 +66,10 @@ public class DiskSmartService : IDiskSmartService
                             DeviceId = deviceId,
                             FriendlyName = disk["FriendlyName"]?.ToString() ?? string.Empty,
                             SerialNumber = disk["SerialNumber"]?.ToString(),
-                            BusType = TryGetUShort(disk["BusType"]),
-                            MediaType = TryGetUShort(disk["MediaType"]),
-                            Size = TryGetULong(disk["Size"]),
-                            HealthStatus = TryGetUShort(disk["HealthStatus"]),
+                            BusType = TryConvert<ushort>(disk["BusType"]),
+                            MediaType = TryConvert<ushort>(disk["MediaType"]),
+                            Size = TryConvertOrDefault(disk["Size"]),
+                            HealthStatus = TryConvert<ushort>(disk["HealthStatus"]),
                             Temperature = rel.Temperature,
                             Wear = rel.Wear,
                             PowerOnHours = rel.PowerOnHours
@@ -86,7 +86,7 @@ public class DiskSmartService : IDiskSmartService
         return result;
     }
 
-    private static ushort? TryGetUShort(object? value)
+    private static T? TryConvert<T>(object? value) where T : struct
     {
         if (value is null)
         {
@@ -95,7 +95,7 @@ public class DiskSmartService : IDiskSmartService
 
         try
         {
-            return Convert.ToUInt16(value);
+            return (T)Convert.ChangeType(value, typeof(T));
         }
         catch
         {
@@ -103,28 +103,11 @@ public class DiskSmartService : IDiskSmartService
         }
     }
 
-    private static uint? TryGetUInt(object? value)
+    private static ulong TryConvertOrDefault(object? value, ulong defaultValue = 0UL)
     {
         if (value is null)
         {
-            return null;
-        }
-
-        try
-        {
-            return Convert.ToUInt32(value);
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-    private static ulong TryGetULong(object? value)
-    {
-        if (value is null)
-        {
-            return 0UL;
+            return defaultValue;
         }
 
         try
@@ -133,7 +116,7 @@ public class DiskSmartService : IDiskSmartService
         }
         catch
         {
-            return 0UL;
+            return defaultValue;
         }
     }
 }

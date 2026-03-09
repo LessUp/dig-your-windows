@@ -5,7 +5,7 @@ namespace DigYourWindows.Core.Services;
 
 public interface IHardwareService
 {
-    HardwareData GetHardwareInfo();
+    HardwareData GetHardwareInfo(CancellationToken cancellationToken = default);
 }
 
 public class HardwareService : IHardwareService
@@ -21,20 +21,36 @@ public class HardwareService : IHardwareService
         _log = log;
     }
 
-    public HardwareData GetHardwareInfo()
+    public HardwareData GetHardwareInfo(CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+        var cpuBrand = GetCpuName();
+        cancellationToken.ThrowIfCancellationRequested();
+        var totalMemory = GetTotalMemoryBytes();
+        cancellationToken.ThrowIfCancellationRequested();
+        var disks = GetDisks();
+        cancellationToken.ThrowIfCancellationRequested();
+        var diskSmart = _diskSmartService.GetDiskSmart();
+        cancellationToken.ThrowIfCancellationRequested();
+        var networkAdapters = GetNetworkAdapters();
+        cancellationToken.ThrowIfCancellationRequested();
+        var usbDevices = GetUsbDevices();
+        cancellationToken.ThrowIfCancellationRequested();
+        var usbControllers = GetUsbControllers();
+        cancellationToken.ThrowIfCancellationRequested();
+
         return new HardwareData
         {
             ComputerName = Environment.MachineName,
             OsVersion = Environment.OSVersion.ToString(),
-            CpuBrand = GetCpuName(),
+            CpuBrand = cpuBrand,
             CpuCores = (uint)Environment.ProcessorCount,
-            TotalMemory = GetTotalMemoryBytes(),
-            Disks = GetDisks(),
-            DiskSmart = _diskSmartService.GetDiskSmart(),
-            NetworkAdapters = GetNetworkAdapters(),
-            UsbDevices = GetUsbDevices(),
-            UsbControllers = GetUsbControllers(),
+            TotalMemory = totalMemory,
+            Disks = disks,
+            DiskSmart = diskSmart,
+            NetworkAdapters = networkAdapters,
+            UsbDevices = usbDevices,
+            UsbControllers = usbControllers,
             Gpus = _gpuMonitor.GetGpuInfo()
         };
     }

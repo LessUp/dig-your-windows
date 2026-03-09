@@ -42,20 +42,12 @@ public class ReliabilityService : IReliabilityService
                         continue;
 
                     var recordType = Convert.ToInt32(obj["RecordType"] ?? 0);
-                    var recordTypeDescription = recordType switch
-                    {
-                        1 => "应用程序故障",
-                        2 => "Windows 故障",
-                        3 => "其他故障",
-                        _ => "未知"
-                    };
 
                     records.Add(new ReliabilityRecordData
                     {
                         Timestamp = timeGenerated,
                         SourceName = obj["ProductName"]?.ToString() ?? "",
                         Message = obj["Message"]?.ToString() ?? "",
-                        EventType = recordTypeDescription,
                         RecordType = recordType
                     });
                 }

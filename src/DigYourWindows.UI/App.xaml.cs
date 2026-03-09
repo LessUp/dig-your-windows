@@ -43,6 +43,7 @@ public partial class App : Application
         services.AddSingleton<IReportService, ReportService>();
         services.AddSingleton<IDiagnosticCollectorService, DiagnosticCollectorService>();
 
+        services.AddSingleton<IHardwareMonitorProvider, HardwareMonitorProvider>();
         services.AddSingleton<ICpuMonitorService, CpuMonitorService>();
         services.AddSingleton<INetworkMonitorService, NetworkMonitorService>();
         services.AddSingleton<IGpuMonitorService, GpuMonitorService>();

@@ -3,32 +3,27 @@ using LibreHardwareMonitor.Hardware;
 
 namespace DigYourWindows.Core.Services;
 
-public interface ICpuMonitorService : IDisposable
+public interface ICpuMonitorService
 {
     CpuInfoData GetCpuInfo();
 }
 
 public class CpuMonitorService : ICpuMonitorService
 {
-    private readonly Computer _computer;
+    private readonly IHardwareMonitorProvider _provider;
     private readonly ILogService _log;
-    private bool _disposed;
 
-    public CpuMonitorService(ILogService log)
+    public CpuMonitorService(IHardwareMonitorProvider provider, ILogService log)
     {
+        _provider = provider;
         _log = log;
-        _computer = new Computer
-        {
-            IsCpuEnabled = true
-        };
-        _computer.Open();
     }
 
     public CpuInfoData GetCpuInfo()
     {
         try
         {
-            var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
+            var cpu = _provider.Computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
             if (cpu is null)
             {
                 return new CpuInfoData();
@@ -129,13 +124,4 @@ public class CpuMonitorService : ICpuMonitorService
         return clocks.FirstOrDefault()?.Value ?? 0f;
     }
 
-    public void Dispose()
-    {
-        if (!_disposed)
-        {
-            _computer?.Close();
-            _disposed = true;
-        }
-        GC.SuppressFinalize(this);
-    }
 }
