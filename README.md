@@ -1,5 +1,9 @@
 # DigYourWindows
 
+[![Deploy Docs](https://github.com/LessUp/dig-your-windows/actions/workflows/docs.yml/badge.svg)](https://github.com/LessUp/dig-your-windows/actions/workflows/docs.yml)
+
+> 📖 **文档站**：[https://lessup.github.io/dig-your-windows/](https://lessup.github.io/dig-your-windows/)
+
 Windows 深度诊断工具 — 一键采集硬件信息、事件日志、可靠性记录，生成系统健康评分与优化建议。
 
 ## 功能
