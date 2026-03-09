@@ -5,7 +5,7 @@ namespace DigYourWindows.Core.Services;
 
 public interface IReliabilityService
 {
-    ReliabilityRecordData[] GetReliabilityRecords(int daysBack = 7);
+    ReliabilityRecordData[] GetReliabilityRecords(int daysBack = 7, CancellationToken cancellationToken = default);
 }
 
 public class ReliabilityService : IReliabilityService
@@ -17,7 +17,7 @@ public class ReliabilityService : IReliabilityService
         _log = log;
     }
 
-    public ReliabilityRecordData[] GetReliabilityRecords(int daysBack = 7)
+    public ReliabilityRecordData[] GetReliabilityRecords(int daysBack = 7, CancellationToken cancellationToken = default)
     {
         var records = new List<ReliabilityRecordData>();
         try
@@ -29,6 +29,7 @@ public class ReliabilityService : IReliabilityService
             
             foreach (ManagementObject obj in searcher.Get())
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 using (obj)
                 {
                     var timeStr = obj["TimeGenerated"]?.ToString();

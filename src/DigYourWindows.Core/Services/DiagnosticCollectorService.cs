@@ -44,7 +44,7 @@ public class DiagnosticCollectorService : IDiagnosticCollectorService
         HardwareData hardware;
         try
         {
-            hardware = await Task.Run(() => _hardwareService.GetHardwareInfo(), cancellationToken);
+            hardware = await Task.Run(() => _hardwareService.GetHardwareInfo(cancellationToken), cancellationToken);
         }
         catch (Exception ex)
         {
@@ -57,7 +57,7 @@ public class DiagnosticCollectorService : IDiagnosticCollectorService
         List<ReliabilityRecordData> reliability;
         try
         {
-            var reliabilityRaw = await Task.Run(() => _reliabilityService.GetReliabilityRecords(daysBack), cancellationToken);
+            var reliabilityRaw = await Task.Run(() => _reliabilityService.GetReliabilityRecords(daysBack, cancellationToken), cancellationToken);
             reliability = reliabilityRaw.ToList();
         }
         catch (Exception ex)
@@ -71,7 +71,7 @@ public class DiagnosticCollectorService : IDiagnosticCollectorService
         List<LogEventData> events;
         try
         {
-            events = await Task.Run(() => _eventLogService.GetErrorEvents(daysBack), cancellationToken);
+            events = await Task.Run(() => _eventLogService.GetErrorEvents(daysBack, cancellationToken), cancellationToken);
         }
         catch (Exception ex)
         {

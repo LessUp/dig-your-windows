@@ -5,7 +5,7 @@ namespace DigYourWindows.Core.Services;
 
 public interface IEventLogService
 {
-    List<LogEventData> GetErrorEvents(int daysBack = 3);
+    List<LogEventData> GetErrorEvents(int daysBack = 3, CancellationToken cancellationToken = default);
 }
 
 public class EventLogService : IEventLogService
@@ -17,7 +17,7 @@ public class EventLogService : IEventLogService
         _log = log;
     }
 
-    public List<LogEventData> GetErrorEvents(int daysBack = 3)
+    public List<LogEventData> GetErrorEvents(int daysBack = 3, CancellationToken cancellationToken = default)
     {
         var events = new List<LogEventData>();
         var cutoffDate = DateTime.UtcNow.AddDays(-daysBack);
@@ -25,10 +25,11 @@ public class EventLogService : IEventLogService
         try
         {
             // System Log
-            events.AddRange(ReadEventLog("System", cutoffDate));
+            events.AddRange(ReadEventLog("System", cutoffDate, cancellationToken));
+            cancellationToken.ThrowIfCancellationRequested();
 
             // Application Log
-            events.AddRange(ReadEventLog("Application", cutoffDate));
+            events.AddRange(ReadEventLog("Application", cutoffDate, cancellationToken));
         }
         catch (Exception ex)
         {
@@ -38,7 +39,7 @@ public class EventLogService : IEventLogService
         return events.OrderByDescending(e => e.TimeGenerated).ToList();
     }
 
-    private List<LogEventData> ReadEventLog(string logName, DateTime cutoffDateUtc)
+    private List<LogEventData> ReadEventLog(string logName, DateTime cutoffDateUtc, CancellationToken cancellationToken)
     {
         var entries = new List<LogEventData>();
 
@@ -57,6 +58,7 @@ public class EventLogService : IEventLogService
             EventRecord? record;
             while ((record = reader.ReadEvent()) is not null)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 using (record)
                 {
                     var eventType = record.Level switch
