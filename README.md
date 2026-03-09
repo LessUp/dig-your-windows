@@ -1,6 +1,7 @@
 # DigYourWindows
 
-[![Deploy Docs](https://github.com/LessUp/dig-your-windows/actions/workflows/docs.yml/badge.svg)](https://github.com/LessUp/dig-your-windows/actions/workflows/docs.yml)
+[![CI](https://github.com/LessUp/dig-your-windows/actions/workflows/ci.yml/badge.svg)](https://github.com/LessUp/dig-your-windows/actions/workflows/ci.yml)
+[![Docs](https://github.com/LessUp/dig-your-windows/actions/workflows/pages.yml/badge.svg)](https://github.com/LessUp/dig-your-windows/actions/workflows/pages.yml)
 
 English | [简体中文](README.zh-CN.md)
 
