@@ -1,6 +1,9 @@
 # DigYourWindows
 
 [![Deploy Docs](https://github.com/LessUp/dig-your-windows/actions/workflows/docs.yml/badge.svg)](https://github.com/LessUp/dig-your-windows/actions/workflows/docs.yml)
+[![Docs](https://img.shields.io/badge/Docs-GitHub%20Pages-blue?logo=github)](https://lessup.github.io/dig-your-windows/)
+
+简体中文 | [English](README.en.md)
 
 > 📖 **文档站**：[https://lessup.github.io/dig-your-windows/](https://lessup.github.io/dig-your-windows/)
 
