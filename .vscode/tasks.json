@@ -1,0 +1,45 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "dotnet: build",
+            "type": "shell",
+            "command": "dotnet build",
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": "$msCompile",
+            "detail": "构建整个解决方案"
+        },
+        {
+            "label": "dotnet: build (Release)",
+            "type": "shell",
+            "command": "dotnet build -c Release",
+            "group": "build",
+            "problemMatcher": "$msCompile",
+            "detail": "构建 Release 版本"
+        },
+        {
+            "label": "dotnet: test",
+            "type": "shell",
+            "command": "dotnet test --verbosity normal",
+            "group": { "kind": "test", "isDefault": true },
+            "problemMatcher": "$msCompile",
+            "detail": "运行全部测试"
+        },
+        {
+            "label": "dotnet: clean",
+            "type": "shell",
+            "command": "dotnet clean",
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "清理构建产物"
+        },
+        {
+            "label": "dotnet: restore",
+            "type": "shell",
+            "command": "dotnet restore",
+            "group": "none",
+            "problemMatcher": [],
+            "detail": "还原 NuGet 包"
+        }
+    ]
+}
