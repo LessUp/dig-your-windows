@@ -132,7 +132,7 @@ public class PerformanceService : IPerformanceService
     /// <summary>
     /// 计算内存评分
     /// </summary>
-    private double CalculateMemoryScore(double totalMemoryGB, List<string> recommendations)
+    private static double CalculateMemoryScore(double totalMemoryGB, List<string> recommendations)
     {
         var score = 50d; // 基础分数
 
@@ -161,7 +161,7 @@ public class PerformanceService : IPerformanceService
     /// <summary>
     /// 计算磁盘健康评分
     /// </summary>
-    private double CalculateDiskScore(List<DiskInfoData> disks, List<string> recommendations)
+    private static double CalculateDiskScore(List<DiskInfoData> disks, List<string> recommendations)
     {
         if (disks.Count == 0)
         {
@@ -208,7 +208,7 @@ public class PerformanceService : IPerformanceService
     /// <summary>
     /// 计算稳定性评分
     /// </summary>
-    private double CalculateStabilityScore(
+    private static double CalculateStabilityScore(
         int errorCount,
         int warningCount,
         int criticalEventsCount,
@@ -239,7 +239,7 @@ public class PerformanceService : IPerformanceService
     /// <summary>
     /// 计算性能评分
     /// </summary>
-    private double CalculatePerformanceScore(
+    private static double CalculatePerformanceScore(
         uint cpuCount,
         string cpuBrand,
         double totalMemoryGB,
@@ -323,7 +323,7 @@ public class PerformanceService : IPerformanceService
     /// <summary>
     /// 分析事件日志
     /// </summary>
-    private EventAnalysisResult AnalyzeEvents(List<LogEventData> events)
+    private static EventAnalysisResult AnalyzeEvents(List<LogEventData> events)
     {
         var errorCount = 0;
         var warningCount = 0;
@@ -369,7 +369,7 @@ public class PerformanceService : IPerformanceService
     /// <summary>
     /// 事件分析结果
     /// </summary>
-    private record EventAnalysisResult
+    private sealed record EventAnalysisResult
     {
         public int ErrorCount { get; init; }
         public int WarningCount { get; init; }

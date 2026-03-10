@@ -42,7 +42,7 @@ public class ReliabilityService : IReliabilityService
                     if (timeGenerated < cutoffDate)
                         continue;
 
-                    var recordType = Convert.ToInt32(obj["RecordType"] ?? 0);
+                    var recordType = Convert.ToInt32(obj["RecordType"] ?? 0, System.Globalization.CultureInfo.InvariantCulture);
 
                     records.Add(new ReliabilityRecordData
                     {

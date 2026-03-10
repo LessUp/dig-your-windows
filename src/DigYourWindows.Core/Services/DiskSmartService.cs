@@ -95,7 +95,7 @@ public class DiskSmartService : IDiskSmartService
 
         try
         {
-            return (T)Convert.ChangeType(value, typeof(T));
+            return (T)Convert.ChangeType(value, typeof(T), System.Globalization.CultureInfo.InvariantCulture);
         }
         catch
         {
@@ -112,7 +112,7 @@ public class DiskSmartService : IDiskSmartService
 
         try
         {
-            return Convert.ToUInt64(value);
+            return Convert.ToUInt64(value, System.Globalization.CultureInfo.InvariantCulture);
         }
         catch
         {

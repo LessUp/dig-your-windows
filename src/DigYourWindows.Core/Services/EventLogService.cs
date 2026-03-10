@@ -47,7 +47,7 @@ public class EventLogService : IEventLogService
         {
             // Use structured XML query for efficient server-side filtering:
             //   Level 2 = Error, Level 3 = Warning
-            var cutoffStr = cutoffDateUtc.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ");
+            var cutoffStr = cutoffDateUtc.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ", System.Globalization.CultureInfo.InvariantCulture);
             var queryXml = $"<QueryList><Query Id='0' Path='{logName}'>" +
                            $"<Select Path='{logName}'>*[System[(Level=2 or Level=3) and " +
                            $"TimeCreated[@SystemTime&gt;='{cutoffStr}']]]</Select>" +

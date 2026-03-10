@@ -84,7 +84,7 @@ public class HardwareService : IHardwareService
             {
                 using (obj)
                 {
-                    return Convert.ToUInt64(obj["TotalPhysicalMemory"] ?? 0UL);
+                    return Convert.ToUInt64(obj["TotalPhysicalMemory"] ?? 0UL, System.Globalization.CultureInfo.InvariantCulture);
                 }
             }
         }
@@ -106,8 +106,8 @@ public class HardwareService : IHardwareService
             {
                 using (obj)
                 {
-                    var size = Convert.ToUInt64(obj["Size"] ?? 0UL);
-                    var freeSpace = Convert.ToUInt64(obj["FreeSpace"] ?? 0UL);
+                    var size = Convert.ToUInt64(obj["Size"] ?? 0UL, System.Globalization.CultureInfo.InvariantCulture);
+                    var freeSpace = Convert.ToUInt64(obj["FreeSpace"] ?? 0UL, System.Globalization.CultureInfo.InvariantCulture);
 
                     disks.Add(new DiskInfoData
                     {

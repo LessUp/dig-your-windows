@@ -15,16 +15,16 @@ public interface IReportService
 
 public class ReportService : IReportService
 {
+    private static readonly JsonSerializerOptions IndentedOptions = new() { WriteIndented = true };
+    private static readonly JsonSerializerOptions CompactOptions = new() { WriteIndented = false };
+
     public string SerializeToJson(DiagnosticData data, bool indented = true)
     {
         try
         {
             return JsonSerializer.Serialize(
                 data,
-                new JsonSerializerOptions
-                {
-                    WriteIndented = indented
-                });
+                indented ? IndentedOptions : CompactOptions);
         }
         catch (JsonException ex)
         {
@@ -161,14 +161,14 @@ public class ReportService : IReportService
             sb.AppendLine("                </div>");
             sb.AppendLine("            </div>");
 
-            if (data.Performance.Recommendations.Any())
+            if (data.Performance.Recommendations.Count > 0)
             {
                 sb.AppendLine("            <div class='mt-4'>");
                 sb.AppendLine("                <h5>优化建议</h5>");
                 sb.AppendLine("                <ul>");
                 foreach (var recommendation in data.Performance.Recommendations)
                 {
-                    sb.AppendLine($"                    <li>{WebUtility.HtmlEncode(recommendation)}</li>");
+                    sb.AppendLine(System.Globalization.CultureInfo.InvariantCulture, $"                    <li>{WebUtility.HtmlEncode(recommendation)}</li>");
                 }
                 sb.AppendLine("                </ul>");
                 sb.AppendLine("            </div>");
@@ -188,7 +188,7 @@ public class ReportService : IReportService
             sb.AppendLine("                <tbody>");
             foreach (var gpu in data.Hardware.Gpus)
             {
-                sb.AppendLine($"                    <tr><td>{WebUtility.HtmlEncode(gpu.Name)}</td><td>{gpu.Temperature:F1}°C</td><td>{gpu.Load:F1}%</td><td>{gpu.MemoryUsed:F0}/{gpu.MemoryTotal:F0} MB</td><td>{gpu.CoreClock:F0} MHz</td><td>{gpu.Power:F1} W</td></tr>");
+                sb.AppendLine(System.Globalization.CultureInfo.InvariantCulture, $"                    <tr><td>{WebUtility.HtmlEncode(gpu.Name)}</td><td>{gpu.Temperature:F1}°C</td><td>{gpu.Load:F1}%</td><td>{gpu.MemoryUsed:F0}/{gpu.MemoryTotal:F0} MB</td><td>{gpu.CoreClock:F0} MHz</td><td>{gpu.Power:F1} W</td></tr>");
             }
             sb.AppendLine("                </tbody>");
             sb.AppendLine("            </table>");

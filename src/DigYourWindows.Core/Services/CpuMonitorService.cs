@@ -10,6 +10,23 @@ public interface ICpuMonitorService
 
 public class CpuMonitorService : ICpuMonitorService
 {
+    private static readonly string[] TemperatureSensorNames = new[]
+    {
+        "CPU Package",
+        "Core (Tctl/Tdie)",
+        "Tctl/Tdie",
+        "Package",
+        "CPU Core",
+        "Core"
+    };
+
+    private static readonly string[] LoadSensorNames = new[]
+    {
+        "CPU Total",
+        "Total",
+        "CPU"
+    };
+
     private readonly IHardwareMonitorProvider _provider;
     private readonly ILogService _log;
 
@@ -33,22 +50,9 @@ public class CpuMonitorService : ICpuMonitorService
 
             var sensors = GetAllSensors(cpu).ToList();
 
-            var temperature = GetPreferredSensorValue(sensors, SensorType.Temperature, new[]
-            {
-                "CPU Package",
-                "Core (Tctl/Tdie)",
-                "Tctl/Tdie",
-                "Package",
-                "CPU Core",
-                "Core"
-            });
+            var temperature = GetPreferredSensorValue(sensors, SensorType.Temperature, TemperatureSensorNames);
 
-            var load = GetPreferredSensorValue(sensors, SensorType.Load, new[]
-            {
-                "CPU Total",
-                "Total",
-                "CPU"
-            });
+            var load = GetPreferredSensorValue(sensors, SensorType.Load, LoadSensorNames);
 
             var clock = GetClockMHz(sensors);
 

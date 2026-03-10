@@ -6,7 +6,7 @@ public interface ILogService
 {
     void Info(string message);
     void Warn(string message);
-    void Error(string message, Exception? exception = null);
+    void LogError(string message, Exception? exception = null);
 }
 
 public sealed class FileLogService : ILogService, IDisposable
@@ -32,13 +32,13 @@ public sealed class FileLogService : ILogService, IDisposable
 
     public void Warn(string message) => Write("WARN", message, null);
 
-    public void Error(string message, Exception? exception = null) => Write("ERROR", message, exception);
+    public void LogError(string message, Exception? exception = null) => Write("ERROR", message, exception);
 
     private void Write(string level, string message, Exception? exception)
     {
         try
         {
-            var timestamp = DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss.fff zzz");
+            var timestamp = DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss.fff zzz", System.Globalization.CultureInfo.InvariantCulture);
             var line = $"{timestamp} [{level}] {message}";
 
             if (exception != null)
