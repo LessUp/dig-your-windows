@@ -33,7 +33,7 @@ public class EventLogService : IEventLogService
         }
         catch (Exception ex)
         {
-            _log.Error("读取事件日志失败", ex);
+            _log.LogError("读取事件日志失败", ex);
         }
 
         return events.OrderByDescending(e => e.TimeGenerated).ToList();
@@ -82,7 +82,7 @@ public class EventLogService : IEventLogService
         }
         catch (Exception ex)
         {
-            _log.Error($"读取事件日志 '{logName}' 失败", ex);
+            _log.LogError($"读取事件日志 '{logName}' 失败", ex);
         }
 
         return entries;

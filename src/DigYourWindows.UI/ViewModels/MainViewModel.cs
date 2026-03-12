@@ -292,7 +292,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
-            _log.Error("加载失败", ex);
+            _log.LogError("加载失败", ex);
             StatusMessage = $"加载失败: {ex.Message}";
         }
         finally
@@ -359,7 +359,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
-            _log.Error("导入失败", ex);
+            _log.LogError("导入失败", ex);
             StatusMessage = $"导入失败: {ex.Message}";
         }
         finally
@@ -404,7 +404,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
-            _log.Error("导出JSON失败", ex);
+            _log.LogError("导出JSON失败", ex);
             StatusMessage = $"导出失败: {ex.Message}";
         }
         finally
@@ -433,7 +433,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
-            _log.Error("导出HTML失败", ex);
+            _log.LogError("导出HTML失败", ex);
             StatusMessage = $"导出失败: {ex.Message}";
         }
         finally

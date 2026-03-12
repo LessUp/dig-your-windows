@@ -54,7 +54,7 @@ public class GpuMonitorService : IGpuMonitorService
         }
         catch (Exception ex)
         {
-            _log.Error("获取GPU信息失败", ex);
+            _log.LogError("获取GPU信息失败", ex);
         }
 
         return gpuList;

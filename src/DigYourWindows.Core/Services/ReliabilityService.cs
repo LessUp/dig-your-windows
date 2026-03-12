@@ -56,7 +56,7 @@ public class ReliabilityService : IReliabilityService
         }
         catch (Exception ex)
         {
-            _log.Error("获取可靠性记录失败", ex);
+            _log.LogError("获取可靠性记录失败", ex);
         }
         return records.OrderByDescending(r => r.Timestamp).ToArray();
     }

@@ -48,7 +48,7 @@ public class DiagnosticCollectorService : IDiagnosticCollectorService
         }
         catch (Exception ex)
         {
-            _log.Error("获取硬件信息失败", ex);
+            _log.LogError("获取硬件信息失败", ex);
             warnings.Add($"硬件信息获取失败: {ex.Message}");
             hardware = new HardwareData();
         }
@@ -62,7 +62,7 @@ public class DiagnosticCollectorService : IDiagnosticCollectorService
         }
         catch (Exception ex)
         {
-            _log.Error("获取可靠性记录失败", ex);
+            _log.LogError("获取可靠性记录失败", ex);
             warnings.Add($"可靠性记录获取失败: {ex.Message}");
             reliability = new List<ReliabilityRecordData>();
         }
@@ -75,7 +75,7 @@ public class DiagnosticCollectorService : IDiagnosticCollectorService
         }
         catch (Exception ex)
         {
-            _log.Error("获取事件日志失败", ex);
+            _log.LogError("获取事件日志失败", ex);
             warnings.Add($"事件日志获取失败: {ex.Message}");
             events = new List<LogEventData>();
         }
@@ -90,7 +90,7 @@ public class DiagnosticCollectorService : IDiagnosticCollectorService
         }
         catch (Exception ex)
         {
-            _log.Error("性能分析失败", ex);
+            _log.LogError("性能分析失败", ex);
             warnings.Add($"性能分析失败: {ex.Message}");
             analysis = new PerformanceAnalysisData();
         }
