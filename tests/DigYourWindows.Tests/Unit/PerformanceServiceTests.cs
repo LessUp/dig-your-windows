@@ -19,8 +19,8 @@ public class PerformanceServiceTests
             CpuBrand = "Unknown",
             CpuCores = 1,
             TotalMemory = 2UL * 1024UL * 1024UL * 1024UL,
-            Disks = new List<DiskInfoData>
-            {
+            Disks =
+            [
                 new DiskInfoData
                 {
                     Name = "C:",
@@ -28,12 +28,12 @@ public class PerformanceServiceTests
                     TotalSpace = 100UL,
                     AvailableSpace = 5UL
                 }
-            }
+            ]
         };
 
         var events = new List<LogEventData>
         {
-            new LogEventData
+            new()
             {
                 TimeGenerated = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                 LogFile = "System",
@@ -83,8 +83,8 @@ public class PerformanceServiceTests
             CpuBrand = "Intel(R) Core(TM) i9-12900K",
             CpuCores = 8,
             TotalMemory = 16UL * 1024UL * 1024UL * 1024UL,
-            Disks = new List<DiskInfoData>
-            {
+            Disks =
+            [
                 new DiskInfoData
                 {
                     Name = "C:",
@@ -92,11 +92,11 @@ public class PerformanceServiceTests
                     TotalSpace = 100UL,
                     AvailableSpace = 60UL
                 }
-            }
+            ]
         };
 
         var service = new PerformanceService(new StubSystemInfoProvider());
-        var analysis = service.AnalyzeSystemPerformance(hardware, new List<LogEventData>(), new List<ReliabilityRecordData>());
+        var analysis = service.AnalyzeSystemPerformance(hardware, [], []);
 
         Assert.True(analysis.SystemHealthScore >= 90d);
         Assert.Equal("优秀", analysis.HealthGrade);
@@ -105,5 +105,98 @@ public class PerformanceServiceTests
 
         Assert.Equal((uint)0, analysis.CriticalIssuesCount);
         Assert.Equal((uint)0, analysis.WarningsCount);
+    }
+
+    [Theory]
+    [InlineData(4, 60)]
+    [InlineData(8, 75)]
+    [InlineData(16, 90)]
+    public void AnalyzeSystemPerformance_MemoryThresholds_ShouldReturnExpectedMemoryScores(int memoryGb, double expectedScore)
+    {
+        var service = new PerformanceService(new StubSystemInfoProvider());
+        var analysis = service.AnalyzeSystemPerformance(
+            CreateHardware(totalMemoryGb: memoryGb),
+            [],
+            []);
+
+        Assert.Equal(expectedScore, analysis.MemoryUsageScore);
+    }
+
+    [Fact]
+    public void AnalyzeSystemPerformance_FourGbMemory_ShouldAddUpgradeRecommendation()
+    {
+        var service = new PerformanceService(new StubSystemInfoProvider());
+        var analysis = service.AnalyzeSystemPerformance(CreateHardware(totalMemoryGb: 4), [], []);
+
+        Assert.Contains("内存容量较小，建议考虑升级到8GB或更多以提升性能", analysis.Recommendations);
+    }
+
+    [Theory]
+    [InlineData(10, 30, "严重不足")]
+    [InlineData(25, 60, "不足")]
+    [InlineData(50, 75, null)]
+    public void AnalyzeSystemPerformance_DiskFreeThresholds_ShouldReturnExpectedDiskScores(int freePercent, double expectedScore, string? expectedMessageFragment)
+    {
+        var service = new PerformanceService(new StubSystemInfoProvider());
+        var analysis = service.AnalyzeSystemPerformance(
+            CreateHardware(diskFreePercent: freePercent),
+            [],
+            []);
+
+        Assert.Equal(expectedScore, analysis.DiskHealthScore);
+
+        if (expectedMessageFragment is null)
+        {
+            Assert.DoesNotContain(analysis.Recommendations, recommendation => recommendation.Contains("磁盘 C:"));
+        }
+        else
+        {
+            Assert.Contains(analysis.Recommendations, recommendation => recommendation.Contains(expectedMessageFragment, StringComparison.Ordinal));
+        }
+    }
+
+    [Fact]
+    public void AnalyzeSystemPerformance_ReliabilityThresholdBoundary_ShouldOnlyWarnAboveFifty()
+    {
+        var service = new PerformanceService(new StubSystemInfoProvider());
+        var fiftyRecords = Enumerable.Range(0, 50).Select(_ => new ReliabilityRecordData()).ToList();
+        var fiftyOneRecords = Enumerable.Range(0, 51).Select(_ => new ReliabilityRecordData()).ToList();
+
+        var analysisAtBoundary = service.AnalyzeSystemPerformance(CreateHardware(), [], fiftyRecords);
+        var analysisAboveBoundary = service.AnalyzeSystemPerformance(CreateHardware(), [], fiftyOneRecords);
+
+        Assert.DoesNotContain("系统可靠性记录较多，建议检查系统稳定性", analysisAtBoundary.Recommendations);
+        Assert.Contains("系统可靠性记录较多，建议检查系统稳定性", analysisAboveBoundary.Recommendations);
+        Assert.Equal(100d, analysisAtBoundary.StabilityScore);
+        Assert.Equal(90d, analysisAboveBoundary.StabilityScore);
+    }
+
+    [Fact]
+    public void AnalyzeSystemPerformance_UnknownUptime_ShouldPreserveNullSystemUptime()
+    {
+        var service = new PerformanceService(new StubSystemInfoProvider { UptimeDays = null });
+        var analysis = service.AnalyzeSystemPerformance(CreateHardware(), [], []);
+
+        Assert.Null(analysis.SystemUptimeDays);
+    }
+
+    private static HardwareData CreateHardware(int totalMemoryGb = 16, int diskFreePercent = 60)
+    {
+        return new HardwareData
+        {
+            CpuBrand = "Intel(R) Core(TM) i5-12400",
+            CpuCores = 4,
+            TotalMemory = (ulong)totalMemoryGb * 1024UL * 1024UL * 1024UL,
+            Disks =
+            [
+                new DiskInfoData
+                {
+                    Name = "C:",
+                    FileSystem = "NTFS",
+                    TotalSpace = 100UL,
+                    AvailableSpace = (ulong)diskFreePercent
+                }
+            ]
+        };
     }
 }

@@ -57,168 +57,181 @@ public class HardwareService : IHardwareService
 
     private string GetCpuName()
     {
-        try
-        {
-            using var searcher = new ManagementObjectSearcher("SELECT Name FROM Win32_Processor");
-            foreach (var obj in searcher.Get())
+        return ExecuteSafely(
+            operationName: "获取CPU名称",
+            fallback: "Unknown CPU",
+            action: () =>
             {
-                using (obj)
+                using var searcher = new ManagementObjectSearcher("SELECT Name FROM Win32_Processor");
+                foreach (var obj in searcher.Get())
                 {
-                    return obj["Name"]?.ToString()?.Trim() ?? "Unknown";
+                    using (obj)
+                    {
+                        return obj["Name"]?.ToString()?.Trim() ?? "Unknown";
+                    }
                 }
-            }
-        }
-        catch (Exception ex)
-        {
-            _log.Warn($"获取CPU名称失败: {ex.Message}");
-        }
-        return "Unknown CPU";
+
+                return "Unknown CPU";
+            });
     }
 
     private ulong GetTotalMemoryBytes()
     {
-        try
-        {
-            using var searcher = new ManagementObjectSearcher("SELECT TotalPhysicalMemory FROM Win32_ComputerSystem");
-            foreach (var obj in searcher.Get())
+        return ExecuteSafely(
+            operationName: "获取总内存",
+            fallback: 0UL,
+            action: () =>
             {
-                using (obj)
+                using var searcher = new ManagementObjectSearcher("SELECT TotalPhysicalMemory FROM Win32_ComputerSystem");
+                foreach (var obj in searcher.Get())
                 {
-                    return Convert.ToUInt64(obj["TotalPhysicalMemory"] ?? 0UL, System.Globalization.CultureInfo.InvariantCulture);
+                    using (obj)
+                    {
+                        return Convert.ToUInt64(obj["TotalPhysicalMemory"] ?? 0UL, System.Globalization.CultureInfo.InvariantCulture);
+                    }
                 }
-            }
-        }
-        catch (Exception ex)
-        {
-            _log.Warn($"获取总内存失败: {ex.Message}");
-        }
-        return 0UL;
+
+                return 0UL;
+            });
     }
 
     private List<DiskInfoData> GetDisks()
     {
-        var disks = new List<DiskInfoData>();
-        try
-        {
-            using var searcher = new ManagementObjectSearcher(
-                "SELECT Name, FileSystem, Size, FreeSpace FROM Win32_LogicalDisk WHERE DriveType = 3");
-            foreach (ManagementObject obj in searcher.Get())
+        return ExecuteSafely(
+            operationName: "获取磁盘信息",
+            fallback: new List<DiskInfoData>(),
+            action: () =>
             {
-                using (obj)
+                var disks = new List<DiskInfoData>();
+                using var searcher = new ManagementObjectSearcher(
+                    "SELECT Name, FileSystem, Size, FreeSpace FROM Win32_LogicalDisk WHERE DriveType = 3");
+                foreach (ManagementObject obj in searcher.Get())
                 {
-                    var size = Convert.ToUInt64(obj["Size"] ?? 0UL, System.Globalization.CultureInfo.InvariantCulture);
-                    var freeSpace = Convert.ToUInt64(obj["FreeSpace"] ?? 0UL, System.Globalization.CultureInfo.InvariantCulture);
-
-                    disks.Add(new DiskInfoData
+                    using (obj)
                     {
-                        Name = obj["Name"]?.ToString() ?? "",
-                        FileSystem = obj["FileSystem"]?.ToString() ?? "",
-                        TotalSpace = size,
-                        AvailableSpace = freeSpace
-                    });
+                        var size = Convert.ToUInt64(obj["Size"] ?? 0UL, System.Globalization.CultureInfo.InvariantCulture);
+                        var freeSpace = Convert.ToUInt64(obj["FreeSpace"] ?? 0UL, System.Globalization.CultureInfo.InvariantCulture);
+
+                        disks.Add(new DiskInfoData
+                        {
+                            Name = obj["Name"]?.ToString() ?? "",
+                            FileSystem = obj["FileSystem"]?.ToString() ?? "",
+                            TotalSpace = size,
+                            AvailableSpace = freeSpace
+                        });
+                    }
                 }
-            }
-        }
-        catch (Exception ex)
-        {
-            _log.Warn($"获取磁盘信息失败: {ex.Message}");
-        }
-        return disks;
+
+                return disks;
+            });
     }
 
     private List<NetworkAdapterData> GetNetworkAdapters()
     {
-        var adapters = new List<NetworkAdapterData>();
-        try
-        {
-            using var searcher = new ManagementObjectSearcher(
-                "SELECT * FROM Win32_NetworkAdapterConfiguration WHERE IPEnabled = True");
-
-            foreach (ManagementObject obj in searcher.Get())
+        return ExecuteSafely(
+            operationName: "获取网络适配器",
+            fallback: new List<NetworkAdapterData>(),
+            action: () =>
             {
-                using (obj)
+                var adapters = new List<NetworkAdapterData>();
+                using var searcher = new ManagementObjectSearcher(
+                    "SELECT * FROM Win32_NetworkAdapterConfiguration WHERE IPEnabled = True");
+
+                foreach (ManagementObject obj in searcher.Get())
                 {
-                    var ipAddresses = obj["IPAddress"] as string[];
-                    adapters.Add(new NetworkAdapterData
+                    using (obj)
                     {
-                        Name = obj["Description"]?.ToString() ?? "",
-                        MacAddress = obj["MACAddress"]?.ToString() ?? "",
-                        IpAddresses = ipAddresses?.ToList() ?? new List<string>()
-                    });
+                        var ipAddresses = obj["IPAddress"] as string[];
+                        adapters.Add(new NetworkAdapterData
+                        {
+                            Name = obj["Description"]?.ToString() ?? "",
+                            MacAddress = obj["MACAddress"]?.ToString() ?? "",
+                            IpAddresses = ipAddresses?.ToList() ?? new List<string>()
+                        });
+                    }
                 }
-            }
-        }
-        catch (Exception ex)
-        {
-            _log.Warn($"获取网络适配器失败: {ex.Message}");
-        }
-        return adapters;
+
+                return adapters;
+            });
     }
 
     private List<UsbDeviceData> GetUsbDevices()
     {
-        var devices = new List<UsbDeviceData>();
-        try
-        {
-            using var searcher = new ManagementObjectSearcher(
-                "SELECT DeviceID, Name, Description, Manufacturer FROM Win32_PnPEntity WHERE DeviceID LIKE 'USB%'");
-
-            foreach (ManagementObject obj in searcher.Get())
+        return ExecuteSafely(
+            operationName: "获取USB设备",
+            fallback: new List<UsbDeviceData>(),
+            action: () =>
             {
-                using (obj)
+                var devices = new List<UsbDeviceData>();
+                using var searcher = new ManagementObjectSearcher(
+                    "SELECT DeviceID, Name, Description, Manufacturer FROM Win32_PnPEntity WHERE DeviceID LIKE 'USB%'");
+
+                foreach (ManagementObject obj in searcher.Get())
                 {
-                    devices.Add(new UsbDeviceData
+                    using (obj)
                     {
-                        DeviceId = obj["DeviceID"]?.ToString() ?? "",
-                        Name = obj["Name"]?.ToString(),
-                        Description = obj["Description"]?.ToString(),
-                        Manufacturer = obj["Manufacturer"]?.ToString()
-                    });
+                        devices.Add(new UsbDeviceData
+                        {
+                            DeviceId = obj["DeviceID"]?.ToString() ?? "",
+                            Name = obj["Name"]?.ToString(),
+                            Description = obj["Description"]?.ToString(),
+                            Manufacturer = obj["Manufacturer"]?.ToString()
+                        });
+                    }
                 }
-            }
-        }
-        catch (Exception ex)
-        {
-            _log.Warn($"获取USB设备失败: {ex.Message}");
-        }
-        return devices;
+
+                return devices;
+            });
     }
 
     private List<UsbControllerData> GetUsbControllers()
     {
-        var controllers = new List<UsbControllerData>();
+        return ExecuteSafely(
+            operationName: "获取USB控制器",
+            fallback: new List<UsbControllerData>(),
+            action: () =>
+            {
+                var controllers = new List<UsbControllerData>();
+                using var searcher = new ManagementObjectSearcher(
+                    "SELECT DeviceID, Name, Manufacturer, Caption FROM Win32_USBController");
+
+                foreach (ManagementObject obj in searcher.Get())
+                {
+                    using (obj)
+                    {
+                        var caption = obj["Caption"]?.ToString() ?? "";
+                        var protocol = caption.Contains("3.0") || caption.Contains("3.1") || caption.Contains("xHCI")
+                            ? "USB 3.x"
+                            : "USB 2.0";
+
+                        var deviceId = obj["DeviceID"]?.ToString();
+                        var name = obj["Name"]?.ToString();
+
+                        controllers.Add(new UsbControllerData
+                        {
+                            DeviceId = string.IsNullOrWhiteSpace(deviceId) ? (name ?? string.Empty) : deviceId,
+                            Name = name,
+                            Manufacturer = obj["Manufacturer"]?.ToString(),
+                            Caption = caption,
+                            ProtocolVersion = protocol
+                        });
+                    }
+                }
+
+                return controllers;
+            });
+    }
+
+    private T ExecuteSafely<T>(string operationName, T fallback, Func<T> action)
+    {
         try
         {
-            using var searcher = new ManagementObjectSearcher(
-                "SELECT DeviceID, Name, Manufacturer, Caption FROM Win32_USBController");
-
-            foreach (ManagementObject obj in searcher.Get())
-            {
-                using (obj)
-                {
-                    var caption = obj["Caption"]?.ToString() ?? "";
-                    var protocol = caption.Contains("3.0") || caption.Contains("3.1") || caption.Contains("xHCI") 
-                        ? "USB 3.x" 
-                        : "USB 2.0";
-
-                    var deviceId = obj["DeviceID"]?.ToString();
-                    var name = obj["Name"]?.ToString();
-
-                    controllers.Add(new UsbControllerData
-                    {
-                        DeviceId = string.IsNullOrWhiteSpace(deviceId) ? (name ?? string.Empty) : deviceId,
-                        Name = name,
-                        Manufacturer = obj["Manufacturer"]?.ToString(),
-                        Caption = caption,
-                        ProtocolVersion = protocol
-                    });
-                }
-            }
+            return action();
         }
         catch (Exception ex)
         {
-            _log.Warn($"获取USB控制器失败: {ex.Message}");
+            _log.Warn($"{operationName}失败: {ex.Message}");
+            return fallback;
         }
-        return controllers;
     }
 }

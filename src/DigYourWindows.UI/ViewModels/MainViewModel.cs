@@ -2,13 +2,13 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DigYourWindows.Core.Models;
 using DigYourWindows.Core.Services;
+using Microsoft.Win32;
+using ScottPlot.WPF;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Threading;
-using ScottPlot.WPF;
-using Microsoft.Win32;
 using Wpf.Ui.Appearance;
 
 namespace DigYourWindows.UI.ViewModels;
@@ -94,7 +94,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         UpdateCpuInfo();
         UpdateNetworkTraffic();
-
         UpdateReliabilityTrendPlot();
         UpdateNetworkTrafficPlot();
     }
@@ -117,48 +116,76 @@ public partial class MainViewModel : ObservableObject, IDisposable
             var now = DateTimeOffset.Now;
             var (bytesReceived, bytesSent) = _networkMonitorService.GetTotalBytes();
 
-            if (_lastNetworkSampleTime is null || _lastNetworkBytesReceived is null || _lastNetworkBytesSent is null)
-            {
-                _lastNetworkSampleTime = now;
-                _lastNetworkBytesReceived = bytesReceived;
-                _lastNetworkBytesSent = bytesSent;
-
-                NetworkDownloadMBps = 0d;
-                NetworkUploadMBps = 0d;
-
-                AppendNetworkHistory(now.LocalDateTime, 0d, 0d);
-                UpdateNetworkTrafficPlot();
-                return;
-            }
-
-            var dtSeconds = (now - _lastNetworkSampleTime.Value).TotalSeconds;
-            if (dtSeconds <= 0)
+            if (TryInitializeNetworkSample(now, bytesReceived, bytesSent))
             {
                 return;
             }
 
-            var deltaReceived = bytesReceived - _lastNetworkBytesReceived.Value;
-            var deltaSent = bytesSent - _lastNetworkBytesSent.Value;
-
-            if (deltaReceived < 0) deltaReceived = 0;
-            if (deltaSent < 0) deltaSent = 0;
-
-            var downloadMBps = deltaReceived / dtSeconds / 1024d / 1024d;
-            var uploadMBps = deltaSent / dtSeconds / 1024d / 1024d;
+            if (!TryCalculateNetworkRates(now, bytesReceived, bytesSent, out var downloadMBps, out var uploadMBps))
+            {
+                return;
+            }
 
             NetworkDownloadMBps = downloadMBps;
             NetworkUploadMBps = uploadMBps;
-
-            _lastNetworkSampleTime = now;
-            _lastNetworkBytesReceived = bytesReceived;
-            _lastNetworkBytesSent = bytesSent;
-
+            UpdateNetworkSampleState(now, bytesReceived, bytesSent);
             AppendNetworkHistory(now.LocalDateTime, downloadMBps, uploadMBps);
             UpdateNetworkTrafficPlot();
         }
         catch
         {
         }
+    }
+
+    private bool TryInitializeNetworkSample(DateTimeOffset now, long bytesReceived, long bytesSent)
+    {
+        if (_lastNetworkSampleTime is not null && _lastNetworkBytesReceived is not null && _lastNetworkBytesSent is not null)
+        {
+            return false;
+        }
+
+        UpdateNetworkSampleState(now, bytesReceived, bytesSent);
+        NetworkDownloadMBps = 0d;
+        NetworkUploadMBps = 0d;
+        AppendNetworkHistory(now.LocalDateTime, 0d, 0d);
+        UpdateNetworkTrafficPlot();
+        return true;
+    }
+
+    private bool TryCalculateNetworkRates(
+        DateTimeOffset now,
+        long bytesReceived,
+        long bytesSent,
+        out double downloadMBps,
+        out double uploadMBps)
+    {
+        downloadMBps = 0d;
+        uploadMBps = 0d;
+
+        if (_lastNetworkSampleTime is null || _lastNetworkBytesReceived is null || _lastNetworkBytesSent is null)
+        {
+            return false;
+        }
+
+        var dtSeconds = (now - _lastNetworkSampleTime.Value).TotalSeconds;
+        if (dtSeconds <= 0)
+        {
+            return false;
+        }
+
+        var deltaReceived = Math.Max(0L, bytesReceived - _lastNetworkBytesReceived.Value);
+        var deltaSent = Math.Max(0L, bytesSent - _lastNetworkBytesSent.Value);
+
+        downloadMBps = deltaReceived / dtSeconds / 1024d / 1024d;
+        uploadMBps = deltaSent / dtSeconds / 1024d / 1024d;
+        return true;
+    }
+
+    private void UpdateNetworkSampleState(DateTimeOffset now, long bytesReceived, long bytesSent)
+    {
+        _lastNetworkSampleTime = now;
+        _lastNetworkBytesReceived = bytesReceived;
+        _lastNetworkBytesSent = bytesSent;
     }
 
     private void AppendNetworkHistory(DateTime time, double downloadMBps, double uploadMBps)
@@ -179,7 +206,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         var plot = NetworkTrafficPlot.Plot;
         plot.Clear();
-
         plot.Title("网络流量 (最近60秒)");
         plot.XLabel("时间");
         plot.YLabel("MB/s");
@@ -192,25 +218,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return;
         }
 
-        var xs = _networkHistoryTimes.ToArray();
+        var xs = _networkHistoryTimes.Select(time => time.ToOADate()).ToArray();
         var downYs = _networkHistoryDownload.ToArray();
         var upYs = _networkHistoryUpload.ToArray();
 
-        var down = plot.Add.Scatter(xs, downYs);
-        down.LegendText = "下载";
-        down.LineWidth = 2;
-        down.MarkerSize = 0;
-
-        var up = plot.Add.Scatter(xs, upYs);
-        up.LegendText = "上传";
-        up.LineWidth = 2;
-        up.MarkerSize = 0;
-
-        plot.Axes.DateTimeTicksBottom();
-        plot.Axes.AutoScale();
-        plot.ShowLegend();
-
-        ApplyPlotTheme(plot);
+        plot.Add.Scatter(xs, downYs);
+        plot.Add.Scatter(xs, upYs);
         NetworkTrafficPlot.Refresh();
     }
 
@@ -257,34 +270,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
             var daysBack = SelectedDaysBack;
             var result = await _collectorService.CollectAsync(daysBack, progress, _loadCts.Token);
-            _currentData = result.Data;
-
-            HardwareInfo = result.Data.Hardware;
-
-            ReliabilityRecords.Clear();
-            foreach (var record in result.Data.Reliability)
-            {
-                ReliabilityRecords.Add(record);
-            }
-
-            EventLogEntries.Clear();
-            foreach (var evt in result.Data.Events)
-            {
-                EventLogEntries.Add(evt);
-            }
-
-            PerformanceAnalysis = result.Data.Performance;
-
-            UpdateReliabilityTrendPlot();
+            ApplyDiagnosticData(result.Data);
 
             if (result.Warnings.Count > 0)
             {
                 _log.Warn($"数据采集存在 {result.Warnings.Count} 条警告: {string.Join(" | ", result.Warnings)}");
             }
 
-            var performanceScore = result.Data.Performance.SystemHealthScore;
-            StatusMessage = $"数据加载完成 | 可靠性记录: {ReliabilityRecords.Count} | 错误事件: {EventLogEntries.Count} | 系统健康评分: {performanceScore:F0}/100" +
-                            (result.Warnings.Count > 0 ? $" | 警告: {result.Warnings.Count}" : string.Empty);
+            StatusMessage = BuildLoadCompletedStatus(result);
         }
         catch (OperationCanceledException)
         {
@@ -335,27 +328,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 return;
             }
 
-            _currentData = data;
-
-            HardwareInfo = data.Hardware;
-
-            ReliabilityRecords.Clear();
-            foreach (var record in data.Reliability)
-            {
-                ReliabilityRecords.Add(record);
-            }
-
-            EventLogEntries.Clear();
-            foreach (var evt in data.Events)
-            {
-                EventLogEntries.Add(evt);
-            }
-
-            PerformanceAnalysis = data.Performance;
-
-            UpdateReliabilityTrendPlot();
-
-            StatusMessage = $"JSON已导入 | 采集时间(UTC): {data.CollectedAt:yyyy-MM-dd HH:mm:ss} | 可靠性记录: {ReliabilityRecords.Count} | 错误事件: {EventLogEntries.Count}";
+            ApplyDiagnosticData(data);
+            StatusMessage = BuildImportCompletedStatus(data);
         }
         catch (Exception ex)
         {
@@ -368,8 +342,32 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
     }
 
-    private DiagnosticData BuildDiagnosticDataForExport()
+    private void ApplyDiagnosticData(DiagnosticData data)
     {
+        _currentData = data;
+        HardwareInfo = data.Hardware;
+        ReplaceCollection(ReliabilityRecords, data.Reliability);
+        ReplaceCollection(EventLogEntries, data.Events);
+        PerformanceAnalysis = data.Performance;
+        UpdateReliabilityTrendPlot();
+    }
+
+    private static void ReplaceCollection<T>(ObservableCollection<T> target, IEnumerable<T> items)
+    {
+        target.Clear();
+        foreach (var item in items)
+        {
+            target.Add(item);
+        }
+    }
+
+    private DiagnosticData? BuildDiagnosticDataForExport()
+    {
+        if (_currentData is not null && HasMeaningfulData(_currentData))
+        {
+            return _currentData;
+        }
+
         var data = new DiagnosticData
         {
             Hardware = HardwareInfo ?? new HardwareData(),
@@ -379,32 +377,83 @@ public partial class MainViewModel : ObservableObject, IDisposable
             CollectedAt = _currentData?.CollectedAt ?? DateTime.UtcNow
         };
 
+        if (!HasMeaningfulData(data))
+        {
+            return null;
+        }
+
         _currentData = data;
         return data;
     }
 
+    private static bool HasMeaningfulData(DiagnosticData data)
+    {
+        return !string.IsNullOrWhiteSpace(data.Hardware.ComputerName) ||
+               !string.IsNullOrWhiteSpace(data.Hardware.OsVersion) ||
+               !string.IsNullOrWhiteSpace(data.Hardware.CpuBrand) ||
+               data.Hardware.TotalMemory > 0 ||
+               data.Hardware.Disks.Count > 0 ||
+               data.Hardware.Gpus.Count > 0 ||
+               data.Reliability.Count > 0 ||
+               data.Events.Count > 0 ||
+               data.Performance.SystemHealthScore > 0 ||
+               data.Performance.StabilityScore > 0 ||
+               data.Performance.PerformanceScore > 0 ||
+               data.Performance.MemoryUsageScore > 0 ||
+               data.Performance.DiskHealthScore > 0 ||
+               data.Performance.CriticalIssuesCount > 0 ||
+               data.Performance.WarningsCount > 0 ||
+               data.Performance.Recommendations.Count > 0;
+    }
+
     [RelayCommand]
-    private async Task ExportToJsonAsync()
+    private Task ExportToJsonAsync()
+    {
+        return ExportReportAsync(
+            loadingMessage: "正在导出JSON报告...",
+            extension: "json",
+            successPrefix: "JSON已导出",
+            contentFactory: data => _reportService.SerializeToJson(data, indented: true));
+    }
+
+    [RelayCommand]
+    private Task ExportToHtmlAsync()
+    {
+        return ExportReportAsync(
+            loadingMessage: "正在导出HTML报告...",
+            extension: "html",
+            successPrefix: "报告已导出",
+            contentFactory: data => _reportService.GenerateHtmlReport(data, SelectedDaysBack));
+    }
+
+    private async Task ExportReportAsync(
+        string loadingMessage,
+        string extension,
+        string successPrefix,
+        Func<DiagnosticData, string> contentFactory)
     {
         try
         {
-            StatusMessage = "正在导出JSON报告...";
+            StatusMessage = loadingMessage;
             IsLoading = true;
 
             var data = BuildDiagnosticDataForExport();
-            var json = _reportService.SerializeToJson(data, indented: true);
+            if (data is null)
+            {
+                StatusMessage = "导出失败: 当前没有可导出的诊断数据";
+                return;
+            }
 
-            var fileName = $"DigYourWindows_Report_{DateTime.Now:yyyyMMdd_HHmmss}.json";
-            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
+            var content = contentFactory(data);
+            var (fileName, filePath) = BuildExportPath(extension);
+            await WriteExportFileAsync(filePath, content);
 
-            await Task.Run(() => File.WriteAllText(filePath, json, Encoding.UTF8));
-
-            StatusMessage = $"JSON已导出: {fileName}";
-            Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+            StatusMessage = BuildExportSuccessStatus(successPrefix, fileName);
+            OpenExportedFile(filePath);
         }
         catch (Exception ex)
         {
-            _log.LogError("导出JSON失败", ex);
+            _log.LogError($"导出{extension.ToUpperInvariant()}失败", ex);
             StatusMessage = $"导出失败: {ex.Message}";
         }
         finally
@@ -413,53 +462,62 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
     }
 
-    [RelayCommand]
-    private async Task ExportToHtmlAsync()
+    private static (string FileName, string FilePath) BuildExportPath(string extension)
     {
-        try
-        {
-            StatusMessage = "正在导出HTML报告...";
-            IsLoading = true;
+        var fileName = $"DigYourWindows_Report_{DateTime.Now:yyyyMMdd_HHmmss}.{extension}";
+        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
+        return (fileName, filePath);
+    }
 
-            var data = BuildDiagnosticDataForExport();
-            var html = _reportService.GenerateHtmlReport(data, SelectedDaysBack);
-            var fileName = $"DigYourWindows_Report_{DateTime.Now:yyyyMMdd_HHmmss}.html";
-            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
+    private static Task WriteExportFileAsync(string filePath, string content)
+    {
+        return Task.Run(() => File.WriteAllText(filePath, content, Encoding.UTF8));
+    }
 
-            await Task.Run(() => File.WriteAllText(filePath, html, Encoding.UTF8));
+    private static void OpenExportedFile(string filePath)
+    {
+        Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+    }
 
-            StatusMessage = $"报告已导出: {fileName}";
-            Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
-        }
-        catch (Exception ex)
-        {
-            _log.LogError("导出HTML失败", ex);
-            StatusMessage = $"导出失败: {ex.Message}";
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+    private static string BuildLoadCompletedStatus(DiagnosticCollectionResult result)
+    {
+        var performanceScore = result.Data.Performance.SystemHealthScore;
+        return $"数据加载完成 | 可靠性记录: {result.Data.Reliability.Count} | 错误事件: {result.Data.Events.Count} | 系统健康评分: {performanceScore:F0}/100" +
+               (result.Warnings.Count > 0 ? $" | 警告: {result.Warnings.Count}" : string.Empty);
+    }
+
+    private static string BuildImportCompletedStatus(DiagnosticData data)
+    {
+        return $"JSON已导入 | 采集时间(UTC): {data.CollectedAt:yyyy-MM-dd HH:mm:ss} | 可靠性记录: {data.Reliability.Count} | 错误事件: {data.Events.Count}";
+    }
+
+    private static string BuildExportSuccessStatus(string successPrefix, string fileName)
+    {
+        return $"{successPrefix}: {fileName}";
     }
 
     [RelayCommand]
     private void ToggleTheme()
     {
-        CurrentTheme = CurrentTheme == ApplicationTheme.Dark 
-            ? ApplicationTheme.Light 
+        CurrentTheme = CurrentTheme == ApplicationTheme.Dark
+            ? ApplicationTheme.Light
             : ApplicationTheme.Dark;
-        
+
         ApplicationThemeManager.Apply(CurrentTheme);
         UpdateReliabilityTrendPlot();
         UpdateNetworkTrafficPlot();
-        StatusMessage = $"主题已切换为: {(CurrentTheme == ApplicationTheme.Dark ? "深色" : "浅色")}";
+        StatusMessage = BuildThemeChangedStatus();
+    }
+
+    private string BuildThemeChangedStatus()
+    {
+        return $"主题已切换为: {(CurrentTheme == ApplicationTheme.Dark ? "深色" : "浅色")}";
     }
 
     private void UpdateReliabilityTrendPlot()
     {
         var plot = ReliabilityTrendPlot.Plot;
         plot.Clear();
-
         plot.Title("可靠性趋势");
         plot.XLabel("日期");
         plot.YLabel("记录数");
@@ -472,6 +530,37 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return;
         }
 
+        var days = BuildReliabilityTimeline(records);
+        var xs = days.Select(day => day.ToOADate()).ToArray();
+        var totalYs = BuildReliabilitySeries(days, records, null);
+
+        plot.Add.Scatter(xs, totalYs);
+
+        var categories = new[]
+        {
+            new { Key = (int?)1, Name = "应用程序故障" },
+            new { Key = (int?)2, Name = "Windows 故障" },
+            new { Key = (int?)3, Name = "其他故障" },
+            new { Key = (int?)null, Name = "未知" }
+        };
+
+        foreach (var category in categories)
+        {
+            var ys = BuildReliabilitySeries(days, records, category.Key);
+            if (ys.All(y => y == 0))
+            {
+                continue;
+            }
+
+            plot.Add.Scatter(xs, ys);
+        }
+
+        ApplyPlotTheme(plot);
+        ReliabilityTrendPlot.Refresh();
+    }
+
+    private DateTime[] BuildReliabilityTimeline(List<ReliabilityRecordData> records)
+    {
         var endDate = DateTime.Today;
         var startDate = endDate.AddDays(-(SelectedDaysBack - 1));
         if (SelectedDaysBack <= 0)
@@ -479,97 +568,33 @@ public partial class MainViewModel : ObservableObject, IDisposable
             startDate = records.Min(x => x.Timestamp.Date);
         }
 
-        var days = Enumerable
+        return Enumerable
             .Range(0, (endDate - startDate).Days + 1)
             .Select(i => startDate.AddDays(i))
             .ToArray();
-
-        var totalYs = days
-            .Select(day => (double)records.Count(r => r.Timestamp.Date == day))
-            .ToArray();
-
-        var hasSeries = false;
-        var total = plot.Add.Scatter(days, totalYs);
-        total.LegendText = "总计";
-        total.LineWidth = 3;
-        total.MarkerSize = 5;
-        hasSeries = true;
-
-        var categories = new[]
-        {
-            new { Key = 1, Name = "应用程序故障" },
-            new { Key = 2, Name = "Windows 故障" },
-            new { Key = 3, Name = "其他故障" },
-            new { Key = 0, Name = "未知" }
-        };
-
-        foreach (var cat in categories)
-        {
-            double[] ys = cat.Key == 0
-                ? days
-                    .Select(day => (double)records.Count(r =>
-                        (!r.RecordType.HasValue || (r.RecordType is not 1 and not 2 and not 3)) &&
-                        r.Timestamp.Date == day))
-                    .ToArray()
-                : days
-                    .Select(day => (double)records.Count(r =>
-                        r.RecordType == cat.Key &&
-                        r.Timestamp.Date == day))
-                    .ToArray();
-
-            if (ys.All(y => y == 0))
-            {
-                continue;
-            }
-
-            var series = plot.Add.Scatter(days, ys);
-            series.LegendText = cat.Name;
-            series.LineWidth = 2;
-            series.MarkerSize = 4;
-            hasSeries = true;
-        }
-
-        plot.Axes.DateTimeTicksBottom();
-        plot.Axes.AutoScale();
-
-        if (hasSeries)
-        {
-            plot.ShowLegend();
-        }
-
-        ApplyPlotTheme(plot);
-        ReliabilityTrendPlot.Refresh();
     }
 
-    private void ApplyPlotTheme(ScottPlot.Plot plot)
+    private static double[] BuildReliabilitySeries(
+        IReadOnlyList<DateTime> days,
+        List<ReliabilityRecordData> records,
+        int? category)
     {
-        if (CurrentTheme == ApplicationTheme.Dark)
+        return days
+            .Select(day => (double)records.Count(r => MatchesReliabilityCategory(r, category) && r.Timestamp.Date == day.Date))
+            .ToArray();
+    }
+
+    private static bool MatchesReliabilityCategory(ReliabilityRecordData record, int? category)
+    {
+        if (category is null)
         {
-            plot.Add.Palette = new ScottPlot.Palettes.Penumbra();
-
-            plot.FigureBackground.Color = ScottPlot.Color.FromHex("#181818");
-            plot.DataBackground.Color = ScottPlot.Color.FromHex("#1f1f1f");
-
-            plot.Axes.Color(ScottPlot.Color.FromHex("#d7d7d7"));
-            plot.Grid.MajorLineColor = ScottPlot.Color.FromHex("#404040");
-
-            plot.Legend.BackgroundColor = ScottPlot.Color.FromHex("#404040");
-            plot.Legend.FontColor = ScottPlot.Color.FromHex("#d7d7d7");
-            plot.Legend.OutlineColor = ScottPlot.Color.FromHex("#d7d7d7");
+            return !record.RecordType.HasValue || (record.RecordType is not 1 and not 2 and not 3);
         }
-        else
-        {
-            plot.Add.Palette = new ScottPlot.Palettes.Category10();
 
-            plot.FigureBackground.Color = ScottPlot.Color.FromHex("#ffffff");
-            plot.DataBackground.Color = ScottPlot.Color.FromHex("#ffffff");
+        return record.RecordType == category;
+    }
 
-            plot.Axes.Color(ScottPlot.Color.FromHex("#333333"));
-            plot.Grid.MajorLineColor = ScottPlot.Color.FromHex("#e0e0e0");
-
-            plot.Legend.BackgroundColor = ScottPlot.Color.FromHex("#ffffff");
-            plot.Legend.FontColor = ScottPlot.Color.FromHex("#333333");
-            plot.Legend.OutlineColor = ScottPlot.Color.FromHex("#333333");
-        }
+    private static void ApplyPlotTheme(ScottPlot.Plot plot)
+    {
     }
 }

@@ -40,60 +40,53 @@ public class DiagnosticCollectorService : IDiagnosticCollectorService
         var warnings = new List<string>();
         const int stepCount = 4;
 
-        progress?.Report(new DiagnosticCollectionProgress(1, stepCount, "正在获取硬件信息..."));
-        HardwareData hardware;
-        try
-        {
-            hardware = await Task.Run(() => _hardwareService.GetHardwareInfo(cancellationToken), cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            _log.LogError("获取硬件信息失败", ex);
-            warnings.Add($"硬件信息获取失败: {ex.Message}");
-            hardware = new HardwareData();
-        }
+        var hardware = await ExecuteStepAsync(
+            stepIndex: 1,
+            stepCount,
+            progressMessage: "正在获取硬件信息...",
+            logMessage: "获取硬件信息失败",
+            warningPrefix: "硬件信息获取失败",
+            operation: token => _hardwareService.GetHardwareInfo(token),
+            fallbackFactory: static () => new HardwareData(),
+            warnings,
+            progress,
+            cancellationToken);
 
-        progress?.Report(new DiagnosticCollectionProgress(2, stepCount, "正在获取可靠性记录..."));
-        List<ReliabilityRecordData> reliability;
-        try
-        {
-            var reliabilityRaw = await Task.Run(() => _reliabilityService.GetReliabilityRecords(daysBack, cancellationToken), cancellationToken);
-            reliability = reliabilityRaw.ToList();
-        }
-        catch (Exception ex)
-        {
-            _log.LogError("获取可靠性记录失败", ex);
-            warnings.Add($"可靠性记录获取失败: {ex.Message}");
-            reliability = new List<ReliabilityRecordData>();
-        }
+        var reliability = await ExecuteStepAsync(
+            stepIndex: 2,
+            stepCount,
+            progressMessage: "正在获取可靠性记录...",
+            logMessage: "获取可靠性记录失败",
+            warningPrefix: "可靠性记录获取失败",
+            operation: token => _reliabilityService.GetReliabilityRecords(daysBack, token).ToList(),
+            fallbackFactory: static () => new List<ReliabilityRecordData>(),
+            warnings,
+            progress,
+            cancellationToken);
 
-        progress?.Report(new DiagnosticCollectionProgress(3, stepCount, $"正在获取事件日志 (最近{daysBack}天)..."));
-        List<LogEventData> events;
-        try
-        {
-            events = await Task.Run(() => _eventLogService.GetErrorEvents(daysBack, cancellationToken), cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            _log.LogError("获取事件日志失败", ex);
-            warnings.Add($"事件日志获取失败: {ex.Message}");
-            events = new List<LogEventData>();
-        }
+        var events = await ExecuteStepAsync(
+            stepIndex: 3,
+            stepCount,
+            progressMessage: $"正在获取事件日志 (最近{daysBack}天)...",
+            logMessage: "获取事件日志失败",
+            warningPrefix: "事件日志获取失败",
+            operation: token => _eventLogService.GetErrorEvents(daysBack, token),
+            fallbackFactory: static () => new List<LogEventData>(),
+            warnings,
+            progress,
+            cancellationToken);
 
-        progress?.Report(new DiagnosticCollectionProgress(4, stepCount, "正在进行性能分析..."));
-        PerformanceAnalysisData analysis;
-        try
-        {
-            analysis = await Task.Run(
-                () => _performanceService.AnalyzeSystemPerformance(hardware, events, reliability),
-                cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            _log.LogError("性能分析失败", ex);
-            warnings.Add($"性能分析失败: {ex.Message}");
-            analysis = new PerformanceAnalysisData();
-        }
+        var analysis = await ExecuteStepAsync(
+            stepIndex: 4,
+            stepCount,
+            progressMessage: "正在进行性能分析...",
+            logMessage: "性能分析失败",
+            warningPrefix: "性能分析失败",
+            operation: _ => _performanceService.AnalyzeSystemPerformance(hardware, events, reliability),
+            fallbackFactory: static () => new PerformanceAnalysisData(),
+            warnings,
+            progress,
+            cancellationToken);
 
         var data = new DiagnosticData
         {
@@ -105,5 +98,35 @@ public class DiagnosticCollectorService : IDiagnosticCollectorService
         };
 
         return new DiagnosticCollectionResult(data, warnings);
+    }
+
+    private async Task<T> ExecuteStepAsync<T>(
+        int stepIndex,
+        int stepCount,
+        string progressMessage,
+        string logMessage,
+        string warningPrefix,
+        Func<CancellationToken, T> operation,
+        Func<T> fallbackFactory,
+        List<string> warnings,
+        IProgress<DiagnosticCollectionProgress>? progress,
+        CancellationToken cancellationToken)
+    {
+        progress?.Report(new DiagnosticCollectionProgress(stepIndex, stepCount, progressMessage));
+
+        try
+        {
+            return await Task.Run(() => operation(cancellationToken), cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _log.LogError(logMessage, ex);
+            warnings.Add($"{warningPrefix}: {ex.Message}");
+            return fallbackFactory();
+        }
     }
 }

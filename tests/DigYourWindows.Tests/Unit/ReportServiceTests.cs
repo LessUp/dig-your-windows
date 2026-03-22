@@ -20,8 +20,8 @@ public class ReportServiceTests
                 CpuBrand = "Test CPU",
                 CpuCores = 8,
                 TotalMemory = 8UL * 1024UL * 1024UL * 1024UL,
-                Disks = new List<DiskInfoData>
-                {
+                Disks =
+                [
                     new DiskInfoData
                     {
                         Name = "C:",
@@ -29,9 +29,9 @@ public class ReportServiceTests
                         TotalSpace = 100UL,
                         AvailableSpace = 50UL
                     }
-                },
-                DiskSmart = new List<DiskSmartData>
-                {
+                ],
+                DiskSmart =
+                [
                     new DiskSmartData
                     {
                         DeviceId = "0",
@@ -45,10 +45,10 @@ public class ReportServiceTests
                         Wear = 5,
                         PowerOnHours = 1234
                     }
-                }
+                ]
             },
-            Reliability = new List<ReliabilityRecordData>
-            {
+            Reliability =
+            [
                 new ReliabilityRecordData
                 {
                     Timestamp = collectedAt,
@@ -57,9 +57,9 @@ public class ReportServiceTests
                     EventType = "Error",
                     RecordType = 1
                 }
-            },
-            Events = new List<LogEventData>
-            {
+            ],
+            Events =
+            [
                 new LogEventData
                 {
                     TimeGenerated = collectedAt,
@@ -69,18 +69,18 @@ public class ReportServiceTests
                     EventId = 41,
                     Message = "Test event message"
                 }
-            },
+            ],
             Performance = new PerformanceAnalysisData
             {
-                SystemHealthScore = 80,
-                StabilityScore = 80,
-                PerformanceScore = 80,
-                MemoryUsageScore = 75,
-                DiskHealthScore = 70,
-                SystemUptimeDays = 1,
+                SystemHealthScore = 80d,
+                StabilityScore = 80d,
+                PerformanceScore = 80d,
+                MemoryUsageScore = 75d,
+                DiskHealthScore = 70d,
+                SystemUptimeDays = 1d,
                 CriticalIssuesCount = 1,
                 WarningsCount = 0,
-                Recommendations = new List<string> { "Rec1" },
+                Recommendations = ["Rec1"],
                 HealthGrade = "良好",
                 HealthColor = "#17a2b8"
             },
@@ -107,9 +107,9 @@ public class ReportServiceTests
         Assert.Equal((uint)41, deserialized.Events[0].EventId);
 
         Assert.Single(deserialized.Reliability);
-        Assert.Equal(1, deserialized.Reliability[0].RecordType);
+        Assert.Equal((int?)1, deserialized.Reliability[0].RecordType);
 
-        Assert.Equal(80, deserialized.Performance.SystemHealthScore);
+        Assert.Equal(80d, deserialized.Performance.SystemHealthScore);
         Assert.Equal(collectedAt, deserialized.CollectedAt);
     }
 
@@ -123,14 +123,14 @@ public class ReportServiceTests
             Hardware = new HardwareData
             {
                 ComputerName = "TEST-PC",
-                DiskSmart = new List<DiskSmartData>
-                {
+                DiskSmart =
+                [
                     new DiskSmartData
                     {
                         DeviceId = "0",
                         FriendlyName = "TestDisk"
                     }
-                }
+                ]
             },
             CollectedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         };
@@ -149,54 +149,7 @@ public class ReportServiceTests
         var truncatedSuffix = "UNIQUE_SUFFIX_SHOULD_NOT_APPEAR";
         var longMessage = new string('A', 100) + truncatedSuffix;
 
-        var data = new DiagnosticData
-        {
-            Hardware = new HardwareData
-            {
-                ComputerName = "TEST-PC",
-                OsVersion = "Windows 11",
-                CpuBrand = "Test CPU",
-                TotalMemory = 8UL * 1024UL * 1024UL * 1024UL,
-                Gpus = new List<GpuInfoData>
-                {
-                    new GpuInfoData
-                    {
-                        Name = "GPU1",
-                        Temperature = 50,
-                        Load = 10,
-                        MemoryUsed = 100,
-                        MemoryTotal = 200,
-                        CoreClock = 1000,
-                        Power = 50
-                    }
-                }
-            },
-            Events = new List<LogEventData>
-            {
-                new LogEventData
-                {
-                    TimeGenerated = collectedAt,
-                    LogFile = "System",
-                    SourceName = "Kernel-Power",
-                    EventType = "Error",
-                    EventId = 41,
-                    Message = longMessage
-                }
-            },
-            Performance = new PerformanceAnalysisData
-            {
-                SystemHealthScore = 88,
-                StabilityScore = 80,
-                PerformanceScore = 80,
-                MemoryUsageScore = 75,
-                DiskHealthScore = 70,
-                CriticalIssuesCount = 1,
-                WarningsCount = 0,
-                HealthGrade = "良好",
-                HealthColor = "#17a2b8"
-            },
-            CollectedAt = collectedAt
-        };
+        var data = CreateDiagnosticData(collectedAt, longMessage: longMessage);
 
         var html = service.GenerateHtmlReport(data, daysBackForEvents: 3);
 
@@ -216,5 +169,113 @@ public class ReportServiceTests
 
         Assert.Contains("错误日志 (最近3天)", html);
         Assert.DoesNotContain(truncatedSuffix, html);
+    }
+
+    [Fact]
+    public void GenerateHtmlReport_WithNegativeMaxEvents_ShouldRenderNoEventRows()
+    {
+        var service = new ReportService();
+        var data = CreateDiagnosticData(new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+
+        var html = service.GenerateHtmlReport(data, daysBackForEvents: 3, maxEvents: -1);
+
+        Assert.Contains("错误日志 (最近3天) - 1 条", html);
+        Assert.DoesNotContain("Kernel-Power", html);
+    }
+
+    [Fact]
+    public void GenerateHtmlReport_WithoutRecommendationsGpuAndUptime_ShouldHideGpuAndShowUnknownUptime()
+    {
+        var service = new ReportService();
+        var data = CreateDiagnosticData(
+            new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            includeGpu: false,
+            recommendations: [],
+            uptimeDays: null);
+
+        var html = service.GenerateHtmlReport(data, daysBackForEvents: 3);
+
+        Assert.DoesNotContain("GPU 信息", html);
+        Assert.DoesNotContain("优化建议", html);
+        Assert.Contains(">未知<", html);
+    }
+
+    [Fact]
+    public void GenerateHtmlReport_ShouldHtmlEncodeSpecialCharacters()
+    {
+        var service = new ReportService();
+        var data = CreateDiagnosticData(
+            new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            computerName: "<script>alert('x')</script>",
+            eventMessage: "Error <b>bold</b> & details");
+
+        var html = service.GenerateHtmlReport(data, daysBackForEvents: 3);
+
+        Assert.Contains("&lt;script&gt;alert(&#39;x&#39;)&lt;/script&gt;", html);
+        Assert.Contains("Error &lt;b&gt;bold&lt;/b&gt; &amp; details", html);
+        Assert.DoesNotContain("<script>alert('x')</script>", html);
+    }
+
+    private static DiagnosticData CreateDiagnosticData(
+        DateTime collectedAt,
+        string? longMessage = null,
+        string? eventMessage = null,
+        string computerName = "TEST-PC",
+        bool includeGpu = true,
+        List<string>? recommendations = null,
+        double? uptimeDays = 1)
+    {
+        return new DiagnosticData
+        {
+            Hardware = new HardwareData
+            {
+                ComputerName = computerName,
+                OsVersion = "Windows 11",
+                CpuBrand = "Test CPU",
+                TotalMemory = 8UL * 1024UL * 1024UL * 1024UL,
+                Gpus = includeGpu
+                    ?
+                    [
+                        new GpuInfoData
+                        {
+                            Name = "GPU1",
+                            Temperature = 50,
+                            Load = 10,
+                            MemoryUsed = 100,
+                            MemoryTotal = 200,
+                            CoreClock = 1000,
+                            Power = 50
+                        }
+                    ]
+                    : []
+            },
+            Events =
+            [
+                new LogEventData
+                {
+                    TimeGenerated = collectedAt,
+                    LogFile = "System",
+                    SourceName = "Kernel-Power",
+                    EventType = "Error",
+                    EventId = 41,
+                    Message = longMessage ?? eventMessage ?? "Test event message"
+                }
+            ],
+            Performance = new PerformanceAnalysisData
+            {
+                SystemHealthScore = 88d,
+                StabilityScore = 80d,
+                PerformanceScore = 80d,
+                MemoryUsageScore = 75d,
+                DiskHealthScore = 70d,
+                CriticalIssuesCount = 1,
+                WarningsCount = 0,
+                SystemUptimeDays = uptimeDays,
+                Recommendations = recommendations ?? ["Rec1"],
+                HealthGrade = "良好",
+                HealthColor = "#17a2b8"
+            },
+            CollectedAt = collectedAt
+        };
     }
 }

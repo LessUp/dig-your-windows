@@ -45,6 +45,19 @@ public class PerformanceService : IPerformanceService
 {
     private static readonly HashSet<uint> CriticalEventIds = new() { 41, 55, 57, 1003, 1073, 6008, 7034, 7036 };
 
+    private const double ExcellentMemoryThresholdGb = 16d;
+    private const double GoodMemoryThresholdGb = 8d;
+    private const double AcceptableMemoryThresholdGb = 4d;
+    private const double ExcellentDiskFreeThresholdPercent = 50d;
+    private const double GoodDiskFreeThresholdPercent = 25d;
+    private const double AcceptableDiskFreeThresholdPercent = 10d;
+    private const int HighReliabilityRecordThreshold = 50;
+
+    private const double StabilityWeight = 0.4d;
+    private const double PerformanceWeight = 0.3d;
+    private const double MemoryWeight = 0.15d;
+    private const double DiskWeight = 0.15d;
+
     private readonly ISystemInfoProvider _systemInfo;
 
     public PerformanceService(ISystemInfoProvider systemInfo)
@@ -52,64 +65,35 @@ public class PerformanceService : IPerformanceService
         _systemInfo = systemInfo;
     }
 
-    /// <summary>
-    /// 分析系统性能和健康状况
-    /// </summary>
-    /// <param name="hardware">硬件信息</param>
-    /// <param name="events">事件日志</param>
-    /// <param name="reliability">可靠性记录</param>
-    /// <returns>性能分析结果</returns>
     public PerformanceAnalysisData AnalyzeSystemPerformance(
         HardwareData hardware,
         List<LogEventData> events,
         List<ReliabilityRecordData> reliability)
     {
         var recommendations = new List<string>();
-
-        // 分析事件日志以获取详细统计信息
         var eventAnalysis = AnalyzeEvents(events);
-        
-        // 计算内存使用评分
         var totalMemoryGB = hardware.TotalMemory / 1024d / 1024d / 1024d;
         var memoryUsageScore = CalculateMemoryScore(totalMemoryGB, recommendations);
-
-        // 计算磁盘健康评分
         var diskHealthScore = CalculateDiskScore(hardware.Disks, recommendations);
-
-        // 获取系统运行时间（天数）
         var systemUptimeDays = _systemInfo.GetSystemUptimeDays();
-        
-        // 计算系统稳定性评分
         var stabilityScore = CalculateStabilityScore(
             eventAnalysis.ErrorCount,
             eventAnalysis.WarningCount,
             eventAnalysis.CriticalEvents.Count,
             reliability.Count,
             recommendations);
-
-        // 计算性能评分
         var performanceScore = CalculatePerformanceScore(
             hardware.CpuCores,
             hardware.CpuBrand,
             totalMemoryGB,
             recommendations);
+        var systemHealthScore = CalculateSystemHealthScore(
+            stabilityScore,
+            performanceScore,
+            memoryUsageScore,
+            diskHealthScore);
 
-        // 计算整体系统健康评分
-        var systemHealthScore = (stabilityScore * 0.4f + performanceScore * 0.3f +
-                                  memoryUsageScore * 0.15f + diskHealthScore * 0.15f);
-        systemHealthScore = Math.Max(0d, Math.Min(100d, systemHealthScore));
-        
-        // 生成额外的建议
-        if (eventAnalysis.CriticalEvents.Count > 0)
-        {
-            recommendations.Add(
-                $"发现 {eventAnalysis.CriticalEvents.Count} 个严重系统错误，建议立即检查系统日志");
-        }
-
-        if (systemHealthScore < 60f)
-        {
-            recommendations.Add("系统健康评分较低，建议进行全面系统维护");
-        }
+        AddSummaryRecommendations(eventAnalysis.CriticalEvents.Count, systemHealthScore, recommendations);
 
         var (healthGrade, healthColor) = GetHealthGradeAndColor(systemHealthScore);
 
@@ -129,43 +113,33 @@ public class PerformanceService : IPerformanceService
         };
     }
 
-    /// <summary>
-    /// 计算内存评分
-    /// </summary>
     private static double CalculateMemoryScore(double totalMemoryGB, List<string> recommendations)
     {
-        var score = 50d; // 基础分数
-
-        if (totalMemoryGB >= 16f)
+        if (totalMemoryGB >= ExcellentMemoryThresholdGb)
         {
-            score = 90d; // 优秀
-        }
-        else if (totalMemoryGB >= 8f)
-        {
-            score = 75d; // 良好
-        }
-        else if (totalMemoryGB >= 4f)
-        {
-            score = 60d; // 可接受
-            recommendations.Add("内存容量较小，建议考虑升级到8GB或更多以提升性能");
-        }
-        else
-        {
-            score = 40d; // 较差
-            recommendations.Add("内存容量严重不足，强烈建议升级到8GB或更多");
+            return 90d;
         }
 
-        return score;
+        if (totalMemoryGB >= GoodMemoryThresholdGb)
+        {
+            return 75d;
+        }
+
+        if (totalMemoryGB >= AcceptableMemoryThresholdGb)
+        {
+            AddRecommendation(recommendations, "内存容量较小，建议考虑升级到8GB或更多以提升性能");
+            return 60d;
+        }
+
+        AddRecommendation(recommendations, "内存容量严重不足，强烈建议升级到8GB或更多");
+        return 40d;
     }
 
-    /// <summary>
-    /// 计算磁盘健康评分
-    /// </summary>
     private static double CalculateDiskScore(List<DiskInfoData> disks, List<string> recommendations)
     {
         if (disks.Count == 0)
         {
-            recommendations.Add("未检测到磁盘信息，请检查磁盘连接");
+            AddRecommendation(recommendations, "未检测到磁盘信息，请检查磁盘连接");
             return 50d;
         }
 
@@ -173,41 +147,38 @@ public class PerformanceService : IPerformanceService
 
         foreach (var disk in disks)
         {
-            // 计算可用空间百分比
             var freePercentage = disk.TotalSpace > 0
                 ? (disk.AvailableSpace / (double)disk.TotalSpace) * 100d
                 : 0d;
 
-            var diskScore = 50d; // 基础分数
-
-            if (freePercentage > 50f)
-            {
-                diskScore = 90d; // 优秀
-            }
-            else if (freePercentage > 25f)
-            {
-                diskScore = 75d; // 良好
-            }
-            else if (freePercentage > 10f)
-            {
-                diskScore = 60d; // 可接受
-                recommendations.Add($"磁盘 {disk.Name} 剩余空间不足 ({freePercentage:F0}%)，建议清理空间");
-            }
-            else
-            {
-                diskScore = 30d; // 较差
-                recommendations.Add($"磁盘 {disk.Name} 剩余空间严重不足 ({freePercentage:F0}%)，请立即清理空间");
-            }
-
-            totalScore += diskScore;
+            totalScore += GetDiskScore(disk, freePercentage, recommendations);
         }
 
         return totalScore / disks.Count;
     }
 
-    /// <summary>
-    /// 计算稳定性评分
-    /// </summary>
+    private static double GetDiskScore(DiskInfoData disk, double freePercentage, List<string> recommendations)
+    {
+        if (freePercentage > ExcellentDiskFreeThresholdPercent)
+        {
+            return 90d;
+        }
+
+        if (freePercentage > GoodDiskFreeThresholdPercent)
+        {
+            return 75d;
+        }
+
+        if (freePercentage > AcceptableDiskFreeThresholdPercent)
+        {
+            AddRecommendation(recommendations, $"磁盘 {disk.Name} 剩余空间不足 ({freePercentage:F0}%)，建议清理空间");
+            return 60d;
+        }
+
+        AddRecommendation(recommendations, $"磁盘 {disk.Name} 剩余空间严重不足 ({freePercentage:F0}%)，请立即清理空间");
+        return 30d;
+    }
+
     private static double CalculateStabilityScore(
         int errorCount,
         int warningCount,
@@ -215,114 +186,118 @@ public class PerformanceService : IPerformanceService
         int reliabilityRecordsCount,
         List<string> recommendations)
     {
-        var score = 100d; // 从完美分数开始
+        var score = 100d;
 
-        // 根据错误数量扣分
         score -= Math.Min(40d, errorCount * 2d);
-
-        // 根据警告数量扣分
         score -= Math.Min(20d, warningCount * 0.5d);
-
-        // 根据严重事件扣分
         score -= Math.Min(30d, criticalEventsCount * 10d);
 
-        // 检查可靠性问题
-        if (reliabilityRecordsCount > 50)
+        if (reliabilityRecordsCount > HighReliabilityRecordThreshold)
         {
             score -= 10d;
-            recommendations.Add("系统可靠性记录较多，建议检查系统稳定性");
+            AddRecommendation(recommendations, "系统可靠性记录较多，建议检查系统稳定性");
         }
 
         return Math.Max(0d, score);
     }
 
-    /// <summary>
-    /// 计算性能评分
-    /// </summary>
     private static double CalculatePerformanceScore(
         uint cpuCount,
         string cpuBrand,
         double totalMemoryGB,
         List<string> recommendations)
     {
-        var score = 50d; // 基础分数
-        var brand = cpuBrand.ToLowerInvariant();
+        var score = 50d;
+        score += GetCpuCoreScore(cpuCount, recommendations);
+        score += GetCpuBrandScore(cpuBrand);
+        score += GetMemoryPerformanceScore(totalMemoryGB);
 
-        // CPU 性能评估
+        return Math.Clamp(score, 0d, 100d);
+    }
+
+    private static double GetCpuCoreScore(uint cpuCount, List<string> recommendations)
+    {
         if (cpuCount >= 8)
         {
-            score += 20d; // 优秀
-        }
-        else if (cpuCount >= 4)
-        {
-            score += 15d; // 良好
-        }
-        else if (cpuCount >= 2)
-        {
-            score += 5d; // 可接受
-        }
-        else
-        {
-            score -= 10d; // 较差
-            recommendations.Add("CPU核心数较少，可能会影响多任务处理性能");
+            return 20d;
         }
 
-        // CPU 品牌评估
+        if (cpuCount >= 4)
+        {
+            return 15d;
+        }
+
+        if (cpuCount >= 2)
+        {
+            return 5d;
+        }
+
+        AddRecommendation(recommendations, "CPU核心数较少，可能会影响多任务处理性能");
+        return -10d;
+    }
+
+    private static double GetCpuBrandScore(string cpuBrand)
+    {
+        var brand = cpuBrand.ToLowerInvariant();
+
         if (brand.Contains("intel"))
         {
             if (brand.Contains("i9") || brand.Contains("xeon"))
             {
-                score += 15d; // 高端
+                return 15d;
             }
-            else if (brand.Contains("i7"))
+
+            if (brand.Contains("i7"))
             {
-                score += 10d; // 中高端
+                return 10d;
             }
-            else if (brand.Contains("i5"))
+
+            if (brand.Contains("i5"))
             {
-                score += 5d; // 中端
+                return 5d;
             }
         }
         else if (brand.Contains("amd"))
         {
             if (brand.Contains("ryzen 9") || brand.Contains("threadripper"))
             {
-                score += 15d; // 高端
+                return 15d;
             }
-            else if (brand.Contains("ryzen 7"))
+
+            if (brand.Contains("ryzen 7"))
             {
-                score += 10d; // 中高端
+                return 10d;
             }
-            else if (brand.Contains("ryzen 5"))
+
+            if (brand.Contains("ryzen 5"))
             {
-                score += 5d; // 中端
+                return 5d;
             }
         }
 
-        // 内存评估
-        if (totalMemoryGB >= 16f)
-        {
-            score += 15d; // 优秀
-        }
-        else if (totalMemoryGB >= 8f)
-        {
-            score += 10d; // 良好
-        }
-        else if (totalMemoryGB >= 4f)
-        {
-            score += 5d; // 可接受
-        }
-        else
-        {
-            score -= 5d; // 较差
-        }
-
-        return Math.Max(0d, Math.Min(100d, score));
+        return 0d;
     }
 
-    /// <summary>
-    /// 分析事件日志
-    /// </summary>
+    private static double GetMemoryPerformanceScore(double totalMemoryGB)
+    {
+        if (totalMemoryGB >= ExcellentMemoryThresholdGb)
+        {
+            return 15d;
+        }
+
+        if (totalMemoryGB >= GoodMemoryThresholdGb)
+        {
+            return 10d;
+        }
+
+        if (totalMemoryGB >= AcceptableMemoryThresholdGb)
+        {
+            return 5d;
+        }
+
+        return -5d;
+    }
+
     private static EventAnalysisResult AnalyzeEvents(List<LogEventData> events)
     {
         var errorCount = 0;
@@ -335,7 +310,6 @@ public class PerformanceService : IPerformanceService
             {
                 case "error":
                     errorCount++;
-                    // 判断是否为关键错误
                     if (IsCriticalError(evt))
                     {
                         criticalEvents.Add(evt);
@@ -355,9 +329,6 @@ public class PerformanceService : IPerformanceService
         };
     }
 
-    /// <summary>
-    /// 判断是否为关键错误
-    /// </summary>
     private static bool IsCriticalError(LogEventData evt)
     {
         return CriticalEventIds.Contains(evt.EventId) ||
@@ -366,9 +337,41 @@ public class PerformanceService : IPerformanceService
                evt.Message.Contains("fatal", StringComparison.OrdinalIgnoreCase);
     }
 
-    /// <summary>
-    /// 事件分析结果
-    /// </summary>
+    private static double CalculateSystemHealthScore(
+        double stabilityScore,
+        double performanceScore,
+        double memoryUsageScore,
+        double diskHealthScore)
+    {
+        var score = stabilityScore * StabilityWeight +
+                    performanceScore * PerformanceWeight +
+                    memoryUsageScore * MemoryWeight +
+                    diskHealthScore * DiskWeight;
+
+        return Math.Clamp(score, 0d, 100d);
+    }
+
+    private static void AddSummaryRecommendations(int criticalEventCount, double systemHealthScore, List<string> recommendations)
+    {
+        if (criticalEventCount > 0)
+        {
+            AddRecommendation(recommendations, $"发现 {criticalEventCount} 个严重系统错误，建议立即检查系统日志");
+        }
+
+        if (systemHealthScore < 60d)
+        {
+            AddRecommendation(recommendations, "系统健康评分较低，建议进行全面系统维护");
+        }
+    }
+
+    private static void AddRecommendation(List<string> recommendations, string message)
+    {
+        if (!recommendations.Contains(message, StringComparer.Ordinal))
+        {
+            recommendations.Add(message);
+        }
+    }
+
     private sealed record EventAnalysisResult
     {
         public int ErrorCount { get; init; }

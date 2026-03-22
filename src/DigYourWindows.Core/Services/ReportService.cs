@@ -15,6 +15,7 @@ public interface IReportService
 
 public class ReportService : IReportService
 {
+    private const int EventMessageMaxLength = 100;
     private static readonly JsonSerializerOptions IndentedOptions = new() { WriteIndented = true };
     private static readonly JsonSerializerOptions CompactOptions = new() { WriteIndented = false };
 
@@ -52,6 +53,19 @@ public class ReportService : IReportService
     public string GenerateHtmlReport(DiagnosticData data, int daysBackForEvents, int maxEvents = 100)
     {
         var sb = new StringBuilder();
+
+        AppendDocumentStart(sb, data.CollectedAt);
+        AppendOverviewSection(sb, data.Hardware);
+        AppendPerformanceSection(sb, data.Performance);
+        AppendGpuSection(sb, data.Hardware.Gpus);
+        AppendEventsSection(sb, data.Events, daysBackForEvents, maxEvents);
+        AppendDocumentEnd(sb);
+
+        return sb.ToString();
+    }
+
+    private static void AppendDocumentStart(StringBuilder sb, DateTime collectedAt)
+    {
         sb.AppendLine("<!DOCTYPE html>");
         sb.AppendLine("<html lang='zh-CN'>");
         sb.AppendLine("<head>");
@@ -88,138 +102,155 @@ public class ReportService : IReportService
         sb.AppendLine("    </style>");
         sb.AppendLine("</head>");
         sb.AppendLine("<body>");
-        sb.AppendLine($"    <h1 class='mb-4'>Windows 诊断报告 - {data.CollectedAt.ToLocalTime():yyyy-MM-dd HH:mm:ss}</h1>");
+        sb.AppendLine($"    <h1 class='mb-4'>Windows 诊断报告 - {collectedAt.ToLocalTime():yyyy-MM-dd HH:mm:ss}</h1>");
+    }
 
+    private static void AppendOverviewSection(StringBuilder sb, HardwareData hardware)
+    {
         sb.AppendLine("    <div class='card'>");
         sb.AppendLine("        <div class='card-header'><h3>系统概览</h3></div>");
         sb.AppendLine("        <div class='card-body'>");
         sb.AppendLine("            <div class='row'>");
-        sb.AppendLine($"                <div class='col-md-3'><strong>计算机名:</strong> {WebUtility.HtmlEncode(data.Hardware.ComputerName)}</div>");
-        sb.AppendLine($"                <div class='col-md-3'><strong>操作系统:</strong> {WebUtility.HtmlEncode(data.Hardware.OsVersion)}</div>");
-        sb.AppendLine($"                <div class='col-md-3'><strong>CPU:</strong> {WebUtility.HtmlEncode(data.Hardware.CpuName)}</div>");
-        sb.AppendLine($"                <div class='col-md-3'><strong>内存:</strong> {data.Hardware.TotalMemoryMB} MB</div>");
+        sb.AppendLine($"                <div class='col-md-3'><strong>计算机名:</strong> {WebUtility.HtmlEncode(hardware.ComputerName)}</div>");
+        sb.AppendLine($"                <div class='col-md-3'><strong>操作系统:</strong> {WebUtility.HtmlEncode(hardware.OsVersion)}</div>");
+        sb.AppendLine($"                <div class='col-md-3'><strong>CPU:</strong> {WebUtility.HtmlEncode(hardware.CpuName)}</div>");
+        sb.AppendLine($"                <div class='col-md-3'><strong>内存:</strong> {hardware.TotalMemoryMB} MB</div>");
         sb.AppendLine("            </div>");
         sb.AppendLine("        </div>");
         sb.AppendLine("    </div>");
+    }
 
-        if (data.Performance != null)
+    private static void AppendPerformanceSection(StringBuilder sb, PerformanceAnalysisData? performance)
+    {
+        if (performance is null)
         {
-            sb.AppendLine("    <div class='card'>");
-            sb.AppendLine("        <div class='card-header'><h3>系统性能分析</h3></div>");
-            sb.AppendLine("        <div class='card-body'>");
-            sb.AppendLine("            <div class='row mb-3'>");
-            sb.AppendLine("                <div class='col-md-3'>");
-            sb.AppendLine("                    <div class='card text-center p-3'>");
-            sb.AppendLine("                        <h5>系统健康评分</h5>");
-            sb.AppendLine($"                        <div class='metric' style='color: {WebUtility.HtmlEncode(data.Performance.HealthColor)}'>{data.Performance.SystemHealthScore:F0}/100</div>");
-            sb.AppendLine($"                        <span class='badge bg-secondary'>{WebUtility.HtmlEncode(data.Performance.HealthGrade)}</span>");
-            sb.AppendLine("                    </div>");
-            sb.AppendLine("                </div>");
-            sb.AppendLine("                <div class='col-md-3'>");
-            sb.AppendLine("                    <div class='card text-center p-3'>");
-            sb.AppendLine("                        <h5>稳定性评分</h5>");
-            sb.AppendLine($"                        <div class='metric'>{data.Performance.StabilityScore:F0}/100</div>");
-            sb.AppendLine("                    </div>");
-            sb.AppendLine("                </div>");
-            sb.AppendLine("                <div class='col-md-3'>");
-            sb.AppendLine("                    <div class='card text-center p-3'>");
-            sb.AppendLine("                        <h5>性能评分</h5>");
-            sb.AppendLine($"                        <div class='metric'>{data.Performance.PerformanceScore:F0}/100</div>");
-            sb.AppendLine("                    </div>");
-            sb.AppendLine("                </div>");
-            sb.AppendLine("                <div class='col-md-3'>");
-            sb.AppendLine("                    <div class='card text-center p-3'>");
-            sb.AppendLine("                        <h5>内存评分</h5>");
-            sb.AppendLine($"                        <div class='metric'>{data.Performance.MemoryUsageScore:F0}/100</div>");
-            sb.AppendLine("                    </div>");
-            sb.AppendLine("                </div>");
-            sb.AppendLine("            </div>");
-            sb.AppendLine("            <div class='row'>");
-            sb.AppendLine("                <div class='col-md-3'>");
-            sb.AppendLine("                    <div class='card text-center p-3'>");
-            sb.AppendLine("                        <h5>磁盘健康</h5>");
-            sb.AppendLine($"                        <div class='metric'>{data.Performance.DiskHealthScore:F0}/100</div>");
-            sb.AppendLine("                    </div>");
-            sb.AppendLine("                </div>");
-            sb.AppendLine("                <div class='col-md-3'>");
-            sb.AppendLine("                    <div class='card text-center p-3'>");
-            sb.AppendLine("                        <h5>关键问题</h5>");
-            sb.AppendLine($"                        <div class='metric text-danger'>{data.Performance.CriticalIssuesCount}</div>");
-            sb.AppendLine("                    </div>");
-            sb.AppendLine("                </div>");
-            sb.AppendLine("                <div class='col-md-3'>");
-            sb.AppendLine("                    <div class='card text-center p-3'>");
-            sb.AppendLine("                        <h5>警告数量</h5>");
-            sb.AppendLine($"                        <div class='metric text-warning'>{data.Performance.WarningsCount}</div>");
-            sb.AppendLine("                    </div>");
-            sb.AppendLine("                </div>");
-            sb.AppendLine("                <div class='col-md-3'>");
-            sb.AppendLine("                    <div class='card text-center p-3'>");
-            sb.AppendLine("                        <h5>系统运行时间</h5>");
-            sb.AppendLine($"                        <div class='metric'>{data.Performance.SystemUptimeDays:F0} 天</div>");
-            sb.AppendLine("                    </div>");
-            sb.AppendLine("                </div>");
-            sb.AppendLine("            </div>");
-
-            if (data.Performance.Recommendations.Count > 0)
-            {
-                sb.AppendLine("            <div class='mt-4'>");
-                sb.AppendLine("                <h5>优化建议</h5>");
-                sb.AppendLine("                <ul>");
-                foreach (var recommendation in data.Performance.Recommendations)
-                {
-                    sb.AppendLine(System.Globalization.CultureInfo.InvariantCulture, $"                    <li>{WebUtility.HtmlEncode(recommendation)}</li>");
-                }
-                sb.AppendLine("                </ul>");
-                sb.AppendLine("            </div>");
-            }
-
-            sb.AppendLine("        </div>");
-            sb.AppendLine("    </div>");
-        }
-
-        if (data.Hardware.Gpus.Count > 0)
-        {
-            sb.AppendLine("    <div class='card'>");
-            sb.AppendLine("        <div class='card-header'><h3>GPU 信息</h3></div>");
-            sb.AppendLine("        <div class='card-body'>");
-            sb.AppendLine("            <table class='table'>");
-            sb.AppendLine("                <thead><tr><th>名称</th><th>温度</th><th>负载</th><th>显存</th><th>核心频率</th><th>功耗</th></tr></thead>");
-            sb.AppendLine("                <tbody>");
-            foreach (var gpu in data.Hardware.Gpus)
-            {
-                sb.AppendLine(System.Globalization.CultureInfo.InvariantCulture, $"                    <tr><td>{WebUtility.HtmlEncode(gpu.Name)}</td><td>{gpu.Temperature:F1}°C</td><td>{gpu.Load:F1}%</td><td>{gpu.MemoryUsed:F0}/{gpu.MemoryTotal:F0} MB</td><td>{gpu.CoreClock:F0} MHz</td><td>{gpu.Power:F1} W</td></tr>");
-            }
-            sb.AppendLine("                </tbody>");
-            sb.AppendLine("            </table>");
-            sb.AppendLine("        </div>");
-            sb.AppendLine("    </div>");
+            return;
         }
 
         sb.AppendLine("    <div class='card'>");
-        sb.AppendLine($"        <div class='card-header'><h3>错误日志 (最近{daysBackForEvents}天) - {data.Events.Count} 条</h3></div>");
+        sb.AppendLine("        <div class='card-header'><h3>系统性能分析</h3></div>");
         sb.AppendLine("        <div class='card-body'>");
-        sb.AppendLine("            <table class='table table-sm table-striped'>");
-        sb.AppendLine("                <thead><tr><th>时间</th><th>来源</th><th>类型</th><th>ID</th><th>消息</th></tr></thead>");
-        sb.AppendLine("                <tbody>");
-        foreach (var evt in data.Events.Take(maxEvents))
-        {
-            var msg = evt.Message;
-            if (msg.Length > 100)
-            {
-                msg = msg[..100];
-            }
+        sb.AppendLine("            <div class='row mb-3'>");
+        AppendMetricCard(sb, "系统健康评分", $"{performance.SystemHealthScore:F0}/100", performance.HealthColor, performance.HealthGrade);
+        AppendMetricCard(sb, "稳定性评分", $"{performance.StabilityScore:F0}/100");
+        AppendMetricCard(sb, "性能评分", $"{performance.PerformanceScore:F0}/100");
+        AppendMetricCard(sb, "内存评分", $"{performance.MemoryUsageScore:F0}/100");
+        sb.AppendLine("            </div>");
+        sb.AppendLine("            <div class='row'>");
+        AppendMetricCard(sb, "磁盘健康", $"{performance.DiskHealthScore:F0}/100");
+        AppendMetricCard(sb, "关键问题", performance.CriticalIssuesCount.ToString(System.Globalization.CultureInfo.InvariantCulture), valueClass: "text-danger");
+        AppendMetricCard(sb, "警告数量", performance.WarningsCount.ToString(System.Globalization.CultureInfo.InvariantCulture), valueClass: "text-warning");
+        AppendMetricCard(sb, "系统运行时间", FormatUptime(performance.SystemUptimeDays));
+        sb.AppendLine("            </div>");
 
-            sb.AppendLine($"                    <tr><td>{evt.TimeGenerated:yyyy-MM-dd HH:mm}</td><td>{WebUtility.HtmlEncode(evt.SourceName)}</td><td>{WebUtility.HtmlEncode(evt.EventType)}</td><td>{evt.EventId}</td><td>{WebUtility.HtmlEncode(msg)}</td></tr>");
+        if (performance.Recommendations.Count > 0)
+        {
+            sb.AppendLine("            <div class='mt-4'>");
+            sb.AppendLine("                <h5>优化建议</h5>");
+            sb.AppendLine("                <ul>");
+            foreach (var recommendation in performance.Recommendations)
+            {
+                sb.AppendLine(System.Globalization.CultureInfo.InvariantCulture, $"                    <li>{WebUtility.HtmlEncode(recommendation)}</li>");
+            }
+            sb.AppendLine("                </ul>");
+            sb.AppendLine("            </div>");
+        }
+
+        sb.AppendLine("        </div>");
+        sb.AppendLine("    </div>");
+    }
+
+    private static void AppendMetricCard(
+        StringBuilder sb,
+        string title,
+        string value,
+        string? valueColor = null,
+        string? badge = null,
+        string? valueClass = null)
+    {
+        var encodedTitle = WebUtility.HtmlEncode(title);
+        var encodedValue = WebUtility.HtmlEncode(value);
+        var encodedBadge = badge is null ? null : WebUtility.HtmlEncode(badge);
+        var colorAttribute = string.IsNullOrWhiteSpace(valueColor)
+            ? string.Empty
+            : $" style='color: {WebUtility.HtmlEncode(valueColor)}'";
+        var classAttribute = string.IsNullOrWhiteSpace(valueClass)
+            ? "metric"
+            : $"metric {valueClass}";
+
+        sb.AppendLine("                <div class='col-md-3'>");
+        sb.AppendLine("                    <div class='card text-center p-3'>");
+        sb.AppendLine($"                        <h5>{encodedTitle}</h5>");
+        sb.AppendLine($"                        <div class='{classAttribute}'{colorAttribute}>{encodedValue}</div>");
+        if (encodedBadge is not null)
+        {
+            sb.AppendLine($"                        <span class='badge bg-secondary'>{encodedBadge}</span>");
+        }
+        sb.AppendLine("                    </div>");
+        sb.AppendLine("                </div>");
+    }
+
+    private static void AppendGpuSection(StringBuilder sb, List<GpuInfoData> gpus)
+    {
+        if (gpus.Count == 0)
+        {
+            return;
+        }
+
+        sb.AppendLine("    <div class='card'>");
+        sb.AppendLine("        <div class='card-header'><h3>GPU 信息</h3></div>");
+        sb.AppendLine("        <div class='card-body'>");
+        sb.AppendLine("            <table class='table'>");
+        sb.AppendLine("                <thead><tr><th>名称</th><th>温度</th><th>负载</th><th>显存</th><th>核心频率</th><th>功耗</th></tr></thead>");
+        sb.AppendLine("                <tbody>");
+        foreach (var gpu in gpus)
+        {
+            sb.AppendLine(System.Globalization.CultureInfo.InvariantCulture, $"                    <tr><td>{WebUtility.HtmlEncode(gpu.Name)}</td><td>{gpu.Temperature:F1}°C</td><td>{gpu.Load:F1}%</td><td>{gpu.MemoryUsed:F0}/{gpu.MemoryTotal:F0} MB</td><td>{gpu.CoreClock:F0} MHz</td><td>{gpu.Power:F1} W</td></tr>");
         }
         sb.AppendLine("                </tbody>");
         sb.AppendLine("            </table>");
         sb.AppendLine("        </div>");
         sb.AppendLine("    </div>");
+    }
 
+    private static void AppendEventsSection(StringBuilder sb, List<LogEventData> events, int daysBackForEvents, int maxEvents)
+    {
+        sb.AppendLine("    <div class='card'>");
+        sb.AppendLine($"        <div class='card-header'><h3>错误日志 (最近{daysBackForEvents}天) - {events.Count} 条</h3></div>");
+        sb.AppendLine("        <div class='card-body'>");
+        sb.AppendLine("            <table class='table table-sm table-striped'>");
+        sb.AppendLine("                <thead><tr><th>时间</th><th>来源</th><th>类型</th><th>ID</th><th>消息</th></tr></thead>");
+        sb.AppendLine("                <tbody>");
+        foreach (var evt in events.Take(Math.Max(0, maxEvents)))
+        {
+            sb.AppendLine($"                    <tr><td>{evt.TimeGenerated:yyyy-MM-dd HH:mm}</td><td>{WebUtility.HtmlEncode(evt.SourceName)}</td><td>{WebUtility.HtmlEncode(evt.EventType)}</td><td>{evt.EventId}</td><td>{WebUtility.HtmlEncode(TruncateMessage(evt.Message))}</td></tr>");
+        }
+        sb.AppendLine("                </tbody>");
+        sb.AppendLine("            </table>");
+        sb.AppendLine("        </div>");
+        sb.AppendLine("    </div>");
+    }
+
+    private static string TruncateMessage(string message)
+    {
+        if (message.Length <= EventMessageMaxLength)
+        {
+            return message;
+        }
+
+        return message[..EventMessageMaxLength];
+    }
+
+    private static string FormatUptime(double? uptimeDays)
+    {
+        return uptimeDays.HasValue
+            ? $"{uptimeDays.Value:F0} 天"
+            : "未知";
+    }
+
+    private static void AppendDocumentEnd(StringBuilder sb)
+    {
         sb.AppendLine("</body>");
         sb.AppendLine("</html>");
-
-        return sb.ToString();
     }
 }
