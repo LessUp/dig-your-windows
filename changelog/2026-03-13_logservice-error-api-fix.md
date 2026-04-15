@@ -1,13 +1,51 @@
 # LogService Error API 对齐
 
-日期：2026-03-13
+**日期**: 2026-03-13
+**版本**: 0.4.0
+**类型**: Bug Fix
 
-## 变更内容
+---
 
-- 将多处 `_log.Error(...)` 调用统一改为 `ILogService` 实际提供的 `_log.LogError(...)`
-- 覆盖核心采集服务、事件日志服务、GPU 监控服务以及主界面 ViewModel
-- 不改变异常处理语义，仅修正接口与调用方之间的命名漂移
+## 概述
 
-## 背景
+统一日志服务方法调用，修复 CI 编译失败问题。
 
-仓库中的 `ILogService` 只暴露 `Info`、`Warn` 与 `LogError`，但部分服务后来继续沿用旧的 `Error` 方法名，导致 CI 在编译阶段直接失败。本次调整用于恢复 .NET 主线构建通过。
+---
+
+## 问题
+
+`ILogService` 接口只暴露 `Info`、`Warn` 与 `LogError` 方法，但部分服务继续沿用旧的 `Error` 方法名，导致编译失败。
+
+```csharp
+// 接口定义
+public interface ILogService
+{
+    void Info(string message);
+    void Warn(string message);
+    void LogError(string message, Exception? exception = null);
+}
+
+// 错误调用
+_log.Error("操作失败", ex);  // CS0117: 'ILogService' does not contain a definition for 'Error'
+```
+
+---
+
+## 修复
+
+统一所有 `_log.Error(...)` 调用为 `_log.LogError(...)`:
+
+| 文件 | 修改 |
+|------|------|
+| `DiagnosticCollectorService.cs` | `_log.Error` → `_log.LogError` |
+| `EventLogService.cs` | `_log.Error` → `_log.LogError` |
+| `GpuMonitorService.cs` | `_log.Error` → `_log.LogError` |
+| `MainViewModel.cs` | `_log.Error` → `_log.LogError` |
+
+---
+
+## 影响
+
+- 不改变异常处理语义
+- 仅修正接口与调用方之间的命名漂移
+- CI 构建恢复正常

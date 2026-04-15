@@ -13,20 +13,46 @@ public interface IHardwareMonitorProvider : IDisposable
 
 public sealed class HardwareMonitorProvider : IHardwareMonitorProvider
 {
-    public Computer Computer { get; }
+    private readonly object _lock = new();
+    private Computer? _computer;
+    private bool _disposed;
+
+    public Computer Computer
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            return _computer!;
+        }
+    }
 
     public HardwareMonitorProvider()
     {
-        Computer = new Computer
+        _computer = new Computer
         {
             IsCpuEnabled = true,
             IsGpuEnabled = true
         };
-        Computer.Open();
+        _computer.Open();
     }
 
     public void Dispose()
     {
-        Computer.Close();
+        if (_disposed)
+        {
+            return;
+        }
+
+        lock (_lock)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+            _computer?.Close();
+            _computer = null;
+        }
     }
 }

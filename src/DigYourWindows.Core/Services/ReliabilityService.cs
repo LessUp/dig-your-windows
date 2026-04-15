@@ -67,7 +67,11 @@ public class ReliabilityService : IReliabilityService
         {
             return ManagementDateTimeConverter.ToDateTime(wmiDateTime);
         }
-        catch
+        catch (FormatException)
+        {
+            return DateTime.MinValue;
+        }
+        catch (ArgumentException)
         {
             return DateTime.MinValue;
         }

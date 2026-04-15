@@ -233,12 +233,14 @@ public class ReportService : IReportService
 
     private static string TruncateMessage(string message)
     {
-        if (message.Length <= EventMessageMaxLength)
+        if (string.IsNullOrEmpty(message))
         {
-            return message;
+            return string.Empty;
         }
 
-        return message[..EventMessageMaxLength];
+        return message.Length <= EventMessageMaxLength
+            ? message
+            : message[..EventMessageMaxLength];
     }
 
     private static string FormatUptime(double? uptimeDays)

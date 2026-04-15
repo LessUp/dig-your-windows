@@ -11,6 +11,13 @@ public interface ISystemInfoProvider
 
 public class WmiSystemInfoProvider : ISystemInfoProvider
 {
+    private readonly ILogService _log;
+
+    public WmiSystemInfoProvider(ILogService log)
+    {
+        _log = log;
+    }
+
     public double? GetSystemUptimeDays()
     {
         try
@@ -26,8 +33,9 @@ public class WmiSystemInfoProvider : ISystemInfoProvider
                 }
             }
         }
-        catch
+        catch (Exception ex)
         {
+            _log.Warn($"获取系统运行时间失败: {ex.Message}");
         }
         return null;
     }
@@ -45,24 +53,13 @@ public class PerformanceService : IPerformanceService
 {
     private static readonly HashSet<uint> CriticalEventIds = new() { 41, 55, 57, 1003, 1073, 6008, 7034, 7036 };
 
-    private const double ExcellentMemoryThresholdGb = 16d;
-    private const double GoodMemoryThresholdGb = 8d;
-    private const double AcceptableMemoryThresholdGb = 4d;
-    private const double ExcellentDiskFreeThresholdPercent = 50d;
-    private const double GoodDiskFreeThresholdPercent = 25d;
-    private const double AcceptableDiskFreeThresholdPercent = 10d;
-    private const int HighReliabilityRecordThreshold = 50;
-
-    private const double StabilityWeight = 0.4d;
-    private const double PerformanceWeight = 0.3d;
-    private const double MemoryWeight = 0.15d;
-    private const double DiskWeight = 0.15d;
-
     private readonly ISystemInfoProvider _systemInfo;
+    private readonly ILogService _log;
 
-    public PerformanceService(ISystemInfoProvider systemInfo)
+    public PerformanceService(ISystemInfoProvider systemInfo, ILogService log)
     {
         _systemInfo = systemInfo;
+        _log = log;
     }
 
     public PerformanceAnalysisData AnalyzeSystemPerformance(
@@ -115,24 +112,24 @@ public class PerformanceService : IPerformanceService
 
     private static double CalculateMemoryScore(double totalMemoryGB, List<string> recommendations)
     {
-        if (totalMemoryGB >= ExcellentMemoryThresholdGb)
+        if (totalMemoryGB >= ScoringConfiguration.ExcellentMemoryThresholdGb)
         {
-            return 90d;
+            return ScoringConfiguration.ExcellentScore;
         }
 
-        if (totalMemoryGB >= GoodMemoryThresholdGb)
+        if (totalMemoryGB >= ScoringConfiguration.GoodMemoryThresholdGb)
         {
-            return 75d;
+            return ScoringConfiguration.GoodScore;
         }
 
-        if (totalMemoryGB >= AcceptableMemoryThresholdGb)
+        if (totalMemoryGB >= ScoringConfiguration.AcceptableMemoryThresholdGb)
         {
             AddRecommendation(recommendations, "内存容量较小，建议考虑升级到8GB或更多以提升性能");
-            return 60d;
+            return ScoringConfiguration.AcceptableScore;
         }
 
         AddRecommendation(recommendations, "内存容量严重不足，强烈建议升级到8GB或更多");
-        return 40d;
+        return ScoringConfiguration.PoorScore;
     }
 
     private static double CalculateDiskScore(List<DiskInfoData> disks, List<string> recommendations)
@@ -159,20 +156,20 @@ public class PerformanceService : IPerformanceService
 
     private static double GetDiskScore(DiskInfoData disk, double freePercentage, List<string> recommendations)
     {
-        if (freePercentage > ExcellentDiskFreeThresholdPercent)
+        if (freePercentage > ScoringConfiguration.ExcellentDiskFreeThresholdPercent)
         {
-            return 90d;
+            return ScoringConfiguration.ExcellentScore;
         }
 
-        if (freePercentage > GoodDiskFreeThresholdPercent)
+        if (freePercentage > ScoringConfiguration.GoodDiskFreeThresholdPercent)
         {
-            return 75d;
+            return ScoringConfiguration.GoodScore;
         }
 
-        if (freePercentage > AcceptableDiskFreeThresholdPercent)
+        if (freePercentage > ScoringConfiguration.AcceptableDiskFreeThresholdPercent)
         {
             AddRecommendation(recommendations, $"磁盘 {disk.Name} 剩余空间不足 ({freePercentage:F0}%)，建议清理空间");
-            return 60d;
+            return ScoringConfiguration.AcceptableScore;
         }
 
         AddRecommendation(recommendations, $"磁盘 {disk.Name} 剩余空间严重不足 ({freePercentage:F0}%)，请立即清理空间");
@@ -188,13 +185,13 @@ public class PerformanceService : IPerformanceService
     {
         var score = 100d;
 
-        score -= Math.Min(40d, errorCount * 2d);
-        score -= Math.Min(20d, warningCount * 0.5d);
-        score -= Math.Min(30d, criticalEventsCount * 10d);
+        score -= Math.Min(ScoringConfiguration.MaxErrorPenalty, errorCount * ScoringConfiguration.ErrorPenaltyPerError);
+        score -= Math.Min(ScoringConfiguration.MaxWarningPenalty, warningCount * ScoringConfiguration.WarningPenaltyPerWarning);
+        score -= Math.Min(ScoringConfiguration.MaxCriticalEventPenalty, criticalEventsCount * ScoringConfiguration.CriticalEventPenalty);
 
-        if (reliabilityRecordsCount > HighReliabilityRecordThreshold)
+        if (reliabilityRecordsCount > ScoringConfiguration.HighReliabilityRecordThreshold)
         {
-            score -= 10d;
+            score -= ScoringConfiguration.HighReliabilityRecordPenalty;
             AddRecommendation(recommendations, "系统可靠性记录较多，建议检查系统稳定性");
         }
 
@@ -217,80 +214,156 @@ public class PerformanceService : IPerformanceService
 
     private static double GetCpuCoreScore(uint cpuCount, List<string> recommendations)
     {
-        if (cpuCount >= 8)
+        if (cpuCount >= ScoringConfiguration.HighCoreCountThreshold)
         {
-            return 20d;
+            return ScoringConfiguration.HighCoreCountScore;
         }
 
-        if (cpuCount >= 4)
+        if (cpuCount >= ScoringConfiguration.MediumCoreCountThreshold)
         {
-            return 15d;
+            return ScoringConfiguration.MediumCoreCountScore;
         }
 
-        if (cpuCount >= 2)
+        if (cpuCount >= ScoringConfiguration.LowCoreCountThreshold)
         {
-            return 5d;
+            return ScoringConfiguration.LowCoreCountScore;
         }
 
         AddRecommendation(recommendations, "CPU核心数较少，可能会影响多任务处理性能");
-        return -10d;
+        return ScoringConfiguration.SingleCorePenalty;
     }
 
     private static double GetCpuBrandScore(string cpuBrand)
     {
+        if (string.IsNullOrWhiteSpace(cpuBrand))
+        {
+            return 0d;
+        }
+
         var brand = cpuBrand.ToLowerInvariant();
 
+        // Intel detection - use word boundaries to avoid false matches
         if (brand.Contains("intel"))
         {
-            if (brand.Contains("i9") || brand.Contains("xeon"))
+            if (ContainsWord(brand, "i9") || brand.Contains("xeon"))
             {
-                return 15d;
+                return ScoringConfiguration.TopTierCpuScore;
             }
 
-            if (brand.Contains("i7"))
+            if (ContainsWord(brand, "i7"))
             {
-                return 10d;
+                return ScoringConfiguration.HighTierCpuScore;
             }
 
-            if (brand.Contains("i5"))
+            if (ContainsWord(brand, "i5"))
             {
-                return 5d;
+                return ScoringConfiguration.MidTierCpuScore;
+            }
+
+            if (ContainsWord(brand, "i3"))
+            {
+                return 0d;
+            }
+
+            // Check for generation number (e.g., i7-12700, i9-13900)
+            var intelMatch = System.Text.RegularExpressions.Regex.Match(brand, @"i[3579][-\s]?(\d{1,2})\d{3}");
+            if (intelMatch.Success && int.TryParse(intelMatch.Groups[1].Value, out var generation))
+            {
+                // Bonus for newer generations (12th gen and above)
+                if (generation >= 12)
+                {
+                    return brand.Contains("i9") ? 18d : brand.Contains("i7") ? 12d : brand.Contains("i5") ? 7d : 0d;
+                }
             }
         }
         else if (brand.Contains("amd"))
         {
-            if (brand.Contains("ryzen 9") || brand.Contains("threadripper"))
+            if (ContainsWord(brand, "ryzen 9") || brand.Contains("threadripper"))
             {
-                return 15d;
+                return ScoringConfiguration.TopTierCpuScore;
             }
 
-            if (brand.Contains("ryzen 7"))
+            if (ContainsWord(brand, "ryzen 7"))
             {
-                return 10d;
+                return ScoringConfiguration.HighTierCpuScore;
             }
 
-            if (brand.Contains("ryzen 5"))
+            if (ContainsWord(brand, "ryzen 5"))
             {
-                return 5d;
+                return ScoringConfiguration.MidTierCpuScore;
             }
+
+            if (ContainsWord(brand, "ryzen 3"))
+            {
+                return 0d;
+            }
+
+            // Check for Ryzen series number (e.g., Ryzen 9 7950X)
+            var amdMatch = System.Text.RegularExpressions.Regex.Match(brand, @"ryzen\s*\d\s*(\d{1,2})\d{3}");
+            if (amdMatch.Success && int.TryParse(amdMatch.Groups[1].Value, out var series))
+            {
+                // Bonus for 7000/9000 series (Zen 4/5)
+                if (series >= 7)
+                {
+                    return brand.Contains("ryzen 9") ? 18d : brand.Contains("ryzen 7") ? 12d : brand.Contains("ryzen 5") ? 7d : 0d;
+                }
+            }
+
+            // EPYC server processors
+            if (brand.Contains("epyc"))
+            {
+                return ScoringConfiguration.TopTierCpuScore;
+            }
+        }
+
+        // Apple Silicon detection (for future compatibility)
+        if (brand.Contains("apple") || brand.Contains("m1") || brand.Contains("m2") || brand.Contains("m3"))
+        {
+            if (brand.Contains("max") || brand.Contains("ultra"))
+            {
+                return ScoringConfiguration.TopTierCpuScore;
+            }
+
+            if (brand.Contains("pro"))
+            {
+                return ScoringConfiguration.HighTierCpuScore;
+            }
+
+            return ScoringConfiguration.MidTierCpuScore;
         }
 
         return 0d;
     }
 
+    private static bool ContainsWord(string text, string word)
+    {
+        var index = text.IndexOf(word, StringComparison.OrdinalIgnoreCase);
+        if (index < 0)
+        {
+            return false;
+        }
+
+        // Check that it's a word boundary (not part of another word)
+        var beforeIsBoundary = index == 0 || !char.IsLetterOrDigit(text[index - 1]);
+        var afterIndex = index + word.Length;
+        var afterIsBoundary = afterIndex >= text.Length || !char.IsLetterOrDigit(text[afterIndex]);
+
+        return beforeIsBoundary && afterIsBoundary;
+    }
+
     private static double GetMemoryPerformanceScore(double totalMemoryGB)
     {
-        if (totalMemoryGB >= ExcellentMemoryThresholdGb)
+        if (totalMemoryGB >= ScoringConfiguration.ExcellentMemoryThresholdGb)
         {
             return 15d;
         }
 
-        if (totalMemoryGB >= GoodMemoryThresholdGb)
+        if (totalMemoryGB >= ScoringConfiguration.GoodMemoryThresholdGb)
         {
             return 10d;
         }
 
-        if (totalMemoryGB >= AcceptableMemoryThresholdGb)
+        if (totalMemoryGB >= ScoringConfiguration.AcceptableMemoryThresholdGb)
         {
             return 5d;
         }
@@ -343,10 +416,10 @@ public class PerformanceService : IPerformanceService
         double memoryUsageScore,
         double diskHealthScore)
     {
-        var score = stabilityScore * StabilityWeight +
-                    performanceScore * PerformanceWeight +
-                    memoryUsageScore * MemoryWeight +
-                    diskHealthScore * DiskWeight;
+        var score = stabilityScore * ScoringConfiguration.StabilityWeight +
+                    performanceScore * ScoringConfiguration.PerformanceWeight +
+                    memoryUsageScore * ScoringConfiguration.MemoryWeight +
+                    diskHealthScore * ScoringConfiguration.DiskWeight;
 
         return Math.Clamp(score, 0d, 100d);
     }
@@ -358,7 +431,7 @@ public class PerformanceService : IPerformanceService
             AddRecommendation(recommendations, $"发现 {criticalEventCount} 个严重系统错误，建议立即检查系统日志");
         }
 
-        if (systemHealthScore < 60d)
+        if (systemHealthScore < ScoringConfiguration.AcceptableHealthThreshold)
         {
             AddRecommendation(recommendations, "系统健康评分较低，建议进行全面系统维护");
         }
@@ -383,11 +456,11 @@ public class PerformanceService : IPerformanceService
     {
         return systemHealthScore switch
         {
-            >= 90 => ("优秀", "#28a745"),
-            >= 75 => ("良好", "#17a2b8"),
-            >= 60 => ("一般", "#ffc107"),
-            >= 40 => ("较差", "#fd7e14"),
-            _ => ("需要优化", "#dc3545")
+            >= ScoringConfiguration.ExcellentHealthThreshold => (ScoringConfiguration.ExcellentHealthGrade, ScoringConfiguration.ExcellentHealthColor),
+            >= ScoringConfiguration.GoodHealthThreshold => (ScoringConfiguration.GoodHealthGrade, ScoringConfiguration.GoodHealthColor),
+            >= ScoringConfiguration.AcceptableHealthThreshold => (ScoringConfiguration.AcceptableHealthGrade, ScoringConfiguration.AcceptableHealthColor),
+            >= ScoringConfiguration.PoorHealthThreshold => (ScoringConfiguration.PoorHealthGrade, ScoringConfiguration.PoorHealthColor),
+            _ => (ScoringConfiguration.CriticalHealthGrade, ScoringConfiguration.CriticalHealthColor)
         };
     }
 }

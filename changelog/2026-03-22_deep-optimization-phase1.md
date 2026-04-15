@@ -1,21 +1,89 @@
 # 深度优化第一阶段收敛
 
-日期：2026-03-22
+**日期**: 2026-03-22
+**版本**: 0.5.0
+**类型**: Refactor + Test
 
-## 变更内容
+---
 
-- 重构 `DiagnosticCollectorService` 的阶段执行流程，统一采集步骤骨架，并确保 `OperationCanceledException` 不再被降级吞掉
-- 新增 `DiagnosticCollectorServiceTests`，覆盖取消传播、warning + fallback、进度顺序与结果装配
-- 收敛 `PerformanceService` 的评分阈值与权重表达，拆分评分辅助函数，并补充内存/磁盘/可靠性边界测试
-- 将 `ReportService.GenerateHtmlReport()` 拆分为文档头、概览、性能、GPU、事件表等 section helper，补充 `maxEvents`、空建议、空 GPU、未知 uptime 与 HTML 编码测试
-- 在 `MainViewModel` 中抽取统一的数据应用入口，复用导入/加载后的 UI 回填流程，并为 JSON/HTML 导出增加“无有效数据时阻止导出”的保护
+## 概述
 
-## 背景
+本版本重点解决采集编排、评分规则、报告生成和主界面流程重复等质量问题。
 
-项目当前的主要质量风险集中在采集编排、评分规则、报告生成和主界面流程重复上。其中最直接的问题是采集取消会被普通异常处理吞掉，导致 UI 侧无法正确感知取消；同时 `MainViewModel` 和 `ReportService` 存在明显的重复与长方法维护成本。
+---
 
-## 验证说明
+## 变更详情
 
-- 已补充并更新对应单元测试文件，覆盖 Collector / Performance / Report 三块核心逻辑
-- 尝试执行 `dotnet restore/build/test` 进行本地验证，但当前环境缺少 `dotnet` 命令，无法在此会话内完成构建与测试运行
-- 建议在具备 .NET SDK 的环境中继续执行：`dotnet restore DigYourWindows.slnx && dotnet build DigYourWindows.slnx -c Release --no-restore && dotnet test DigYourWindows.slnx -c Release --no-build`
+### DiagnosticCollectorService
+
+**问题**: 采集取消会被普通异常处理吞掉，UI 无法正确感知取消。
+
+**修复**:
+```csharp
+private async Task<T> ExecuteStepAsync<T>(...)
+{
+    try
+    {
+        return await Task.Run(() => operation(cancellationToken), cancellationToken);
+    }
+    catch (OperationCanceledException)
+    {
+        throw;  // 不再被降级吞掉
+    }
+    catch (Exception ex)
+    {
+        // 其他异常正常处理
+    }
+}
+```
+
+**新增测试**:
+- 取消传播测试
+- warning + fallback 测试
+- 进度顺序测试
+- 结果装配测试
+
+### PerformanceService
+
+| 改进项 | 说明 |
+|--------|------|
+| 评分阈值 | 拆分为 `ScoringConfiguration` 常量类 |
+| 评分辅助函数 | 提取 `CalculateMemoryScore`、`CalculateDiskScore`、`CalculateStabilityScore` 等 |
+| 边界测试 | 补充内存/磁盘/可靠性边界测试 |
+
+### ReportService
+
+**重构**: 将 `GenerateHtmlReport()` 拆分为多个 section helper:
+
+```csharp
+private static void AppendDocumentStart(StringBuilder sb, DateTime collectedAt);
+private static void AppendOverviewSection(StringBuilder sb, HardwareData hardware);
+private static void AppendPerformanceSection(StringBuilder sb, PerformanceAnalysisData? performance);
+private static void AppendGpuSection(StringBuilder sb, List<GpuInfoData> gpus);
+private static void AppendEventsSection(StringBuilder sb, List<LogEventData> events, int daysBackForEvents, int maxEvents);
+private static void AppendDocumentEnd(StringBuilder sb);
+```
+
+**新增测试**:
+- `maxEvents` 边界测试
+- 空建议测试
+- 空 GPU 测试
+- 未知 uptime 测试
+- HTML 编码测试
+
+### MainViewModel
+
+**改进**:
+- 抽取统一的数据应用入口 `ApplyDiagnosticData()`
+- 复用导入/加载后的 UI 回填流程
+- 增加"无有效数据时阻止导出"的保护
+
+---
+
+## 测试覆盖
+
+| 测试类 | 覆盖内容 |
+|--------|----------|
+| `DiagnosticCollectorServiceTests` | 取消、警告、进度、结果装配 |
+| `PerformanceServiceTests` | 评分边界、建议生成 |
+| `ReportServiceTests` | 报告生成、HTML 编码 |

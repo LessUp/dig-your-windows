@@ -11,6 +11,18 @@ public class PerformanceServiceTests
         public double? GetSystemUptimeDays() => UptimeDays;
     }
 
+    private sealed class StubLogService : ILogService
+    {
+        public void Info(string message) { }
+        public void Warn(string message) { }
+        public void LogError(string message, Exception? exception = null) { }
+    }
+
+    private static PerformanceService CreateService(ISystemInfoProvider? systemInfo = null)
+    {
+        return new PerformanceService(systemInfo ?? new StubSystemInfoProvider(), new StubLogService());
+    }
+
     [Fact]
     public void AnalyzeSystemPerformance_PoorSystem_ShouldReturnLowGradeAndRecommendations()
     {
@@ -56,7 +68,7 @@ public class PerformanceServiceTests
             })
             .ToList();
 
-        var service = new PerformanceService(new StubSystemInfoProvider());
+        var service = CreateService();
         var analysis = service.AnalyzeSystemPerformance(hardware, events, reliability);
 
         Assert.InRange(analysis.SystemHealthScore, 0d, 100d);
@@ -95,7 +107,7 @@ public class PerformanceServiceTests
             ]
         };
 
-        var service = new PerformanceService(new StubSystemInfoProvider());
+        var service = CreateService();
         var analysis = service.AnalyzeSystemPerformance(hardware, [], []);
 
         Assert.True(analysis.SystemHealthScore >= 90d);
@@ -113,7 +125,7 @@ public class PerformanceServiceTests
     [InlineData(16, 90)]
     public void AnalyzeSystemPerformance_MemoryThresholds_ShouldReturnExpectedMemoryScores(int memoryGb, double expectedScore)
     {
-        var service = new PerformanceService(new StubSystemInfoProvider());
+        var service = CreateService();
         var analysis = service.AnalyzeSystemPerformance(
             CreateHardware(totalMemoryGb: memoryGb),
             [],
@@ -125,7 +137,7 @@ public class PerformanceServiceTests
     [Fact]
     public void AnalyzeSystemPerformance_FourGbMemory_ShouldAddUpgradeRecommendation()
     {
-        var service = new PerformanceService(new StubSystemInfoProvider());
+        var service = CreateService();
         var analysis = service.AnalyzeSystemPerformance(CreateHardware(totalMemoryGb: 4), [], []);
 
         Assert.Contains("内存容量较小，建议考虑升级到8GB或更多以提升性能", analysis.Recommendations);
@@ -137,7 +149,7 @@ public class PerformanceServiceTests
     [InlineData(50, 75, null)]
     public void AnalyzeSystemPerformance_DiskFreeThresholds_ShouldReturnExpectedDiskScores(int freePercent, double expectedScore, string? expectedMessageFragment)
     {
-        var service = new PerformanceService(new StubSystemInfoProvider());
+        var service = CreateService();
         var analysis = service.AnalyzeSystemPerformance(
             CreateHardware(diskFreePercent: freePercent),
             [],
@@ -158,7 +170,7 @@ public class PerformanceServiceTests
     [Fact]
     public void AnalyzeSystemPerformance_ReliabilityThresholdBoundary_ShouldOnlyWarnAboveFifty()
     {
-        var service = new PerformanceService(new StubSystemInfoProvider());
+        var service = CreateService();
         var fiftyRecords = Enumerable.Range(0, 50).Select(_ => new ReliabilityRecordData()).ToList();
         var fiftyOneRecords = Enumerable.Range(0, 51).Select(_ => new ReliabilityRecordData()).ToList();
 
@@ -174,7 +186,7 @@ public class PerformanceServiceTests
     [Fact]
     public void AnalyzeSystemPerformance_UnknownUptime_ShouldPreserveNullSystemUptime()
     {
-        var service = new PerformanceService(new StubSystemInfoProvider { UptimeDays = null });
+        var service = CreateService(new StubSystemInfoProvider { UptimeDays = null });
         var analysis = service.AnalyzeSystemPerformance(CreateHardware(), [], []);
 
         Assert.Null(analysis.SystemUptimeDays);

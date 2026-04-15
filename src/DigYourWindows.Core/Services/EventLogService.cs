@@ -94,9 +94,14 @@ public class EventLogService : IEventLogService
         {
             return record.FormatDescription() ?? string.Empty;
         }
-        catch
+        catch (System.ComponentModel.Win32Exception)
         {
             // FormatDescription may fail if the provider DLL is not available
+            return string.Empty;
+        }
+        catch (InvalidOperationException)
+        {
+            // FormatDescription may fail if the event provider is not registered
             return string.Empty;
         }
     }

@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -10,7 +9,9 @@ namespace DigYourWindows.UI.Converters
     /// </summary>
     public class StringToBrushConverter : IValueConverter
     {
-        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        private static readonly SolidColorBrush DefaultBrush = new(Colors.Gray);
+
+        public object Convert(object? value, System.Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is string colorString && !string.IsNullOrWhiteSpace(colorString))
             {
@@ -19,18 +20,22 @@ namespace DigYourWindows.UI.Converters
                     var color = (Color)ColorConverter.ConvertFromString(colorString);
                     return new SolidColorBrush(color);
                 }
-                catch
+                catch (FormatException)
                 {
-                    return null;
+                    return DefaultBrush;
+                }
+                catch (NotSupportedException)
+                {
+                    return DefaultBrush;
                 }
             }
 
-            return null;
+            return DefaultBrush;
         }
 
-        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        public object ConvertBack(object? value, System.Type targetType, object? parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            throw new System.NotImplementedException();
         }
     }
 }

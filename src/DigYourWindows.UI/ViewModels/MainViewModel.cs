@@ -132,8 +132,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
             AppendNetworkHistory(now.LocalDateTime, downloadMBps, uploadMBps);
             UpdateNetworkTrafficPlot();
         }
-        catch
+        catch (Exception ex)
         {
+            _log.Warn($"更新网络流量失败: {ex.Message}");
         }
     }
 
@@ -222,8 +223,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
         var downYs = _networkHistoryDownload.ToArray();
         var upYs = _networkHistoryUpload.ToArray();
 
-        plot.Add.Scatter(xs, downYs);
-        plot.Add.Scatter(xs, upYs);
+        var downScatter = plot.Add.Scatter(xs, downYs);
+        downScatter.Label = "下载";
+        downScatter.Color = ScottPlot.Color.FromHex("#2196F3");
+
+        var upScatter = plot.Add.Scatter(xs, upYs);
+        upScatter.Label = "上传";
+        upScatter.Color = ScottPlot.Color.FromHex("#4CAF50");
+
+        plot.Legend.IsVisible = true;
         NetworkTrafficPlot.Refresh();
     }
 
@@ -244,7 +252,19 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return;
         }
 
-        _ = LoadDataAsync();
+        _ = LoadDataAsyncSafe();
+    }
+
+    private async Task LoadDataAsyncSafe()
+    {
+        try
+        {
+            await LoadDataAsync();
+        }
+        catch (Exception ex)
+        {
+            _log.LogError("LoadDataAsync failed unexpectedly", ex);
+        }
     }
 
     [RelayCommand]
@@ -476,7 +496,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private static void OpenExportedFile(string filePath)
     {
-        Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+        try
+        {
+            Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+        }
+        catch (Exception)
+        {
+            // Ignore if we can't open the file - the user can navigate to it manually
+        }
     }
 
     private static string BuildLoadCompletedStatus(DiagnosticCollectionResult result)
@@ -534,14 +561,17 @@ public partial class MainViewModel : ObservableObject, IDisposable
         var xs = days.Select(day => day.ToOADate()).ToArray();
         var totalYs = BuildReliabilitySeries(days, records, null);
 
-        plot.Add.Scatter(xs, totalYs);
+        var totalScatter = plot.Add.Scatter(xs, totalYs);
+        totalScatter.Label = "总计";
+        totalScatter.Color = ScottPlot.Color.FromHex("#9E9E9E");
+        totalScatter.LineWidth = 2;
 
         var categories = new[]
         {
-            new { Key = (int?)1, Name = "应用程序故障" },
-            new { Key = (int?)2, Name = "Windows 故障" },
-            new { Key = (int?)3, Name = "其他故障" },
-            new { Key = (int?)null, Name = "未知" }
+            new { Key = (int?)1, Name = "应用程序故障", Color = "#F44336" },
+            new { Key = (int?)2, Name = "Windows 故障", Color = "#FF9800" },
+            new { Key = (int?)3, Name = "其他故障", Color = "#FFC107" },
+            new { Key = (int?)null, Name = "未知", Color = "#9C27B0" }
         };
 
         foreach (var category in categories)
@@ -552,9 +582,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 continue;
             }
 
-            plot.Add.Scatter(xs, ys);
+            var scatter = plot.Add.Scatter(xs, ys);
+            scatter.Label = category.Name;
+            scatter.Color = ScottPlot.Color.FromHex(category.Color);
         }
 
+        plot.Legend.IsVisible = true;
         ApplyPlotTheme(plot);
         ReliabilityTrendPlot.Refresh();
     }
@@ -562,10 +595,17 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private DateTime[] BuildReliabilityTimeline(List<ReliabilityRecordData> records)
     {
         var endDate = DateTime.Today;
-        var startDate = endDate.AddDays(-(SelectedDaysBack - 1));
+        DateTime startDate;
+
         if (SelectedDaysBack <= 0)
         {
-            startDate = records.Min(x => x.Timestamp.Date);
+            startDate = records.Count > 0
+                ? records.Min(x => x.Timestamp.Date)
+                : endDate;
+        }
+        else
+        {
+            startDate = endDate.AddDays(-(SelectedDaysBack - 1));
         }
 
         return Enumerable
@@ -594,7 +634,23 @@ public partial class MainViewModel : ObservableObject, IDisposable
         return record.RecordType == category;
     }
 
-    private static void ApplyPlotTheme(ScottPlot.Plot plot)
+    private void ApplyPlotTheme(ScottPlot.Plot plot)
     {
+        var isDarkTheme = CurrentTheme == ApplicationTheme.Dark;
+        var backgroundColor = isDarkTheme ? ScottPlot.Color.FromHex("#1E1E1E") : ScottPlot.Color.FromHex("#FFFFFF");
+        var textColor = isDarkTheme ? ScottPlot.Color.FromHex("#FFFFFF") : ScottPlot.Color.FromHex("#212529");
+        var gridColor = isDarkTheme ? ScottPlot.Color.FromHex("#3E3E3E") : ScottPlot.Color.FromHex("#E0E0E0");
+
+        plot.Background.Color = backgroundColor;
+        plot.Axes.Color(textColor);
+        plot.Grid.MajorLineColor = gridColor;
+
+        foreach (var axis in plot.Axes.GetAxes())
+        {
+            axis.Label.FontColor = textColor;
+            axis.TickLabelStyle.FontColor = textColor;
+        }
+
+        plot.Title.Label.FontColor = textColor;
     }
 }

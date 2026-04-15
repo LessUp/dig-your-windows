@@ -11,15 +11,16 @@
                 <ui:ThemesDictionary Theme="Dark" />
                 <ui:ControlsDictionary />
             </ResourceDictionary.MergedDictionaries>
-            
-            <!-- 添加 BooleanToVisibility 转换器 -->
+
+            <!-- Standard Converters -->
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-            
-            <!-- 添加 CountToVisibility 转换器 -->
             <conv:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
-            
-            <!-- 添加 StringToBrush 转换器 -->
             <conv:StringToBrushConverter x:Key="StringToBrushConverter"/>
+
+            <!-- Null-Safe Converters -->
+            <conv:NullToEmptyStringConverter x:Key="NullToEmptyStringConverter"/>
+            <conv:NullToPlaceholderConverter x:Key="NullToPlaceholderConverter"/>
+            <conv:NullableDoubleToStringConverter x:Key="NullableDoubleToStringConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

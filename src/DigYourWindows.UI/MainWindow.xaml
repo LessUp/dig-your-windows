@@ -68,15 +68,18 @@
                         <ui:Card Grid.Column="0" Margin="5">
                             <StackPanel Margin="15">
                                 <TextBlock Text="计算机名" FontWeight="SemiBold" Foreground="Gray"/>
-                                <TextBlock Text="{Binding HardwareInfo.ComputerName}" FontSize="16" Margin="0,5"/>
+                                <TextBlock Text="{Binding HardwareInfo.ComputerName, Converter={StaticResource NullToPlaceholderConverter}, ConverterParameter=未知}" FontSize="16" Margin="0,5"/>
                             </StackPanel>
                         </ui:Card>
 
                         <ui:Card Grid.Column="1" Margin="5">
                             <StackPanel Margin="15">
                                 <TextBlock Text="CPU" FontWeight="SemiBold" Foreground="Gray"/>
-                                <TextBlock Text="{Binding HardwareInfo.CpuName}" FontSize="14" Margin="0,5" TextWrapping="Wrap"/>
-                                <TextBlock Text="{Binding HardwareInfo.CpuCores, StringFormat='{}{0} 核心'}" FontSize="12"/>
+                                <TextBlock Text="{Binding HardwareInfo.CpuName, Converter={StaticResource NullToPlaceholderConverter}, ConverterParameter=未知}" FontSize="14" Margin="0,5" TextWrapping="Wrap"/>
+                                <TextBlock FontSize="12">
+                                    <Run Text="{Binding HardwareInfo.CpuCores, Mode=OneWay}"/>
+                                    <Run Text=" 核心"/>
+                                </TextBlock>
                             </StackPanel>
                         </ui:Card>
 
@@ -93,7 +96,7 @@
                         <ui:Card Grid.Column="3" Margin="5">
                             <StackPanel Margin="15">
                                 <TextBlock Text="操作系统" FontWeight="SemiBold" Foreground="Gray"/>
-                                <TextBlock Text="{Binding HardwareInfo.OsVersion}" FontSize="12" Margin="0,5" TextWrapping="Wrap"/>
+                                <TextBlock Text="{Binding HardwareInfo.OsVersion, Converter={StaticResource NullToPlaceholderConverter}, ConverterParameter=未知}" FontSize="12" Margin="0,5" TextWrapping="Wrap"/>
                             </StackPanel>
                         </ui:Card>
                     </Grid>
@@ -206,7 +209,7 @@
                                 <StackPanel Margin="10">
                                     <TextBlock Text="系统运行时间" FontWeight="SemiBold" Foreground="Gray" HorizontalAlignment="Center"/>
                                     <TextBlock FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,5">
-                                        <Run Text="{Binding PerformanceAnalysis.SystemUptimeDays, StringFormat='{}{0:F0}'}"/>
+                                        <Run Text="{Binding PerformanceAnalysis.SystemUptimeDays, Converter={StaticResource NullableDoubleToStringConverter}, ConverterParameter=F0, Mode=OneWay}"/>
                                         <Run Text="天"/>
                                     </TextBlock>
                                 </StackPanel>

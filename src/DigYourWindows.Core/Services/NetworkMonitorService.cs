@@ -9,6 +9,13 @@ public interface INetworkMonitorService
 
 public sealed class NetworkMonitorService : INetworkMonitorService
 {
+    private readonly ILogService _log;
+
+    public NetworkMonitorService(ILogService log)
+    {
+        _log = log;
+    }
+
     public (long BytesReceived, long BytesSent) GetTotalBytes()
     {
         long received = 0;
@@ -33,8 +40,9 @@ public sealed class NetworkMonitorService : INetworkMonitorService
                 received += stats.BytesReceived;
                 sent += stats.BytesSent;
             }
-            catch
+            catch (Exception ex)
             {
+                _log.Warn($"获取网络接口 {nic.Name} 统计信息失败: {ex.Message}");
             }
         }
 

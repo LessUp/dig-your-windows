@@ -97,7 +97,15 @@ public class DiskSmartService : IDiskSmartService
         {
             return (T)Convert.ChangeType(value, typeof(T), System.Globalization.CultureInfo.InvariantCulture);
         }
-        catch
+        catch (FormatException)
+        {
+            return null;
+        }
+        catch (InvalidCastException)
+        {
+            return null;
+        }
+        catch (OverflowException)
         {
             return null;
         }
@@ -114,7 +122,15 @@ public class DiskSmartService : IDiskSmartService
         {
             return Convert.ToUInt64(value, System.Globalization.CultureInfo.InvariantCulture);
         }
-        catch
+        catch (FormatException)
+        {
+            return defaultValue;
+        }
+        catch (InvalidCastException)
+        {
+            return defaultValue;
+        }
+        catch (OverflowException)
         {
             return defaultValue;
         }
