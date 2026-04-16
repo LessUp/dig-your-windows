@@ -221,17 +221,12 @@ export default defineConfig({
     },
     build: {
       chunkSizeWarningLimit: 1000,
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            'vendor-vue': ['vue'],
-            'vendor-vendoruse': ['@vueuse/core'],
-          },
-        },
-      },
     },
     optimizeDeps: {
       include: ['vue', '@vueuse/core'],
+    },
+    ssr: {
+      external: ['web-vitals'],
     },
   },
   
