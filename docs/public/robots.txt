@@ -1,4 +1,28 @@
+# robots.txt for DigYourWindows Documentation
+# https://lessup.github.io/dig-your-windows/
+
 User-agent: *
 Allow: /
 
+# Sitemap location
 Sitemap: https://lessup.github.io/dig-your-windows/sitemap.xml
+
+# Crawl rate optimization
+Crawl-delay: 1
+
+# Disallow specific paths (if any)
+# Disallow: /private/
+# Disallow: /admin/
+
+# Allow search engines to index everything else
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /

@@ -23,32 +23,98 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           sparse-checkout: |
             docs
             package.json
             package-lock.json
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          static_site_generator: vitepress
+          enablement: true
+
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            docs/.vitepress/cache
+            node_modules
+          key: ${{ runner.os }}-vitepress-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-vitepress-
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build docs
+      - name: Build documentation
         run: npm run docs:build
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
 
-      - name: Add robots.txt
+      - name: Optimize build output
         run: |
+          # Add security headers configuration
+          cat > docs/.vitepress/dist/_headers << 'EOF'
+          /*
+            X-Frame-Options: DENY
+            X-Content-Type-Options: nosniff
+            X-XSS-Protection: 1; mode=block
+            Referrer-Policy: strict-origin-when-cross-origin
+            Permissions-Policy: camera=(), microphone=(), geolocation=()
+          
+          /*.js
+            Cache-Control: public, max-age=31536000, immutable
+          
+          /*.css
+            Cache-Control: public, max-age=31536000, immutable
+          
+          /*.woff2
+            Cache-Control: public, max-age=31536000, immutable
+          
+          /*.png
+            Cache-Control: public, max-age=2592000
+          
+          /*.jpg
+            Cache-Control: public, max-age=2592000
+          
+          /*.svg
+            Cache-Control: public, max-age=2592000
+          EOF
+          
+          # Copy robots.txt and other static files if they exist
           if [ -f docs/public/robots.txt ]; then
             cp docs/public/robots.txt docs/.vitepress/dist/robots.txt
           fi
+          
+          if [ -f docs/public/browserconfig.xml ]; then
+            cp docs/public/browserconfig.xml docs/.vitepress/dist/browserconfig.xml
+          fi
+          
+          if [ -f docs/public/opensearch.xml ]; then
+            cp docs/public/opensearch.xml docs/.vitepress/dist/opensearch.xml
+          fi
+          
+          if [ -f docs/public/manifest.json ]; then
+            cp docs/public/manifest.json docs/.vitepress/dist/manifest.json
+          fi
+          
+          # List build output
+          echo "Build output size:"
+          du -sh docs/.vitepress/dist/
+          
+          echo "Build output contents:"
+          ls -la docs/.vitepress/dist/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -65,3 +131,42 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  verify:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for deployment
+        run: sleep 30
+
+      - name: Verify deployment
+        run: |
+          SITE_URL="https://lessup.github.io/dig-your-windows/"
+          echo "Checking $SITE_URL..."
+          
+          # Check HTTP status
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$SITE_URL")
+          if [ "$STATUS" != "200" ]; then
+            echo "❌ Deployment verification failed: HTTP $STATUS"
+            exit 1
+          fi
+          
+          # Check for critical content
+          if ! curl -s "$SITE_URL" | grep -q "DigYourWindows"; then
+            echo "❌ Critical content missing"
+            exit 1
+          fi
+          
+          echo "✅ Deployment verified successfully"
+
+      - name: Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          urls: |
+            https://lessup.github.io/dig-your-windows/
+            https://lessup.github.io/dig-your-windows/zh-CN/guide/getting-started
+            https://lessup.github.io/dig-your-windows/en-US/guide/getting-started
+          budgetPath: ./.github/lighthouse/budget.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+        continue-on-error: true

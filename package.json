@@ -1,11 +1,31 @@
 {
   "private": true,
+  "type": "module",
   "scripts": {
-    "docs:dev": "vitepress dev docs",
+    "docs:dev": "vitepress dev docs --host",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "docs:build-analyze": "vitepress build docs --analyze",
+    "optimize-images": "node scripts/optimize-images.mjs"
   },
   "devDependencies": {
-    "vitepress": "^1.6.3"
+    "vitepress": "^1.6.3",
+    "@vite-pwa/vitepress": "^0.5.3",
+    "workbox-window": "^7.3.0",
+    "markdown-it-footnote": "^4.0.0",
+    "markdown-it-task-lists": "^2.1.1",
+    "markdown-it-anchor": "^9.2.0",
+    "markdown-it-attrs": "^4.3.1",
+    "@sindresorhus/slugify": "^2.2.1",
+    "sharp": "^0.33.5",
+    "svgo": "^3.3.2",
+    "critters": "^0.0.25"
+  },
+  "dependencies": {
+    "@vueuse/core": "^12.5.0",
+    "vue": "^3.5.13"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }

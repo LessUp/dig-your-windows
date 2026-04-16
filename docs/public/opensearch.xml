@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+  <ShortName>DYW Docs</ShortName>
+  <Description>Search DigYourWindows Documentation</Description>
+  <InputEncoding>UTF-8</InputEncoding>
+  <OutputEncoding>UTF-8</OutputEncoding>
+  <AdultContent>false</AdultContent>
+  <Language>zh-CN</Language>
+  <Language>en-US</Language>
+  <SyndicationRight>open</SyndicationRight>
+  <Tags>Windows diagnostics hardware monitoring system health event log SMART</Tags>
+  <Contact>https://github.com/LessUp/dig-your-windows/issues</Contact>
+  <Url type="text/html" method="get" template="https://lessup.github.io/dig-your-windows/search?q={searchTerms}"/>
+  <Url type="application/opensearchdescription+xml" rel="self" template="https://lessup.github.io/dig-your-windows/opensearch.xml"/>
+  <Image height="16" width="16" type="image/x-icon">https://lessup.github.io/dig-your-windows/favicon.ico</Image>
+  <Image height="64" width="64" type="image/png">https://lessup.github.io/dig-your-windows/icons/icon-64x64.png</Image>
+</OpenSearchDescription>

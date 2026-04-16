@@ -1,0 +1,512 @@
+/* DigYourWindows Custom Theme Styles */
+
+/* ============================================
+   VARIABLES & TOKENS
+   ============================================ */
+
+:root {
+  /* Brand Colors */
+  --vp-c-brand-1: #0078d4;
+  --vp-c-brand-2: #106ebe;
+  --vp-c-brand-3: #005a9e;
+  --vp-c-brand-soft: rgba(0, 120, 212, 0.14);
+  
+  /* Custom accent colors */
+  --dyw-accent-blue: #0078d4;
+  --dyw-accent-green: #107c10;
+  --dyw-accent-orange: #ff8c00;
+  --dyw-accent-red: #d83b01;
+  --dyw-accent-purple: #8764b8;
+  
+  /* Typography */
+  --dyw-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --dyw-font-mono: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, monospace;
+  
+  /* Spacing */
+  --dyw-space-xs: 0.25rem;
+  --dyw-space-sm: 0.5rem;
+  --dyw-space-md: 1rem;
+  --dyw-space-lg: 1.5rem;
+  --dyw-space-xl: 2rem;
+  --dyw-space-2xl: 3rem;
+}
+
+/* Dark mode adjustments */
+.dark {
+  --vp-c-brand-1: #4fc3f7;
+  --vp-c-brand-2: #29b6f6;
+  --vp-c-brand-3: #039be5;
+  --vp-c-brand-soft: rgba(79, 195, 247, 0.16);
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+
+.VPHero {
+  .container {
+    .main {
+      .name {
+        background: linear-gradient(135deg, var(--vp-c-brand-1) 0%, var(--dyw-accent-purple) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      .text {
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      
+      .tagline {
+        font-size: 1.25rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+    
+    .actions {
+      .VPButton {
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);
+        }
+        
+        &.brand {
+          background: linear-gradient(135deg, var(--vp-c-brand-1) 0%, var(--vp-c-brand-2) 100%);
+        }
+      }
+    }
+  }
+}
+
+/* ============================================
+   FEATURES SECTION
+   ============================================ */
+
+.VPFeatures {
+  .VPFeature {
+    border-radius: 12px;
+    border: 1px solid var(--vp-c-divider);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.15);
+      border-color: var(--vp-c-brand-1);
+    }
+    
+    .icon {
+      font-size: 2rem;
+      margin-bottom: var(--dyw-space-md);
+    }
+    
+    .title {
+      font-weight: 600;
+      font-size: 1.125rem;
+      margin-bottom: var(--dyw-space-sm);
+    }
+    
+    .details {
+      color: var(--vp-c-text-2);
+      line-height: 1.6;
+    }
+  }
+}
+
+/* ============================================
+   CODE BLOCKS
+   ============================================ */
+
+.vp-code-block {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  
+  .copy-button {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    
+    .copy-icon {
+      font-size: 0.875rem;
+    }
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    &.copied {
+      background: var(--dyw-accent-green);
+      border-color: var(--dyw-accent-green);
+    }
+  }
+  
+  &:hover .copy-button {
+    opacity: 1;
+  }
+}
+
+/* Code line numbers */
+.vp-code-block code {
+  font-family: var(--dyw-font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+
+.VPNav {
+  .VPNavBar {
+    .container {
+      .content {
+        .curtain {
+          display: none;
+        }
+      }
+    }
+  }
+  
+  .VPNavBarTitle {
+    .title {
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+  }
+}
+
+/* Language switcher */
+.VPNavBarTranslations {
+  .text {
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+}
+
+/* ============================================
+   SIDEBAR
+   ============================================ */
+
+.VPSidebar {
+  .group {
+    .VPLink {
+      border-radius: 6px;
+      margin: 2px 0;
+      transition: all 0.15s ease;
+      
+      &:hover {
+        background: var(--vp-c-bg-soft);
+      }
+      
+      &.active {
+        background: var(--vp-c-brand-soft);
+        color: var(--vp-c-brand-1);
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+/* ============================================
+   CONTENT
+   ============================================ */
+
+.vp-doc {
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    scroll-margin-top: 80px;
+    
+    .header-anchor {
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+    
+    &:hover .header-anchor {
+      opacity: 1;
+    }
+  }
+  
+  h2 {
+    border-bottom: 1px solid var(--vp-c-divider);
+    padding-bottom: 0.5rem;
+    margin-top: 2.5rem;
+  }
+  
+  p {
+    line-height: 1.8;
+  }
+  
+  ul, ol {
+    li {
+      line-height: 1.8;
+      margin: 0.5rem 0;
+    }
+  }
+  
+  blockquote {
+    border-radius: 6px;
+    border-left-width: 4px;
+    background: var(--vp-c-bg-soft);
+    padding: 1rem 1.5rem;
+    
+    p {
+      margin: 0;
+    }
+  }
+  
+  table {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--vp-c-divider);
+    
+    th {
+      background: var(--vp-c-bg-soft);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+    
+    tr {
+      transition: background 0.15s ease;
+      
+      &:hover {
+        background: var(--vp-c-bg-soft);
+      }
+    }
+  }
+  
+  a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s ease;
+    
+    &:hover {
+      border-bottom-color: var(--vp-c-brand-1);
+    }
+  }
+  
+  img {
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* ============================================
+   SEARCH
+   ============================================ */
+
+.VPNavBarSearch {
+  .DocSearch {
+    .DocSearch-Button {
+      border-radius: 8px;
+      background: var(--vp-c-bg-soft);
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        border-color: var(--vp-c-brand-1);
+        background: var(--vp-c-bg);
+      }
+    }
+  }
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+
+.VPFooter {
+  .container {
+    .message, .copyright {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      
+      a {
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition: all 0.15s ease;
+        
+        &:hover {
+          color: var(--vp-c-brand-1);
+          border-bottom-color: var(--vp-c-brand-1);
+        }
+      }
+    }
+  }
+}
+
+/* ============================================
+   CUSTOM COMPONENTS
+   ============================================ */
+
+.dyw-card {
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.dyw-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  
+  &.success {
+    background: rgba(16, 124, 16, 0.1);
+    color: var(--dyw-accent-green);
+  }
+  
+  &.warning {
+    background: rgba(255, 140, 0, 0.1);
+    color: var(--dyw-accent-orange);
+  }
+  
+  &.error {
+    background: rgba(216, 59, 1, 0.1);
+    color: var(--dyw-accent-red);
+  }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .VPHero {
+    .container {
+      .main {
+        .text {
+          font-size: 2rem;
+        }
+        
+        .tagline {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+  
+  .VPFeatures {
+    .VPFeature {
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --vp-c-brand-1: #005a9e;
+  }
+  
+  .vp-doc a {
+    text-decoration: underline;
+  }
+}
