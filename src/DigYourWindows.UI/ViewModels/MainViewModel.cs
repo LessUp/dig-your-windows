@@ -651,6 +651,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
             axis.TickLabelStyle.ForeColor = textColor;
         }
 
-        plot.TitleLabel.ForeColor = textColor;
+        plot.Axes.Title.Label.ForeColor = textColor;
     }
 }
