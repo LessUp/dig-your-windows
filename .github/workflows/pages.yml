@@ -44,6 +44,12 @@ jobs:
       - name: Build docs
         run: npm run docs:build
 
+      - name: Add robots.txt
+        run: |
+          if [ -f docs/public/robots.txt ]; then
+            cp docs/public/robots.txt docs/.vitepress/dist/robots.txt
+          fi
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

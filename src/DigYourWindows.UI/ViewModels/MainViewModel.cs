@@ -224,11 +224,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
         var upYs = _networkHistoryUpload.ToArray();
 
         var downScatter = plot.Add.Scatter(xs, downYs);
-        downScatter.Label = "下载";
+        downScatter.LegendText = "下载";
         downScatter.Color = ScottPlot.Color.FromHex("#2196F3");
 
         var upScatter = plot.Add.Scatter(xs, upYs);
-        upScatter.Label = "上传";
+        upScatter.LegendText = "上传";
         upScatter.Color = ScottPlot.Color.FromHex("#4CAF50");
 
         plot.Legend.IsVisible = true;
@@ -562,7 +562,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         var totalYs = BuildReliabilitySeries(days, records, null);
 
         var totalScatter = plot.Add.Scatter(xs, totalYs);
-        totalScatter.Label = "总计";
+        totalScatter.LegendText = "总计";
         totalScatter.Color = ScottPlot.Color.FromHex("#9E9E9E");
         totalScatter.LineWidth = 2;
 
@@ -583,7 +583,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             }
 
             var scatter = plot.Add.Scatter(xs, ys);
-            scatter.Label = category.Name;
+            scatter.LegendText = category.Name;
             scatter.Color = ScottPlot.Color.FromHex(category.Color);
         }
 
@@ -647,10 +647,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         foreach (var axis in plot.Axes.GetAxes())
         {
-            axis.Label.Style.ForeColor = textColor;
+            axis.Label.ForeColor = textColor;
             axis.TickLabelStyle.ForeColor = textColor;
         }
 
-        plot.Title.LabelStyle.ForeColor = textColor;
+        plot.TitleLabel.ForeColor = textColor;
     }
 }

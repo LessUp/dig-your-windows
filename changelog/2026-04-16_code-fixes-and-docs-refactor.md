@@ -8,11 +8,30 @@
 
 ## 概述
 
-本版本修复了多个潜在的运行时错误，并完成项目文档的全面重构。
+本版本修复了多个潜在的运行时错误，解决 ScottPlot API 兼容性问题，并完成项目文档的全面重构。
 
 ---
 
 ## 代码修复
+
+### ScottPlot API 兼容性
+
+**问题**: ScottPlot 5.1 API 变更导致编译失败：
+- `Scatter.Label` 已过时，应使用 `LegendText`
+- `LabelStyle.Style.ForeColor` 不存在，应使用 `Label.ForeColor`
+- `Plot.Title.LabelStyle` 不存在，应使用 `TitleLabel`
+
+**修复**:
+```csharp
+// Scatter 标签
+scatter.LegendText = "下载";  // 原 scatter.Label
+
+// 轴标签颜色
+axis.Label.ForeColor = textColor;  // 原 axis.Label.Style.ForeColor
+
+// 标题标签颜色
+plot.TitleLabel.ForeColor = textColor;  // 原 plot.Title.LabelStyle.ForeColor
+```
 
 ### HardwareMonitorProvider
 
@@ -111,6 +130,16 @@ public Computer Computer
 | 组件 | 影响 |
 |------|------|
 | Core/Services | 线程安全修复 |
-| UI/ViewModels | 空值处理修复 |
+| UI/ViewModels | 空值处理修复、ScottPlot API 适配 |
 | UI/Converters | 代码清理 |
 | docs/ | 全面重构 |
+
+---
+
+## 验证命令
+
+```powershell
+dotnet restore DigYourWindows.slnx
+dotnet build DigYourWindows.slnx -c Release --no-restore
+dotnet test DigYourWindows.slnx -c Release --no-build
+```
