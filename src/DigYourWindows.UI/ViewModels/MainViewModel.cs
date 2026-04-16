@@ -641,16 +641,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
         var textColor = isDarkTheme ? ScottPlot.Color.FromHex("#FFFFFF") : ScottPlot.Color.FromHex("#212529");
         var gridColor = isDarkTheme ? ScottPlot.Color.FromHex("#3E3E3E") : ScottPlot.Color.FromHex("#E0E0E0");
 
-        plot.Background.Color = backgroundColor;
+        plot.FigureBackground.Color = backgroundColor;
         plot.Axes.Color(textColor);
         plot.Grid.MajorLineColor = gridColor;
 
         foreach (var axis in plot.Axes.GetAxes())
         {
-            axis.Label.FontColor = textColor;
-            axis.TickLabelStyle.FontColor = textColor;
+            axis.Label.Style.ForeColor = textColor;
+            axis.TickLabelStyle.ForeColor = textColor;
         }
 
-        plot.Title.Label.FontColor = textColor;
+        plot.Title.LabelStyle.ForeColor = textColor;
     }
 }
