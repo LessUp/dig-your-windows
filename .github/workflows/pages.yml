@@ -49,12 +49,12 @@ jobs:
           path: |
             docs/.vitepress/cache
             node_modules
-          key: ${{ runner.os }}-vitepress-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-vitepress-v2-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-vitepress-
+            ${{ runner.os }}-vitepress-v2-
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install --prefer-offline
 
       - name: Build documentation
         run: npm run docs:build
