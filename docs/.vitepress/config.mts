@@ -27,10 +27,15 @@ export default defineConfig({
     '**/dist/**',
   ],
   
-  // Ignore dead links (for external URLs)
+  // Ignore dead links (for external URLs and known patterns)
   ignoreDeadLinks: [
     /^https?:\/\/localhost/,
     /^https?:\/\/127\.0\.0\.1/,
+    /\/guide\/index$/,  // Index pages are handled by route config
+    /\/guide\/$/,       // Guide index without .md
+    /\.\/LICENSE$/,     // LICENSE file at repo root
+    /\/zh-CN\/guide\/$/, // Locale guide root
+    /\/en-US\/guide\/$/, // Locale guide root
   ],
   
   // Sitemap configuration
