@@ -225,9 +225,6 @@ export default defineConfig({
     optimizeDeps: {
       include: ['vue', '@vueuse/core'],
     },
-    ssr: {
-      external: ['web-vitals'],
-    },
   },
   
   // Theme configuration

@@ -71,18 +71,6 @@ export default {
       
       // Run on initial load and route change
       addCopyButtons()
-      
-      // Web Vitals tracking (optional)
-      if ('web-vitals' in window) {
-        // @ts-ignore
-        import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-          getCLS(console.log)
-          getFID(console.log)
-          getFCP(console.log)
-          getLCP(console.log)
-          getTTFB(console.log)
-        })
-      }
     }
   },
   
