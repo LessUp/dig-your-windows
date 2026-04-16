@@ -263,7 +263,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
-            _log.LogError("LoadDataAsync failed unexpectedly", ex);
+            _log.LogError("加载数据发生意外错误", ex);
         }
     }
 
@@ -500,9 +500,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             // Ignore if we can't open the file - the user can navigate to it manually
+            // Common causes: file association missing, permission denied, or file locked
+            Debug.WriteLine($"Failed to open exported file: {ex.Message}");
         }
     }
 
@@ -651,6 +653,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
             axis.TickLabelStyle.ForeColor = textColor;
         }
 
-        plot.Axes.Title.Label.ForeColor = textColor;
+        plot.Axes.Title.LabelStyle.ForeColor = textColor;
     }
 }
