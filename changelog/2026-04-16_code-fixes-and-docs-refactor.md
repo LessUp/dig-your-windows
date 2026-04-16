@@ -30,7 +30,7 @@ scatter.LegendText = "下载";  // 原 scatter.Label
 axis.Label.ForeColor = textColor;  // 原 axis.Label.Style.ForeColor
 
 // 标题标签颜色
-plot.TitleLabel.ForeColor = textColor;  // 原 plot.Title.LabelStyle.ForeColor
+plot.Axes.Title.Label.ForeColor = textColor;  // 原 plot.Title.LabelStyle.ForeColor
 ```
 
 ### HardwareMonitorProvider
