@@ -1,167 +1,62 @@
+---
+outline: deep
+---
+
 # 变更日志
 
-所有重要的项目变更都记录在此文档中。
+## 最新版本
 
-格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
-版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
+### [1.1.0] - 2026-04-16
 
----
+#### 新增
+- 🌍 **完整文档国际化** - 中英文双语文档全面上线
+- 📚 **中文文档重构** - 优化结构，内容大幅扩充
+- 📚 **英文文档新增** - 完整的英文版文档
 
-## [1.0.0] - 2026-04-16
-
-### 新增
-- 完整的文档站重构，包括架构文档、测试指南、数据 Schema
-- VitePress 本地搜索功能
-- 贡献指南
-
-### 修复
-- **ScottPlot API**: 迁移至 ScottPlot 5.1 API（`LegendText`、`TitleLabel`、`Label.ForeColor`）
-- **HardwareMonitorProvider**: 添加线程安全的双重检查锁定 dispose 模式
-- **FileLogService**: 修复 `Dispose()` 方法的线程安全问题
-- **ReportService**: 修复 `TruncateMessage()` 空字符串和 null 处理
-- **MainViewModel**: 修复 `BuildReliabilityTimeline()` 在空记录时的异常
-
-### 变更
-- 移除 Converters 中冗余的 `using System;` 指令
-- 统一代码风格
-
-[详细变更 →](https://github.com/LessUp/dig-your-windows/blob/master/changelog/2026-04-16_code-fixes-and-docs-refactor.md)
+#### 变更
+- 优化 README.md 结构和内容
+- 改进 VitePress 配置，添加国际化支持
 
 ---
 
-## [0.5.0] - 2026-03-22
+## 历史版本
 
-### 新增
-- `DiagnosticCollectorServiceTests` 测试套件
-- 性能评分边界测试
-- HTML 报告生成测试
+### [1.0.0] - 2026-04-16
+- 📚 完整文档站重构
+- 🔧 多处 Bug 修复
 
-### 修复
-- 采集取消操作不再被普通异常处理吞掉
-- `ReportServiceTests` 断言类型不一致问题
+### [0.5.0] - 2026-03-22
+- 🧪 测试套件扩展
+- 🏗️ 代码重构优化
 
-### 变更
-- 重构 `DiagnosticCollectorService` 统一采集步骤骨架
-- 提取 `PerformanceService` 评分辅助函数
-- 拆分 `ReportService.GenerateHtmlReport()` 为多个 section helper
-- 抽取 `MainViewModel` 统一的数据应用入口
+### [0.4.0] - 2026-03-13
+- 🔧 LogService API 修复
 
-### 移除
-- UI 项目中未使用的 `LiveChartsCore.SkiaSharpView.WPF` 包引用
-- 未使用的命名空间声明
+### [0.3.0] - 2026-03-10
+- 🔍 SEO 优化
+- 📋 变更日志页面
 
-[详细变更 →](https://github.com/LessUp/dig-your-windows/blob/master/changelog/2026-03-22_phase2-compile-and-cleanup.md)
+### [0.2.0] - 2025-12-14
+- 🏗️ WPF 依赖注入架构
+- 📤 JSON 导出/导入
+- 🌓 主题切换
+- 📊 实时监控功能
 
----
-
-## [0.4.0] - 2026-03-13
-
-### 修复
-- 统一 `_log.Error(...)` 调用为 `_log.LogError(...)`
-
-[详细变更 →](https://github.com/LessUp/dig-your-windows/blob/master/changelog/2026-03-13_logservice-error-api-fix.md)
+### [0.1.0] - 2025-02-27
+- 🚀 初始发布
 
 ---
 
-## [0.3.0] - 2026-03-10
+## 完整变更日志
 
-### 新增
-- VitePress 文档站 SEO 优化（og:* meta 标签、keywords）
-- 变更日志汇总页面
+- [中文完整版 →](/zh-CN/changelog)
+- [English Version →](/en-US/changelog)
+- [GitHub Releases →](https://github.com/LessUp/dig-your-windows/releases)
 
-### 修复
-- README Docs badge 路径修复
+## 版本规范
 
-### 变更
-- Pages workflow 使用 `sparse-checkout` 替代全量 git 历史
+本项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)：
 
-[详细变更 →](https://github.com/LessUp/dig-your-windows/blob/master/changelog/2026-03-10_pages-optimization.md)
-
----
-
-## [0.2.0] - 2025-12-14
-
-### 新增
-- WPF 依赖注入架构（组合根在 `App.xaml.cs`）
-- JSON 导出/导入功能
-- 深色/浅色主题切换
-- 实时 CPU/GPU 监控
-- 网络流量监控
-- 可靠性趋势图表
-
-### 变更
-- 目标框架升级为 `net10.0-windows`
-- 统一数据契约模型
-
-### 移除
-- Rust 模块（采用全 C# 方案）
-
-### 修复
-- 异步加载的线程安全问题
-- `GpuMonitorService` 生命周期管理
-- 编译错误
-
-[详细变更 →](https://github.com/LessUp/dig-your-windows/blob/master/changelog/2025-12-14_remove-rust-and-refactor.md)
-
----
-
-## [0.1.1] - 2025-02-27
-
-### 新增
-- 全面的接口抽象
-- HTML 报告离线化
-- 统一日志系统
-
-### 修复
-- Solution 文件补全
-- 消除静默异常吞没
-
-### 变更
-- `IsCriticalError` 改为 `static readonly HashSet<uint>`
-- 网络历史数据结构从 `List` 改为 `Queue`
-- WMI 日期解析优化
-
-### 移除
-- 模板生成的空占位类
-- 示例测试文件
-
-[详细变更 →](https://github.com/LessUp/dig-your-windows/blob/master/changelog/2025-02-27_project-optimization.md)
-
----
-
-## [0.1.0] - 2025-02-27
-
-### 新增
-- 标准开源项目结构（`src/`、`tests/`、`docs/`）
-- GitHub Actions CI/CD 配置
-- Framework-dependent 和 Self-contained 双版本发布
-- README.md 和 MIT LICENSE
-
-### 变更
-- 消除两层无意义目录嵌套
-- Solution 文件提升到仓库根
-
-[详细变更 →](https://github.com/LessUp/dig-your-windows/blob/master/changelog/2025-02-27_directory-restructure.md)
-
----
-
-## 版本历史
-
-| 版本 | 日期 | 类型 | 说明 |
-|------|------|------|------|
-| 1.0.0 | 2026-04-16 | Patch | 代码修复与文档重构 |
-| 0.5.0 | 2026-03-22 | Minor | 深度优化与测试覆盖 |
-| 0.4.0 | 2026-03-13 | Patch | LogService API 修复 |
-| 0.3.0 | 2026-03-10 | Minor | Pages 与 Workflow 优化 |
-| 0.2.0 | 2025-12-14 | Minor | Rust 移除与 C# 重构 |
-| 0.1.1 | 2025-02-27 | Patch | 项目优化 |
-| 0.1.0 | 2025-02-27 | Major | 初始发布 |
-
----
-
-## 已归档变更
-
-Rust 模块相关变更已归档保留作为历史记录：
-
-- [2025-12-04 - 报告 UI (Rust)](https://github.com/LessUp/dig-your-windows/blob/master/changelog/2025-12-04_report-ui.md)
-- [2025-12-04 - CLI/WMI/性能 (Rust)](https://github.com/LessUp/dig-your-windows/blob/master/changelog/2025-12-04_cli-wmi-perf-package.md)
+- **主版本号**：不兼容的 API 修改
+- **次版本号**：向下兼容的功能新增
+- **修订号**：向下兼容的问题修正

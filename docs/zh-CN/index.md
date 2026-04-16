@@ -78,7 +78,7 @@ dotnet run --project src/DigYourWindows.UI/DigYourWindows.UI.csproj
 |------|------|------|
 | 操作系统 | Windows 10/11 | Build 19041+ |
 | .NET SDK | 10.0.x | [下载](https://dotnet.microsoft.com/download) |
-| 权限 | 管理员（推荐）| 完整功能需要 |
+| 权限 | 管理员（推荐） | 完整功能需要 |
 
 ### 📊 技术栈
 

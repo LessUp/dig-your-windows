@@ -3,129 +3,156 @@
 [![CI](https://github.com/LessUp/dig-your-windows/actions/workflows/ci.yml/badge.svg)](https://github.com/LessUp/dig-your-windows/actions/workflows/ci.yml)
 [![Docs](https://github.com/LessUp/dig-your-windows/actions/workflows/pages.yml/badge.svg)](https://github.com/LessUp/dig-your-windows/actions/workflows/pages.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Release](https://img.shields.io/github/v/release/LessUp/dig-your-windows)](https://github.com/LessUp/dig-your-windows/releases)
+[![Downloads](https://img.shields.io/github/downloads/LessUp/dig-your-windows/total)](https://github.com/LessUp/dig-your-windows/releases)
 
 English | [简体中文](README.zh-CN.md)
 
 > 📖 **Documentation**: [https://lessup.github.io/dig-your-windows/](https://lessup.github.io/dig-your-windows/)
 
-**Windows Deep Diagnostics Tool** — One-click hardware info collection, event log analysis, reliability records, system health scoring, and optimization recommendations.
+**Windows Deep Diagnostics Tool** — One-click hardware information collection, event log analysis, reliability records, system health scoring, and optimization recommendations.
 
-## Features
+## 📸 Screenshots
+
+![DigYourWindows Overview](docs/public/screenshot-overview.png)
+
+## ✨ Features
 
 | Feature | Description |
 |---------|-------------|
-| 🔍 **Hardware Info** | CPU, GPU, RAM, Disk (incl. SMART), Network adapters, USB devices |
+| 🔍 **Hardware Detection** | Collect CPU, GPU, RAM, Disk (with SMART), Network adapters, USB devices |
 | 📊 **Real-Time Monitoring** | CPU temp/load/frequency, GPU temp/load/VRAM, network traffic |
 | 📋 **Event Log Analysis** | Auto-extract System/Application errors and warnings |
 | 📈 **Reliability Records** | Windows Reliability Monitor data with trend visualization |
-| ✅ **Health Score** | Comprehensive stability, performance, memory, disk assessment |
-| 💡 **Optimization Advice** | Auto-generated targeted recommendations |
-| 📄 **Report Export** | HTML and JSON formats |
-| 🎨 **Theme Support** | Dark/Light theme toggle |
+| ✅ **Health Scoring** | Comprehensive stability, performance, memory, disk assessment |
+| 💡 **Smart Recommendations** | AI-generated targeted optimization suggestions |
+| 📄 **Report Export** | HTML and JSON formats with offline viewing |
+| 🎨 **Theme Support** | Dark/Light theme instant toggle |
 
-## Tech Stack
-
-| Component | Technology | Purpose |
-|-----------|------------|---------|
-| Runtime | .NET 10.0 + WPF | Desktop application framework |
-| UI Library | WPF-UI 4.0 | Fluent Design components |
-| MVVM | CommunityToolkit.Mvvm 8.4 | Data binding & commands |
-| Charts | ScottPlot 5.1 | Performance visualization |
-| Hardware | LibreHardwareMonitor 0.9 | CPU/GPU temperature, load, frequency |
-| Testing | xUnit 2.9 + FsCheck 2.16 | Unit & property-based tests |
-
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Windows 10/11
-- [.NET 10.0 SDK](https://dotnet.microsoft.com/download)
+- Windows 10/11 (Build 19041+)
+- [.NET 10.0 SDK](https://dotnet.microsoft.com/download) (for building)
 
-### Build & Run
+### Installation
+
+#### Option 1: Download Release (Recommended)
+
+Download the latest installer from [Releases](https://github.com/LessUp/dig-your-windows/releases):
+
+| Version | Size | Requirements |
+|---------|------|--------------|
+| `DigYourWindows_Setup.exe` | ~5MB | Downloads .NET if needed |
+| FDD (Framework-Dependent) | ~60MB | Requires .NET 10 Runtime |
+| SCD (Self-Contained) | ~180MB | No dependencies |
+
+#### Option 2: Build from Source
 
 ```powershell
-# Restore dependencies
-dotnet restore DigYourWindows.slnx
+# Clone repository
+git clone https://github.com/LessUp/dig-your-windows.git
+cd dig-your-windows
 
-# Build
-dotnet build DigYourWindows.slnx -c Release
-
-# Run
+# Build and run
+dotnet restore
 dotnet run --project src/DigYourWindows.UI/DigYourWindows.UI.csproj
 ```
 
-> ⚠️ Some features (GPU monitoring, SMART data) require administrator privileges.
+> ⚠️ **Note**: Some features (GPU monitoring, SMART data) require administrator privileges.
 
-### Testing
+### First Run
+
+1. Launch `DigYourWindows.UI.exe` (or run via `dotnet run`)
+2. Click "Run Diagnostics" to collect system information
+3. View real-time hardware monitoring on the dashboard
+4. Export reports via JSON or HTML format
+
+## 🏗️ Tech Stack
+
+| Component | Technology | Version | Purpose |
+|-----------|------------|---------|---------|
+| Runtime | .NET + WPF | 10.0 | Desktop application framework |
+| UI Library | WPF-UI | 4.0 | Fluent Design components |
+| MVVM | CommunityToolkit.Mvvm | 8.4 | Data binding & commands |
+| Charts | ScottPlot | 5.1 | Performance visualization |
+| Hardware | LibreHardwareMonitor | 0.9 | CPU/GPU temp, load, frequency |
+| Testing | xUnit + FsCheck | 2.9 / 2.16 | Unit & property-based tests |
+
+## 📁 Project Structure
+
+```
+dig-your-windows/
+├── src/
+│   ├── DigYourWindows.Core/     # Core business logic
+│   └── DigYourWindows.UI/       # WPF user interface
+├── tests/
+│   └── DigYourWindows.Tests/    # Unit & property tests
+├── docs/                        # VitePress documentation (bilingual)
+├── installer/                   # Inno Setup scripts
+├── scripts/                     # Build & release scripts
+└── changelog/                   # Detailed changelogs
+```
+
+## 🧪 Testing
 
 ```powershell
 # Run all tests
 dotnet test DigYourWindows.slnx
 
 # Run with coverage
-dotnet test DigYourWindows.slnx --collect:"XPlat Code Coverage"
+dotnet test --collect:"XPlat Code Coverage"
+
+# Filter specific tests
+dotnet test --filter "FullyQualifiedName~ReportServiceTests"
 ```
 
-### Publish
+## 📚 Documentation
 
-```powershell
-# Generate Framework-dependent and Self-contained builds
-.\scripts\publish.ps1
+- [📖 Getting Started Guide](https://lessup.github.io/dig-your-windows/guide/getting-started)
+- [🏗️ Architecture Documentation](https://lessup.github.io/dig-your-windows/guide/architecture)
+- [🧪 Testing Guide](https://lessup.github.io/dig-your-windows/guide/testing)
+- [📊 Data Schema Reference](https://lessup.github.io/dig-your-windows/reference/data-schema)
+- [❓ FAQ](https://lessup.github.io/dig-your-windows/guide/faq)
 
-# Build installer (requires Inno Setup 6)
-.\scripts\build-installer.ps1
-```
+Documentation is available in **English** and **简体中文**.
 
-## Project Structure
+## 🤝 Contributing
 
-```
-dig-your-windows/
-├── src/
-│   ├── DigYourWindows.Core/     # Core business logic
-│   │   ├── Models/              # Data models (by domain)
-│   │   ├── Services/            # Service layer
-│   │   └── Exceptions/          # Custom exceptions
-│   └── DigYourWindows.UI/       # WPF user interface
-│       ├── ViewModels/          # MVVM view models
-│       └── Converters/          # Value converters
-├── tests/
-│   └── DigYourWindows.Tests/    # Unit & property tests
-│       ├── Unit/                # Unit tests
-│       └── Property/            # Property-based tests
-├── docs/                        # VitePress documentation
-├── installer/                   # Inno Setup scripts
-├── scripts/                     # Build & release scripts
-├── changelog/                   # Change logs
-├── Directory.Build.props        # Shared MSBuild properties
-└── DigYourWindows.slnx          # Solution file
-```
+We welcome contributions! Please see our [Contributing Guide](https://lessup.github.io/dig-your-windows/guide/contributing) for details.
 
-## Architecture Highlights
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-- **Shared Build Properties** — `Directory.Build.props` centralizes TargetFramework, Nullable, version
-- **Singleton Hardware Monitor** — `HardwareMonitorProvider` shares LibreHardwareMonitor instance
-- **Efficient Event Log** — `EventLogReader` with structured XML queries for server-side filtering
-- **CancellationToken Support** — All I/O-bound operations are cancellable
-- **Buffered Logging** — `StreamWriter` with rotation for efficient log writing
-- **Interface-based DI** — All services have interfaces for testability
-
-## Release Process
+## 📦 Release Process
 
 Push a `v*` tag to trigger automatic release:
 
 ```powershell
-git tag v1.0.0
-git push origin v1.0.0
+git tag v1.1.0
+git push origin v1.1.0
 ```
 
-## Contributing
+GitHub Actions will automatically build and publish the release with bilingual release notes.
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+## 🔒 Security
 
-## License
+This tool:
+- ✅ Runs entirely offline
+- ✅ Does not upload any data to external servers
+- ✅ Uses local file system for all operations
+- ✅ Is open source and auditable
+
+## 📄 License
 
 [MIT License](LICENSE) - Copyright © 2025-2026 LessUp
+
+---
+
+<p align="center">
+  Made with ❤️ by <a href="https://github.com/LessUp">LessUp</a>
+</p>

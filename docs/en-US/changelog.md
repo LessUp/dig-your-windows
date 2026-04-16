@@ -2,24 +2,34 @@
 
 All notable changes to this project are documented in this file.
 
-Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/).
+Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
-For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
+---
+
+## [Unreleased]
+
+### Planned
+- Documentation internationalization (Chinese version)
+- Multi-language UI support
+- Theme customization
 
 ---
 
 ## [1.1.0] - 2026-04-16
 
 ### Added
-- 🌍 **Complete Documentation Internationalization** - Full Chinese-English bilingual documentation
-- 📚 **Refactored Chinese Documentation** - Optimized structure with significantly expanded content  
-- 📚 **New English Documentation** - Complete English version of all documents
+- 🌍 **Documentation Internationalization** - Full Chinese-English bilingual documentation support
+- 📚 **Refactored Documentation** - Optimized structure with more detailed content
+- 🏗️ **Enhanced Architecture Docs** - Added Mermaid diagrams and performance optimization details
+- ✅ **Expanded FAQ** - More common questions and troubleshooting
+
+### Changed
+- Optimized VitePress configuration for multi-language switching
+- Improved README structure and content
 
 ### Documentation
-- Restructured docs directory with language isolation (`zh-CN/`, `en-US/`)
-- Updated VitePress configuration for multi-language support
-- Optimized README.md structure for both languages
+- Reorganized docs directory for internationalization
+- Added complete English version of all documents
 
 ---
 
@@ -39,9 +49,7 @@ For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
 
 ### Changed
 - Removed redundant `using System;` directives from converters
-- Unified code style across UI converters
-
-[Details →](changelog/2026-04-16_code-fixes-and-docs-refactor.md)
+- Unified code style
 
 ---
 
@@ -66,16 +74,12 @@ For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
 - Unused `LiveChartsCore.SkiaSharpView.WPF` package reference
 - Unused namespace declarations in `MainWindow.xaml`
 
-[Details →](changelog/2026-03-22_phase2-compile-and-cleanup.md)
-
 ---
 
 ## [0.4.0] - 2026-03-13
 
 ### Fixed
 - Unified `_log.Error(...)` calls to `_log.LogError(...)` across all services
-
-[Details →](changelog/2026-03-13_logservice-error-api-fix.md)
 
 ---
 
@@ -90,8 +94,6 @@ For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
 
 ### Changed
 - Pages workflow uses `sparse-checkout` instead of full git history
-
-[Details →](changelog/2026-03-10_pages-optimization.md)
 
 ---
 
@@ -117,8 +119,6 @@ For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
 - `GpuMonitorService` lifecycle management
 - Compilation errors
 
-[Details →](changelog/2025-12-14_remove-rust-and-refactor.md)
-
 ---
 
 ## [0.1.1] - 2025-02-27
@@ -126,6 +126,7 @@ For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
 ### Added
 - Full interface abstraction for all core services
 - Offline HTML reports (embedded CSS)
+- Unified logging system
 
 ### Fixed
 - Solution file missing test project
@@ -137,10 +138,8 @@ For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
 - WMI date parsing uses `ManagementDateTimeConverter`
 
 ### Removed
-- Template placeholder class `Class1.cs`
+- Template placeholder classes
 - Sample test files
-
-[Details →](changelog/2025-02-27_project-optimization.md)
 
 ---
 
@@ -156,8 +155,6 @@ For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
 - Eliminated two-level directory nesting
 - Solution file moved to repository root
 
-[Details →](changelog/2025-02-27_directory-restructure.md)
-
 ---
 
 ## Version History
@@ -165,7 +162,7 @@ For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
 | Version | Date | Type | Description |
 |---------|------|------|-------------|
 | 1.1.0 | 2026-04-16 | Minor | Documentation internationalization |
-| 1.0.0 | 2026-04-16 | Major | Code fixes & docs restructure |
+| 1.0.0 | 2026-04-16 | Major | Documentation restructure & bug fixes |
 | 0.5.0 | 2026-03-22 | Minor | Deep optimization & test coverage |
 | 0.4.0 | 2026-03-13 | Patch | LogService API fix |
 | 0.3.0 | 2026-03-10 | Minor | Pages & workflow optimization |
@@ -175,16 +172,10 @@ For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
 
 ---
 
-## Archived Changes
+## Upgrade Guide
 
-Changes related to the removed Rust module are archived for historical reference:
+### Upgrading from 0.x to 1.0
 
-- [2025-12-04 - Report UI (Rust)](changelog/2025-12-04_report-ui.md)
-- [2025-12-04 - CLI/WMI/Perf (Rust)](changelog/2025-12-04_cli-wmi-perf-package.md)
-
----
-
-## Related Files
-
-- [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md) - 中文变更日志
-- [Detailed Changelogs](changelog/) - Version-specific detailed changelogs
+1. **API Compatibility**: Version 1.0 is fully backward compatible with 0.5.x
+2. **Data Format**: JSON export format remains unchanged
+3. **Configuration**: If exists, delete old config and regenerate
