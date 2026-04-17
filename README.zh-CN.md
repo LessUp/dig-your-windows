@@ -96,13 +96,12 @@ dig-your-windows/
 │   ├── db/                      # 数据模型规范
 │   └── testing/                 # 测试策略和 BDD 规范
 ├── docs/                        # VitePress 文档站点
-│   ├── setup/                   # 环境搭建指南
-│   ├── tutorials/               # 用户使用教程
-│   ├── architecture/            # 架构概览
-│   └── assets/                  # 静态资源
+│   ├── zh-CN/                   # 中文文档
+│   ├── en-US/                   # 英文文档
+│   ├── public/                  # 静态资源（图片、图标）
+│   └── .vitepress/              # VitePress 配置
 ├── installer/                   # Inno Setup 安装脚本
-├── scripts/                     # 构建和发布脚本
-└── changelog/                   # 详细变更日志
+└── scripts/                     # 构建和发布脚本
 ```
 
 ## 🧪 测试

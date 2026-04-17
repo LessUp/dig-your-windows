@@ -5,7 +5,7 @@ All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
+For Chinese version, see [docs/zh-CN/changelog.md](docs/zh-CN/changelog.md).
 
 ---
 
@@ -13,7 +13,7 @@ For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
 
 ### Added
 - 🌍 **Complete Documentation Internationalization** - Full Chinese-English bilingual documentation
-- 📚 **Refactored Chinese Documentation** - Optimized structure with significantly expanded content  
+- 📚 **Refactored Chinese Documentation** - Optimized structure with significantly expanded content
 - 📚 **New English Documentation** - Complete English version of all documents
 
 ### Documentation
@@ -41,8 +41,6 @@ For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
 - Removed redundant `using System;` directives from converters
 - Unified code style across UI converters
 
-[Details →](changelog/2026-04-16_code-fixes-and-docs-refactor.md)
-
 ---
 
 ## [0.5.0] - 2026-03-22
@@ -66,16 +64,12 @@ For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
 - Unused `LiveChartsCore.SkiaSharpView.WPF` package reference
 - Unused namespace declarations in `MainWindow.xaml`
 
-[Details →](changelog/2026-03-22_phase2-compile-and-cleanup.md)
-
 ---
 
 ## [0.4.0] - 2026-03-13
 
 ### Fixed
 - Unified `_log.Error(...)` calls to `_log.LogError(...)` across all services
-
-[Details →](changelog/2026-03-13_logservice-error-api-fix.md)
 
 ---
 
@@ -90,8 +84,6 @@ For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
 
 ### Changed
 - Pages workflow uses `sparse-checkout` instead of full git history
-
-[Details →](changelog/2026-03-10_pages-optimization.md)
 
 ---
 
@@ -117,8 +109,6 @@ For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
 - `GpuMonitorService` lifecycle management
 - Compilation errors
 
-[Details →](changelog/2025-12-14_remove-rust-and-refactor.md)
-
 ---
 
 ## [0.1.1] - 2025-02-27
@@ -140,8 +130,6 @@ For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
 - Template placeholder class `Class1.cs`
 - Sample test files
 
-[Details →](changelog/2025-02-27_project-optimization.md)
-
 ---
 
 ## [0.1.0] - 2025-02-27
@@ -155,8 +143,6 @@ For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
 ### Changed
 - Eliminated two-level directory nesting
 - Solution file moved to repository root
-
-[Details →](changelog/2025-02-27_directory-restructure.md)
 
 ---
 
@@ -172,19 +158,3 @@ For Chinese version, see [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md).
 | 0.2.0 | 2025-12-14 | Minor | Rust removal & C# refactor |
 | 0.1.1 | 2025-02-27 | Patch | Project optimization |
 | 0.1.0 | 2025-02-27 | Major | Initial release |
-
----
-
-## Archived Changes
-
-Changes related to the removed Rust module are archived for historical reference:
-
-- [2025-12-04 - Report UI (Rust)](changelog/2025-12-04_report-ui.md)
-- [2025-12-04 - CLI/WMI/Perf (Rust)](changelog/2025-12-04_cli-wmi-perf-package.md)
-
----
-
-## Related Files
-
-- [CHANGELOG.zh.md](changelog/CHANGELOG.zh.md) - 中文变更日志
-- [Detailed Changelogs](changelog/) - Version-specific detailed changelogs

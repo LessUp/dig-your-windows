@@ -69,7 +69,6 @@ dig-your-windows/
 ├── docs/                        # VitePress 文档站
 ├── installer/                   # Inno Setup 安装脚本
 ├── scripts/                     # 构建和发布脚本
-├── changelog/                   # 变更日志
 ├── Directory.Build.props        # 共享 MSBuild 属性
 └── DigYourWindows.slnx          # Solution 文件
 ```

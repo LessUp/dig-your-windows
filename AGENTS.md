@@ -12,16 +12,23 @@
 - `/specs/testing/` - BDD 测试用例规范
 
 ### 用户文档 (`/docs/`)
-- `/docs/setup/` - 环境搭建指南
-- `/docs/tutorials/` - 用户使用教程
-- `/docs/architecture/` - 高层面的架构说明（链接到 specs/rfc）
-- `/docs/assets/` - 图片、UML图等静态资源
+- `/docs/zh-CN/` - 中文文档（主语言）
+  - `/guide/` - 用户指南（快速开始、架构、测试、贡献、FAQ）
+  - `/reference/` - 参考资料（数据 Schema）
+- `/docs/en-US/` - English documentation (mirrors zh-CN structure)
+- `/docs/public/` - VitePress 静态资源（图片、图标、manifest）
+- `/docs/.vitepress/` - VitePress 配置和主题
+- `/docs/index.md` - 首页（自动重定向到 zh-CN）
 
 ### 其他关键目录
 - `/src/` - 源代码
-- `/tests/` - 测试代码
-- `/changelog/` - 变更日志条目
+  - `DigYourWindows.Core/` - 核心业务逻辑（服务、模型、异常）
+  - `DigYourWindows.UI/` - WPF 界面（MVVM、转换器、XAML）
+- `/tests/` - 测试代码（Unit、Property、Integration）
+- `/changelog/` - 历史变更日志条目（已弃用，使用根 `CHANGELOG.md`）
 - `/scripts/` - 构建和自动化脚本
+- `/installer/` - Inno Setup 安装包配置
+- `/specs/` - 规范文档（SDD 核心）
 
 ## AI Agent Workflow Instructions (AI 工作流指令)
 

@@ -96,13 +96,12 @@ dig-your-windows/
 │   ├── db/                      # Data model specifications
 │   └── testing/                 # Test strategy & BDD specs
 ├── docs/                        # VitePress documentation site
-│   ├── setup/                   # Setup guides
-│   ├── tutorials/               # User tutorials
-│   ├── architecture/            # Architecture overview
-│   └── assets/                  # Static resources
+│   ├── zh-CN/                   # Chinese documentation
+│   ├── en-US/                   # English documentation
+│   ├── public/                  # Static assets (images, icons)
+│   └── .vitepress/              # VitePress configuration
 ├── installer/                   # Inno Setup scripts
-├── scripts/                     # Build & release scripts
-└── changelog/                   # Detailed changelogs
+└── scripts/                     # Build & release scripts
 ```
 
 ## 🧪 Testing

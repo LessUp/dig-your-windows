@@ -123,7 +123,6 @@ dig-your-windows/
 ├── tests/
 │   └── DigYourWindows.Tests/  # 测试项目
 ├── docs/                      # VitePress 文档站
-├── changelog/                 # 变更日志
 └── scripts/                   # 构建脚本
 ```
 
