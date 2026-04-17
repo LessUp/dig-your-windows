@@ -119,8 +119,8 @@ public class ServiceIntegrationTests
                 new GpuInfoData
                 {
                     Name = "NVIDIA GeForce RTX 4090",
-                    Temperature = 65.5,
-                    Load = 45.0,
+                    Temperature = 65.5f,
+                    Load = 45.0f,
                     MemoryUsed = 8192,
                     MemoryTotal = 24576,
                     CoreClock = 2500,

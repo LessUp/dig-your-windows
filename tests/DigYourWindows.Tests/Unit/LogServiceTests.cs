@@ -1,3 +1,4 @@
+using System.IO;
 using DigYourWindows.Core.Services;
 
 namespace DigYourWindows.Tests.Unit;
