@@ -5,6 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Release](https://img.shields.io/github/v/release/LessUp/dig-your-windows)](https://github.com/LessUp/dig-your-windows/releases)
 [![Downloads](https://img.shields.io/github/downloads/LessUp/dig-your-windows/total)](https://github.com/LessUp/dig-your-windows/releases)
+[![Tests](https://img.shields.io/badge/Tests-67%20cases-green)](https://github.com/LessUp/dig-your-windows/actions/workflows/ci.yml)
 
 English | [简体中文](README.zh-CN.md)
 
@@ -14,7 +15,7 @@ English | [简体中文](README.zh-CN.md)
 
 ## 📸 Screenshots
 
-![DigYourWindows Overview](docs/public/screenshot-overview.png)
+![DigYourWindows Overview](https://raw.githubusercontent.com/LessUp/dig-your-windows/master/docs/public/screenshot-overview.png)
 
 ## ✨ Features
 
@@ -85,10 +86,10 @@ dotnet run --project src/DigYourWindows.UI/DigYourWindows.UI.csproj
 ```
 dig-your-windows/
 ├── src/
-│   ├── DigYourWindows.Core/     # Core business logic
-│   └── DigYourWindows.UI/       # WPF user interface
+│   ├── DigYourWindows.Core/     # Core business logic (services, models, exceptions)
+│   └── DigYourWindows.UI/       # WPF user interface (MVVM, converters, XAML)
 ├── tests/
-│   └── DigYourWindows.Tests/    # Unit & property tests
+│   └── DigYourWindows.Tests/    # Unit (64), Property (0), Integration (3) tests
 ├── specs/                       # Specification documents (SDD)
 │   ├── product/                 # Product requirements (PRD)
 │   ├── rfc/                     # Technical design documents
@@ -119,11 +120,11 @@ dotnet test --filter "FullyQualifiedName~ReportServiceTests"
 
 ## 📚 Documentation
 
-- [📖 Getting Started Guide](https://lessup.github.io/dig-your-windows/guide/getting-started)
-- [🏗️ Architecture Documentation](https://lessup.github.io/dig-your-windows/guide/architecture)
-- [🧪 Testing Guide](https://lessup.github.io/dig-your-windows/guide/testing)
-- [📊 Data Schema Reference](https://lessup.github.io/dig-your-windows/reference/data-schema)
-- [❓ FAQ](https://lessup.github.io/dig-your-windows/guide/faq)
+- [📖 Getting Started Guide](https://lessup.github.io/dig-your-windows/en-US/guide/getting-started)
+- [🏗️ Architecture Documentation](https://lessup.github.io/dig-your-windows/en-US/guide/architecture)
+- [🧪 Testing Guide](https://lessup.github.io/dig-your-windows/en-US/guide/testing)
+- [📊 Data Schema Reference](https://lessup.github.io/dig-your-windows/en-US/reference/data-schema)
+- [❓ FAQ](https://lessup.github.io/dig-your-windows/en-US/guide/faq)
 
 Documentation is available in **English** and **简体中文**.
 

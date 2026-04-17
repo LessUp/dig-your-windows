@@ -4,7 +4,7 @@
 [![Docs](https://github.com/LessUp/dig-your-windows/actions/workflows/pages.yml/badge.svg)](https://github.com/LessUp/dig-your-windows/actions/workflows/pages.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Release](https://img.shields.io/github/v/release/LessUp/dig-your-windows)](https://github.com/LessUp/dig-your-windows/releases)
-[![Downloads](https://img.shields.io/github/downloads/LessUp/dig-your-windows/total)](https://github.com/LessUp/dig-your-windows/releases)
+[![Tests](https://img.shields.io/badge/测试-67%20个用例-green)](https://github.com/LessUp/dig-your-windows/actions/workflows/ci.yml)
 
 [English](README.md) | 简体中文
 
@@ -14,7 +14,7 @@
 
 ## 📸 界面预览
 
-![DigYourWindows 主界面](docs/public/screenshot-overview.png)
+![DigYourWindows 主界面](https://raw.githubusercontent.com/LessUp/dig-your-windows/master/docs/public/screenshot-overview.png)
 
 ## ✨ 功能特性
 
@@ -85,10 +85,10 @@ dotnet run --project src/DigYourWindows.UI/DigYourWindows.UI.csproj
 ```
 dig-your-windows/
 ├── src/
-│   ├── DigYourWindows.Core/     # 核心业务逻辑
-│   └── DigYourWindows.UI/       # WPF 用户界面
+│   ├── DigYourWindows.Core/     # 核心业务逻辑（服务、模型、异常）
+│   └── DigYourWindows.UI/       # WPF 用户界面（MVVM、转换器、XAML）
 ├── tests/
-│   └── DigYourWindows.Tests/    # 单元测试和属性测试
+│   └── DigYourWindows.Tests/    # 单元测试 (64)、属性测试 (0)、集成测试 (3)
 ├── specs/                       # 规范文档（SDD）
 │   ├── product/                 # 产品需求 (PRD)
 │   ├── rfc/                     # 技术设计文档
