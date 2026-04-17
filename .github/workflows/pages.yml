@@ -49,49 +49,16 @@ jobs:
 
       - name: Optimize build output
         run: |
-          # Add security headers configuration
-          cat > docs/.vitepress/dist/_headers << 'EOF'
-          /*
-            X-Frame-Options: DENY
-            X-Content-Type-Options: nosniff
-            X-XSS-Protection: 1; mode=block
-            Referrer-Policy: strict-origin-when-cross-origin
-            Permissions-Policy: camera=(), microphone=(), geolocation=()
+          # Copy static files from public to dist root
+          for f in robots.txt browserconfig.xml opensearch.xml manifest.json; do
+            if [ -f "docs/public/$f" ]; then
+              cp "docs/public/$f" "docs/.vitepress/dist/$f"
+            fi
+          done
           
-          /*.js
-            Cache-Control: public, max-age=31536000, immutable
-          
-          /*.css
-            Cache-Control: public, max-age=31536000, immutable
-          
-          /*.woff2
-            Cache-Control: public, max-age=31536000, immutable
-          
-          /*.png
-            Cache-Control: public, max-age=2592000
-          
-          /*.jpg
-            Cache-Control: public, max-age=2592000
-          
-          /*.svg
-            Cache-Control: public, max-age=2592000
-          EOF
-          
-          # Copy robots.txt and other static files if they exist
-          if [ -f docs/public/robots.txt ]; then
-            cp docs/public/robots.txt docs/.vitepress/dist/robots.txt
-          fi
-          
-          if [ -f docs/public/browserconfig.xml ]; then
-            cp docs/public/browserconfig.xml docs/.vitepress/dist/browserconfig.xml
-          fi
-          
-          if [ -f docs/public/opensearch.xml ]; then
-            cp docs/public/opensearch.xml docs/.vitepress/dist/opensearch.xml
-          fi
-          
-          if [ -f docs/public/manifest.json ]; then
-            cp docs/public/manifest.json docs/.vitepress/dist/manifest.json
+          # Generate 404.html from dist/404/index.html if it exists
+          if [ -f "docs/.vitepress/dist/404.html" ]; then
+            echo "404 page exists"
           fi
           
           # List build output

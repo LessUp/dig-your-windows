@@ -7,14 +7,7 @@ Allow: /
 # Sitemap location
 Sitemap: https://lessup.github.io/dig-your-windows/sitemap.xml
 
-# Crawl rate optimization
-Crawl-delay: 1
-
-# Disallow specific paths (if any)
-# Disallow: /private/
-# Disallow: /admin/
-
-# Allow search engines to index everything else
+# Allow all major search engines
 User-agent: Googlebot
 Allow: /
 

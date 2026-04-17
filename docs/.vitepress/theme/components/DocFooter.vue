@@ -30,7 +30,7 @@ const isZh = computed(() => lang.value === 'zh-CN')
 const repoUrl = 'https://github.com/LessUp/dig-your-windows'
 
 const editLink = computed(() => {
-  return `${repoUrl}/edit/main/docs/${page.value.filePath}`
+  return `${repoUrl}/edit/master/docs/${page.value.filePath}`
 })
 
 const issueLink = computed(() => {
