@@ -1,313 +1,262 @@
 # Getting Started
 
-This guide helps you quickly set up your development environment and run DigYourWindows.
+This guide will help you set up and run DigYourWindows on your Windows machine.
 
-## Requirements
+## Prerequisites
 
-### Required Dependencies
+Before you begin, ensure you have:
 
-| Dependency | Version | Purpose | Download |
-|------------|---------|---------|----------|
-| Windows | 10/11 (Build 19041+) | Runtime platform | - |
-| .NET SDK | 10.0.x | Build and run | [Download](https://dotnet.microsoft.com/download) |
-| IDE (optional) | VS 2022 / Rider / VS Code | Development | - |
+- **Windows 10/11** (Build 19041 or later)
+- **.NET 10.0 SDK** (for building from source)
+- **Administrator privileges** (for full feature access)
 
-### Verify Installation
+## Installation Options
 
-::: code-group
+### Option 1: Download Release (Recommended)
 
-```powershell [PowerShell]
-# Check .NET version (should show 10.0.x)
-dotnet --version
+Download the latest installer from [GitHub Releases](https://github.com/LessUp/dig-your-windows/releases):
 
-# Check Windows version
-[Environment]::OSVersion.Version
-```
+| Version | Size | Requirements | Best For |
+|---------|------|--------------|----------|
+| `DigYourWindows_Setup.exe` | ~5MB | Downloads .NET if needed | Most users |
+| FDD (Framework-Dependent) | ~60MB | Requires .NET 10 Runtime | Users with .NET installed |
+| SCD (Self-Contained) | ~180MB | No dependencies | Offline use |
 
-```cmd [CMD]
-# Check .NET version
-dotnet --version
+#### Installation Steps
 
-# Check Windows version
-ver
-```
+1. Download the installer
+2. Run `DigYourWindows_Setup.exe`
+3. Follow the installation wizard
+4. Launch DigYourWindows from Start Menu
 
-:::
-
-## Get the Source Code
-
-### Option 1: Clone Repository (Recommended)
+### Option 2: Build from Source
 
 ```powershell
-# Using HTTPS
+# Clone repository
 git clone https://github.com/LessUp/dig-your-windows.git
-
-# Or using SSH
-git clone git@github.com:LessUp/dig-your-windows.git
-
-# Enter project directory
 cd dig-your-windows
-```
 
-### Option 2: Download ZIP
+# Restore dependencies
+dotnet restore
 
-```powershell
-# Download latest source
-Invoke-WebRequest -Uri "https://github.com/LessUp/dig-your-windows/archive/refs/heads/master.zip" -OutFile "dig-your-windows.zip"
-
-# Extract
-Expand-Archive -Path "dig-your-windows.zip" -DestinationPath "."
-```
-
-## Build the Project
-
-### 1. Restore Dependencies
-
-```powershell
-dotnet restore DigYourWindows.slnx
-```
-
-::: tip NuGet Configuration
-The project uses the official NuGet source. To configure proxy or private sources, edit `NuGet.Config`.
-:::
-
-### 2. Compile
-
-::: code-group
-
-```powershell [Debug Version]
-dotnet build DigYourWindows.slnx
-```
-
-```powershell [Release Version]
-dotnet build DigYourWindows.slnx -c Release
-```
-
-:::
-
-Build output locations:
-- Debug: `src/DigYourWindows.UI/bin/Debug/net10.0-windows/`
-- Release: `src/DigYourWindows.UI/bin/Release/net10.0-windows/`
-
-## Run the Application
-
-### Basic Run
-
-```powershell
+# Build and run
 dotnet run --project src/DigYourWindows.UI/DigYourWindows.UI.csproj
 ```
 
-### Run as Administrator
+> ⚠️ **Note**: Some features (GPU monitoring, SMART data) require administrator privileges.
 
-::: warning Important Note
-The following features require administrator privileges:
-- GPU temperature/load monitoring
-- Disk SMART data reading
-- Some hardware information collection
-:::
+## First Run
 
-#### Method 1: Right-click Run as Administrator
+1. **Launch the application**:
+   - From Start Menu, or
+   - Run `DigYourWindows.UI.exe`, or
+   - Use `dotnet run`
 
-1. Open File Explorer, navigate to `src/DigYourWindows.UI/bin/Debug/net10.0-windows/`
-2. Right-click `DigYourWindows.UI.exe`
-3. Select "Run as administrator"
+2. **Run diagnostics**:
+   - Click "Run Diagnostics" button
+   - Wait for data collection (typically 5-15 seconds)
 
-#### Method 2: VS Code Configuration
+3. **Review results**:
+   - View hardware information on dashboard
+   - Check event log analysis
+   - Review reliability records
+   - See health score and recommendations
 
-Add admin configuration in `.vscode/launch.json`:
+4. **Export reports** (optional):
+   - Click "Export" button
+   - Choose JSON or HTML format
+   - Select save location
 
-```json
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Run as Admin",
-      "type": "coreclr",
-      "request": "launch",
-      "program": "${workspaceFolder}/src/DigYourWindows.UI/bin/Debug/net10.0-windows/DigYourWindows.UI.dll",
-      "args": [],
-      "cwd": "${workspaceFolder}",
-      "stopAtEntry": false,
-      "console": "internalConsole",
-      "windows": {
-        "runAsAdministrator": true
-      }
-    }
-  ]
-}
-```
+## Administrator Privileges
 
-#### Method 3: Visual Studio
+Some features require administrator privileges:
 
-1. Open the project in Visual Studio
-2. Right-click `DigYourWindows.UI` project → "Properties"
-3. Go to "Debug" tab
-4. Check "Enable native code debugging" (optional)
-5. Start Visual Studio as administrator
+- ✅ GPU temperature/load monitoring
+- ✅ Disk SMART data reading
+- ✅ Some hardware information collection
 
-## Run Tests
+### How to Run as Administrator
 
-### Run All Tests
+**Method 1**: Right-click shortcut
+- Right-click `DigYourWindows.UI.exe`
+- Select "Run as administrator"
 
-```powershell
-dotnet test DigYourWindows.slnx
-```
-
-### Detailed Output
-
-```powershell
-dotnet test DigYourWindows.slnx --logger "console;verbosity=detailed"
-```
-
-### Filter Tests
-
-```powershell
-# Filter by class name
-dotnet test --filter "FullyQualifiedName~ReportServiceTests"
-
-# Filter by method name
-dotnet test --filter "FullyQualifiedName~SerializeToJson"
-```
-
-### Code Coverage
-
-```powershell
-# Collect coverage data
-dotnet test --collect:"XPlat Code Coverage"
-
-# Generate HTML report with ReportGenerator
-dotnet tool install -g dotnet-reportgenerator-globaltool
-reportgenerator -reports:**/coverage.cobertura.xml -targetdir:coverage
-```
-
-Coverage report location: `tests/DigYourWindows.Tests/TestResults/{guid}/coverage.cobertura.xml`
-
-## Publish the Application
-
-### Use Publish Scripts (Recommended)
-
-```powershell
-# Generate framework-dependent (FDD) and self-contained (SCD) versions
-.\scripts\publish.ps1
-```
-
-Output directories:
-- `artifacts/publish/FDD/` — Framework-dependent (64MB, requires .NET Runtime)
-- `artifacts/publish/SCD/` — Self-contained (185MB, no dependencies)
-
-### Build Installer
-
-::: info Prerequisites
-Inno Setup 6 must be installed: [Download](https://jrsoftware.org/isinfo.php)
-:::
-
-```powershell
-.\scripts\build-installer.ps1
-```
-
-Output: `artifacts/installer/DigYourWindows_Setup.exe`
-
-### Manual Publishing
-
-#### Framework-Dependent
-
-```powershell
-dotnet publish src/DigYourWindows.UI/DigYourWindows.UI.csproj `
-  -c Release `
-  -o artifacts/publish/FDD
-```
-
-#### Self-Contained
-
-```powershell
-dotnet publish src/DigYourWindows.UI/DigYourWindows.UI.csproj `
-  -c Release `
-  -r win-x64 `
-  --self-contained true `
-  -p:PublishSingleFile=true `
-  -o artifacts/publish/SCD
-```
-
-## Release a New Version
-
-### Automatic Release Process
-
-Push a `v*` format Git tag to automatically trigger GitHub Actions build and release:
-
-```powershell
-# 1. Update version number in Directory.Build.props
-# 2. Update CHANGELOG.md
-
-# 3. Create and push tag
-git add .
-git commit -m "chore(release): prepare for v1.1.0"
-git tag v1.1.0
-git push origin master
-git push origin v1.1.0
-```
-
-GitHub Actions will automatically:
-1. 🏗️ Build FDD and SCD versions
-2. 📦 Create installer
-3. 📝 Create GitHub Release
-4. ⬆️ Upload build artifacts
-
-### Manual Release
-
-See the [GitHub Releases](https://github.com/LessUp/dig-your-windows/releases) page to manually upload build artifacts.
+**Method 2**: Configure in Visual Studio
+- Open project in Visual Studio
+- Edit `.vscode/launch.json`
+- Add `"runAsAdministrator": true`
 
 ## Troubleshooting
 
-### Common Issues
+### "Administrator privileges required" message
 
-#### Q: "Program cannot start because xxx.dll is missing"
+**Solution**: Run the application as administrator (see above).
 
-**Solution:**
-```powershell
-# Re-restore dependencies
-dotnet restore --force
+### Missing .NET Runtime
 
-# Clean and rebuild
-dotnet clean
-dotnet build
-```
+**Solution**: 
+- Download the self-contained version (SCD), OR
+- Install .NET Desktop Runtime 10 from [Microsoft](https://dotnet.microsoft.com/download)
 
-#### Q: GPU temperature shows N/A
+### Windows Defender warning
 
-**Solution:**
-1. Run the application as administrator
-2. Update graphics drivers
-3. Check if LibreHardwareMonitor supports your GPU
-
-#### Q: Warning MSB3270 during build
-
-This is a mixed platform warning and doesn't affect functionality. To eliminate, ensure all projects use the same target platform.
-
-#### Q: Test host not found error
-
-**Solution:**
-```powershell
-# Reinstall test SDK
-dotnet new install Microsoft.NET.Test.Sdk
-
-# Or clean and rebuild
-dotnet clean
-dotnet build
-```
-
-### Log Location
-
-Application logs are saved at this location for troubleshooting:
-
-```
-%LOCALAPPDATA%\DigYourWindows\Logs\
-```
-
-Log file naming format: `DigYourWindows_YYYYMMDD.log`
+**Solution**: 
+- This is common for unsigned applications
+- Add an exception in Windows Defender
+- Or build from source yourself
 
 ## Next Steps
 
-- [Architecture](/en-US/guide/architecture) — Learn about technical architecture and design decisions
-- [Testing Guide](/en-US/guide/testing) — Learn how to write and run tests
-- [Contributing Guide](/en-US/guide/contributing) — Get involved in project development
-- [Data Schema](/en-US/reference/data-schema) — View diagnostic data format
+- 📖 Read the [Architecture Overview](./architecture.md)
+- 🧪 Learn about [Testing](./testing.md)
+- 🤝 Check out the [Contributing Guide](https://github.com/LessUp/dig-your-windows/blob/main/CONTRIBUTING.md)
+- 📋 Review [Specifications](https://github.com/LessUp/dig-your-windows/tree/main/specs)
+# Using DigYourWindows
+
+This tutorial walks you through the main features of DigYourWindows.
+
+## Table of Contents
+
+1. [Dashboard Overview](#dashboard-overview)
+2. [Running Diagnostics](#running-diagnostics)
+3. [Viewing Hardware Information](#viewing-hardware-information)
+4. [Analyzing Event Logs](#analyzing-event-logs)
+5. [Checking Reliability Records](#checking-reliability-records)
+6. [Understanding Health Scores](#understanding-health-scores)
+7. [Exporting Reports](#exporting-reports)
+
+## Dashboard Overview
+
+When you launch DigYourWindows, you'll see the main dashboard with:
+
+- **System Info**: Computer name, OS version, processor, memory
+- **Quick Stats**: Current CPU/GPU metrics
+- **Action Buttons**: Run Diagnostics, Export, Settings
+
+## Running Diagnostics
+
+1. Click **"Run Diagnostics"** button
+2. Progress indicator shows collection status:
+   - Collecting hardware information
+   - Reading event logs
+   - Analyzing reliability data
+   - Calculating health scores
+3. Wait for completion (typically 5-15 seconds)
+4. Results display automatically
+
+> 💡 **Tip**: You can cancel collection at any time using the Cancel button.
+
+## Viewing Hardware Information
+
+### CPU Information
+
+The CPU section shows:
+- Model name and specifications
+- Core and thread count
+- Real-time temperature and load
+- Current and base frequency
+
+### Memory
+
+Memory information includes:
+- Total and available memory
+- Usage percentage
+- Memory type and speed
+
+### Disks
+
+For each disk, you'll see:
+- Model and interface type (NVMe/SATA)
+- Health status
+- Temperature (if supported)
+- SMART data (requires admin)
+
+### GPU
+
+GPU monitoring displays:
+- Graphics card model
+- Temperature and load
+- VRAM usage
+- Clock speeds (if supported)
+
+## Analyzing Event Logs
+
+The Event Log Analysis section shows:
+
+- **System Errors**: Critical system failures
+- **System Warnings**: Potential issues
+- **Application Errors**: Software crashes
+- **Application Warnings**: Application issues
+
+### Filtering Events
+
+You can filter by:
+- Date range (default: last 7 days)
+- Severity (Error/Warning)
+- Source application
+
+## Checking Reliability Records
+
+Windows Reliability Monitor data displays:
+- Stability index trend (0-10 scale)
+- Historical events timeline
+- Critical events list
+
+## Understanding Health Scores
+
+### Overall Score
+
+Composite score from 0-100 based on:
+- **Stability Score**: System crash frequency
+- **Performance Score**: Resource utilization
+- **Memory Score**: RAM health
+- **Disk Score**: Storage condition
+
+### Recommendations
+
+AI-generated suggestions include:
+- Category (CPU/GPU/Memory/Disk/System)
+- Priority level (Low/Medium/High/Critical)
+- Actionable advice
+
+## Exporting Reports
+
+### JSON Format
+
+Best for:
+- Programmatic analysis
+- Data archival
+- Comparing over time
+
+**Steps**:
+1. Click "Export"
+2. Select "JSON"
+3. Choose save location
+4. File named: `DigYourWindows_Report_[date].json`
+
+### HTML Format
+
+Best for:
+- Sharing with others
+- Offline viewing
+- Printing
+
+**Steps**:
+1. Click "Export"
+2. Select "HTML"
+3. Choose save location
+4. File named: `DigYourWindows_Report_[date].html`
+
+> 📝 **Note**: HTML reports are self-contained with no external dependencies.
+
+## Theme Toggle
+
+Switch between Dark and Light themes:
+- Click theme toggle button (top-right)
+- Preference saved for next session
+
+## Next Steps
+
+- 🏗️ Learn about [Architecture](./architecture.md)
+- 📋 View [Specifications](https://github.com/LessUp/dig-your-windows/tree/main/specs)
+- 🤝 [Contribute](https://github.com/LessUp/dig-your-windows/blob/main/CONTRIBUTING.md)

@@ -89,7 +89,17 @@ dig-your-windows/
 │   └── DigYourWindows.UI/       # WPF 用户界面
 ├── tests/
 │   └── DigYourWindows.Tests/    # 单元测试和属性测试
-├── docs/                        # VitePress 文档（双语）
+├── specs/                       # 规范文档（SDD）
+│   ├── product/                 # 产品需求 (PRD)
+│   ├── rfc/                     # 技术设计文档
+│   ├── api/                     # API 规范
+│   ├── db/                      # 数据模型规范
+│   └── testing/                 # 测试策略和 BDD 规范
+├── docs/                        # VitePress 文档站点
+│   ├── setup/                   # 环境搭建指南
+│   ├── tutorials/               # 用户使用教程
+│   ├── architecture/            # 架构概览
+│   └── assets/                  # 静态资源
 ├── installer/                   # Inno Setup 安装脚本
 ├── scripts/                     # 构建和发布脚本
 └── changelog/                   # 详细变更日志
@@ -120,13 +130,27 @@ dotnet test --filter "FullyQualifiedName~ReportServiceTests"
 
 ## 🤝 贡献指南
 
-欢迎贡献！请查看我们的[贡献指南](https://lessup.github.io/dig-your-windows/zh-CN/guide/contributing)。
+欢迎贡献！本项目遵循**规范驱动开发（SDD）**工作流。
+
+### 快速开始
+
+1. 阅读 [CONTRIBUTING.md](CONTRIBUTING.md) 了解详细指南
+2. 开始工作前查看现有的[规范文档](specs/)
+3. 为新功能创建或更新规范
+4. 按照规范实现代码并提交 Pull Request
+
+### 贡献流程
 
 1. Fork 本仓库
 2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
-3. 提交更改 (`git commit -m 'feat: add amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 创建 Pull Request
+3. **查看/创建规范** 在 `/specs/` 目录中
+4. 按照规范实现代码
+5. 根据验收标准编写测试
+6. 提交更改 (`git commit -m 'feat: add amazing feature'`)
+7. 推送到分支 (`git push origin feature/amazing-feature`)
+8. 创建 Pull Request
+
+查看 [CONTRIBUTING.md](CONTRIBUTING.md) 获取完整指南，包括 SDD 工作流说明。
 
 ## 📦 发布流程
 

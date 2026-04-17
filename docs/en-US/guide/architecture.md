@@ -1,86 +1,26 @@
-# Project Architecture
+# 项目架构
 
-This document provides a detailed explanation of DigYourWindows' technical architecture, design principles, and core implementation.
+本文档详细介绍 DigYourWindows 的技术架构和设计决策。
 
-## Architecture Overview
+## 技术栈
 
-```mermaid
-graph TB
-    subgraph UI[DigYourWindows.UI]
-        MW[MainWindow.xaml]
-        MVM[MainViewModel]
-        CONV[Converters]
-    end
-    
-    subgraph Core[DigYourWindows.Core]
-        subgraph Services[Services]
-            HS[HardwareService]
-            CS[CpuMonitorService]
-            GS[GpuMonitorService]
-            NS[NetworkMonitorService]
-            DS[DiskSmartService]
-            ES[EventLogService]
-            RS[ReliabilityService]
-            PS[PerformanceService]
-            RPS[ReportService]
-            DCS[DiagnosticCollectorService]
-            HMP[HardwareMonitorProvider]
-        end
-        
-        subgraph Models[Models]
-            HD[HardwareData]
-            DM[DiskModels]
-            CM[ComputeModels]
-            EM[EventModels]
-            PM[PerformanceAnalysisData]
-        end
-        
-        subgraph Exceptions[Exceptions]
-            SE[ServiceException]
-            RE[ReportException]
-            WE[WmiException]
-        end
-    end
-    
-    subgraph External[External Dependencies]
-        LHM[LibreHardwareMonitor]
-        WMI[WMI / System.Management]
-        EL[EventLogReader]
-        SP[ScottPlot]
-    end
-    
-    MVM --> HS & CS & GS & NS & ES & RS & PS & RPS & DCS
-    HS --> WMI
-    CS & GS --> HMP --> LHM
-    NS --> WMI
-    DS --> WMI
-    ES --> EL
-    RS & PS --> WMI
-    RPS --> HD & DM & EM & PM
-    DCS --> HS & ES & RS & PS
-    MW --> MVM
-    MW -.-> SP
-```
+| 组件 | 技术 | 版本 | 用途 |
+|------|------|------|------|
+| 运行时 | .NET + WPF | 10.0 | 桌面应用框架 |
+| UI 库 | WPF-UI | 4.0 | Fluent Design 风格组件 |
+| MVVM | CommunityToolkit.Mvvm | 8.4 | 数据绑定与命令 |
+| 图表 | ScottPlot | 5.1 | 性能趋势可视化 |
+| 硬件监控 | LibreHardwareMonitor | 0.9 | CPU/GPU 温度、负载、频率 |
+| WMI | System.Management | 10.0 | Windows 管理信息查询 |
+| 测试 | xUnit + FsCheck | 2.9 / 2.16 | 单元测试 + 属性测试 |
 
-## Technology Stack
-
-| Component | Technology | Version | Purpose |
-|-----------|------------|---------|---------|
-| Runtime | .NET + WPF | 10.0 | Desktop application framework |
-| UI Library | WPF-UI | 4.0 | Fluent Design components |
-| MVVM | CommunityToolkit.Mvvm | 8.4 | Data binding and commands |
-| Charts | ScottPlot | 5.1 | Performance visualization |
-| Hardware Monitoring | LibreHardwareMonitor | 0.9 | CPU/GPU temperature, load, frequency |
-| WMI | System.Management | 10.0 | Windows management queries |
-| Testing | xUnit + FsCheck | 2.9 / 2.16 | Unit + property-based tests |
-
-## Project Structure
+## 项目结构
 
 ```
 dig-your-windows/
 ├── src/
-│   ├── DigYourWindows.Core/     # Core business logic
-│   │   ├── Models/              # Data models (domain-separated)
+│   ├── DigYourWindows.Core/     # 核心业务逻辑
+│   │   ├── Models/              # 数据模型（按领域拆分）
 │   │   │   ├── DiagnosticData.cs
 │   │   │   ├── HardwareData.cs
 │   │   │   ├── DiskModels.cs
@@ -89,7 +29,7 @@ dig-your-windows/
 │   │   │   ├── DeviceModels.cs
 │   │   │   ├── CollectionModels.cs
 │   │   │   └── PerformanceAnalysisData.cs
-│   │   ├── Services/            # Service layer
+│   │   ├── Services/            # 服务层
 │   │   │   ├── HardwareService.cs
 │   │   │   ├── CpuMonitorService.cs
 │   │   │   ├── GpuMonitorService.cs
@@ -103,33 +43,42 @@ dig-your-windows/
 │   │   │   ├── LogService.cs
 │   │   │   ├── HardwareMonitorProvider.cs
 │   │   │   └── ScoringConfiguration.cs
-│   │   └── Exceptions/          # Custom exceptions
+│   │   └── Exceptions/          # 自定义异常
 │   │       ├── ServiceException.cs
 │   │       ├── ReportException.cs
 │   │       └── WmiException.cs
-│   └── DigYourWindows.UI/       # WPF user interface
-│       ├── ViewModels/          # MVVM view models
+│   └── DigYourWindows.UI/       # WPF 用户界面
+│       ├── ViewModels/          # MVVM 视图模型
 │       │   └── MainViewModel.cs
-│       ├── Converters/          # Value converters
+│       ├── Converters/          # 值转换器
 │       │   ├── CountToVisibilityConverter.cs
 │       │   ├── NullConverters.cs
 │       │   └── StringToBrushConverter.cs
-│       ├── App.xaml.cs          # App entry + DI composition root
-│       └── MainWindow.xaml.cs   # Main window
+│       ├── App.xaml.cs          # 应用入口 + DI 组合根
+│       └── MainWindow.xaml.cs   # 主窗口
 ├── tests/
-│   └── DigYourWindows.Tests/    # Test project
-│       ├── Unit/                # Unit tests
-│       ├── Property/            # Property-based tests
-│       ├── Integration/         # Integration tests (reserved)
-│       └── FsCheckConfig.cs     # FsCheck configuration
-└── docs/                        # VitePress documentation site
+│   └── DigYourWindows.Tests/    # 测试项目
+│       ├── Unit/                # 单元测试
+│       │   ├── ReportServiceTests.cs
+│       │   ├── DiagnosticCollectorServiceTests.cs
+│       │   └── PerformanceServiceTests.cs
+│       ├── Property/            # 属性测试
+│       │   └── ReportServicePropertyTests.cs
+│       ├── FsCheckConfig.cs     # FsCheck 配置
+│       └── Usings.cs            # 全局 using
+├── docs/                        # VitePress 文档站
+├── installer/                   # Inno Setup 安装脚本
+├── scripts/                     # 构建和发布脚本
+├── changelog/                   # 变更日志
+├── Directory.Build.props        # 共享 MSBuild 属性
+└── DigYourWindows.slnx          # Solution 文件
 ```
 
-## Core Architecture Design
+## 核心架构设计
 
-### 1. Shared Build Properties (`Directory.Build.props`)
+### 1. 共享构建属性 (`Directory.Build.props`)
 
-Centralize common MSBuild properties for all projects:
+集中管理所有项目的通用 MSBuild 属性：
 
 ```xml
 <Project>
@@ -139,118 +88,66 @@ Centralize common MSBuild properties for all projects:
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <AnalysisLevel>latest-recommended</AnalysisLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-  
-  <PropertyGroup>
-    <VersionPrefix>1.0.0</VersionPrefix>
-    <Authors>LessUp</Authors>
-    <Product>DigYourWindows</Product>
-    <Copyright>Copyright © 2025-2026 LessUp</Copyright>
-    <RepositoryUrl>https://github.com/LessUp/dig-your-windows</RepositoryUrl>
-  </PropertyGroup>
+  <!-- Version, Authors, Product, etc. -->
 </Project>
 ```
 
-**Benefits**:
-- Avoid repetition in `.csproj` files
-- Unify target framework and language features
-- Centralized version management
-- Consistent compiler warning levels
+**优势**：
+- 避免各 `.csproj` 重复配置
+- 统一目标框架和语言版本
+- 便于版本管理
 
-### 2. Singleton Hardware Monitor (`HardwareMonitorProvider`)
+### 2. 单例硬件监控 (`HardwareMonitorProvider`)
 
-LibreHardwareMonitor's `Computer` object is a heavyweight resource, shared via singleton pattern:
+LibreHardwareMonitor 的 `Computer` 对象是重量级资源，通过单例模式共享：
 
 ```csharp
-public sealed class HardwareMonitorProvider : IHardwareMonitorProvider, IDisposable
+public sealed class HardwareMonitorProvider : IHardwareMonitorProvider
 {
-    private readonly object _lock = new();
     private Computer? _computer;
-    private bool _disposed;
+
+    public Computer Computer { get; }
 
     public HardwareMonitorProvider()
     {
-        _computer = new Computer
-        {
-            IsCpuEnabled = true,
-            IsGpuEnabled = true,
-            IsMemoryEnabled = true,
-            IsMotherboardEnabled = true
-        };
+        _computer = new Computer { IsCpuEnabled = true, IsGpuEnabled = true };
         _computer.Open();
     }
-
-    public Computer Computer
-    {
-        get
-        {
-            ObjectDisposedException.ThrowIf(_disposed, this);
-            return _computer!;
-        }
-    }
-
-    public void Dispose()
-    {
-        if (_disposed) return;
-        
-        lock (_lock)
-        {
-            if (_disposed) return;
-            _disposed = true;
-            _computer?.Close();
-            _computer = null;
-        }
-    }
 }
 ```
 
-**Benefits**:
-- Avoid creating multiple `Computer` instances (expensive)
-- CPU/GPU monitoring services share same instance
-- Thread-safe lifecycle management
-- Supports dependency injection and Dispose pattern
+**优势**：
+- 避免创建多个 `Computer` 实例
+- CPU/GPU 监控服务共享同一实例
+- 统一生命周期管理
 
-### 3. Efficient Event Log Reading (`EventLogService`)
+### 3. 高效事件日志读取 (`EventLogService`)
 
-Using `EventLogReader` + structured XML queries for server-side filtering:
+使用 `EventLogReader` + 结构化 XML 查询实现服务端过滤：
 
 ```csharp
-public IEnumerable<LogEvent> GetErrorEvents(string logName, DateTime cutoffDate)
-{
-    var cutoffStr = cutoffDate.ToUniversalTime()
-        .ToString("o", CultureInfo.InvariantCulture);
-    
-    var queryXml = $@"
-      <QueryList>
-        <Query Id='0' Path='{logName}'>
-          <Select Path='{logName}'>
-            *[System[(Level=2 or Level=3) and 
-              TimeCreated[@SystemTime&gt;='{cutoffStr}']]]
-          </Select>
-        </Query>
-      </QueryList>";
+var queryXml = $@"
+  <QueryList>
+    <Query Id='0' Path='{logName}'>
+      <Select Path='{logName}'>
+        *[System[(Level=2 or Level=3) and 
+          TimeCreated[@SystemTime&gt;='{cutoffStr}']]]
+      </Select>
+    </Query>
+  </QueryList>";
 
-    using var reader = new EventLogReader(
-        new EventLogQuery(logName, PathType.LogName, queryXml));
-    
-    for (var entry = reader.ReadEvent(); entry != null; entry = reader.ReadEvent())
-    {
-        yield return MapToLogEvent(entry);
-        entry.Dispose();
-    }
-}
+using var reader = new EventLogReader(new EventLogQuery(logName, PathType.LogName, queryXml));
 ```
 
-**Benefits**:
-- **Server-side filtering**: WMI/ETW returns only matching events, reducing data transfer
-- **Efficient queries**: XML queries executed at native level, avoiding full iteration
-- **Streaming**: Uses `yield return` and `IDisposable` pattern, memory-friendly
-- **UTC support**: Normalized time handling, avoiding timezone issues
+**优势**：
+- 服务端过滤，减少数据传输
+- 替代遍历全部条目，大幅提升性能
+- 支持 UTC 时间范围查询
 
-### 4. Full CancellationToken Support
+### 4. CancellationToken 全链路支持
 
-All I/O-intensive operations support cancellation:
+所有耗时操作均支持取消：
 
 ```csharp
 public interface IHardwareService
@@ -267,88 +164,70 @@ public interface IDiagnosticCollectorService
 }
 ```
 
-**Benefits**:
-- Ensures UI responsiveness, supports cancel button
-- Prevents resource leaks, timely cleanup
-- Complies with .NET async best practices
+**优势**：
+- 保证 UI 响应性
+- 支持用户取消长时间操作
+- 避免资源泄漏
 
-### 5. Model Separation Design
+### 5. 模型拆分设计
 
-Data models split into separate files by responsibility:
+数据模型按职责拆分为独立文件：
 
-| File | Content | Responsibility |
-|------|---------|---------------|
-| `DiagnosticData.cs` | `DiagnosticData` | Diagnostic data overview (root object) |
-| `HardwareData.cs` | `HardwareData` | Hardware info (CPU, memory, motherboard) |
-| `DiskModels.cs` | `DiskInfoData`, `DiskSmartData` | Disk and SMART data |
-| `ComputeModels.cs` | `CpuData`, `GpuInfoData`, `GpuRealtimeData` | CPU/GPU real-time data |
-| `EventModels.cs` | `LogEvent`, `ReliabilityRecord` | Event logs and reliability records |
-| `DeviceModels.cs` | `NetworkAdapterData`, `UsbDeviceData` | Network/USB device info |
-| `PerformanceAnalysisData.cs` | `PerformanceAnalysis` | Performance analysis (scores, recommendations) |
-| `CollectionModels.cs` | `DiagnosticCollectionProgress`, `DiagnosticCollectionResult` | Collection progress and results |
+| 文件 | 内容 |
+|------|------|
+| `DiagnosticData.cs` | 诊断数据总览 |
+| `HardwareData.cs` | 硬件信息 |
+| `DiskModels.cs` | 磁盘与 SMART 数据 |
+| `ComputeModels.cs` | CPU/GPU 实时数据 |
+| `EventModels.cs` | 事件日志与可靠性记录 |
+| `DeviceModels.cs` | 网络/USB 设备信息 |
+| `PerformanceAnalysisData.cs` | 性能分析结果 |
+| `CollectionModels.cs` | 采集进度与结果 |
 
-**Benefits**:
-- **Single Responsibility**: Each file focuses on one domain
-- **Parallel Development**: Reduces team conflicts
-- **Clear Boundaries**: Easier to understand and maintain
-- **Serialization-friendly**: Clear JSON structure
+**优势**：
+- 单一职责原则
+- 便于维护和扩展
+- 清晰的数据边界
 
-### 6. Buffered Log Service (`FileLogService`)
+### 6. 缓冲日志服务 (`FileLogService`)
 
-Using `StreamWriter` instead of individual `File.AppendAllText`:
+使用 `StreamWriter` 替代逐次 `File.AppendAllText`：
 
 ```csharp
-public sealed class FileLogService : ILogService, IDisposable
+private StreamWriter _writer;
+
+private void Write(string level, string message, Exception? exception)
 {
-    private readonly StreamWriter _writer;
-    private readonly object _lock = new();
-
-    public void Info(string message) => Write("INFO", message, null);
-    public void Warn(string message) => Write("WARN", message, null);
-    public void LogError(string message, Exception? exception = null) 
-        => Write("ERROR", message, exception);
-
-    private void Write(string level, string message, Exception? exception)
+    lock (_lock)
     {
-        var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-        var logLine = exception != null
-            ? $"{timestamp} [{level}] {message} - {exception}"
-            : $"{timestamp} [{level}] {message}";
-
-        lock (_lock)
-        {
-            CheckLogRotation();
-            _writer.WriteLine(logLine);
-            _writer.Flush();
-        }
+        CheckLogRotation();  // 按日期和大小轮转
+        _writer.WriteLine($"{timestamp} [{level}] {message}");
     }
 }
 ```
 
-**Benefits**:
-- **Reduced I/O**: Buffered writes, batch flushes
-- **Log Rotation**: Auto-split by date and size
-- **Auto-cleanup**: Configurable retention policy
-- **Thread-safe**: Protected with `lock`
+**优势**：
+- 减少 I/O 开销
+- 支持日志轮转（按日期 + 大小）
+- 自动清理旧日志（保留 7 天）
 
-## Dependency Injection Configuration
+## 依赖注入配置
 
-Services configured at application startup:
+应用启动时配置所有服务：
 
 ```csharp
 private static void ConfigureServices(IServiceCollection services)
 {
-    // UI & ViewModels
+    // UI
     services.AddSingleton<MainWindow>();
     services.AddSingleton<MainViewModel>();
 
     // Core Services
-    services.AddSingleton<ILogService>(provider => 
-        new FileLogService(GetLogDirectory()));
+    services.AddSingleton<ILogService, FileLogService>();
     services.AddSingleton<IReportService, ReportService>();
     services.AddSingleton<IDiagnosticCollectorService, DiagnosticCollectorService>();
 
-    // Hardware Monitoring (shared instance)
+    // Hardware Monitoring
     services.AddSingleton<IHardwareMonitorProvider, HardwareMonitorProvider>();
     services.AddSingleton<ICpuMonitorService, CpuMonitorService>();
     services.AddSingleton<IGpuMonitorService, GpuMonitorService>();
@@ -356,7 +235,7 @@ private static void ConfigureServices(IServiceCollection services)
     services.AddSingleton<IDiskSmartService, DiskSmartService>();
     services.AddSingleton<IHardwareService, HardwareService>();
 
-    // Analysis Services
+    // Analysis
     services.AddSingleton<IReliabilityService, ReliabilityService>();
     services.AddSingleton<IEventLogService, EventLogService>();
     services.AddSingleton<ISystemInfoProvider, WmiSystemInfoProvider>();
@@ -364,56 +243,20 @@ private static void ConfigureServices(IServiceCollection services)
 }
 ```
 
-**Design Principles**:
-- **Single Responsibility**: Each service does one thing
-- **Interface Abstraction**: All services have interfaces for testability and replacement
-- **Lifecycle Management**: Singleton for state preservation, Transient for stateless
-- **Lazy Initialization**: Created only when needed, reducing startup time
+## 异常处理策略
 
-## Exception Handling Strategy
+自定义异常类型提供丰富的上下文信息：
 
-Custom exception types provide rich context information:
+| 异常类型 | 用途 | 特殊属性 |
+|---------|------|----------|
+| `ServiceException` | 服务层错误 | `ErrorType`, `ServiceName`, `FailedServices` |
+| `ReportException` | 报告生成错误 | `ErrorType`, `Path`, `MissingField` |
+| `WmiException` | WMI 查询错误 | `ErrorType`, `Resource`, `Query` |
 
-| Exception Type | Purpose | Special Properties |
-|---------------|---------|-------------------|
-| `ServiceException` | Service layer errors | `ErrorType`, `ServiceName`, `FailedServices` |
-| `ReportException` | Report generation errors | `ErrorType`, `Path`, `MissingField` |
-| `WmiException` | WMI query errors | `ErrorType`, `Resource`, `Query` |
-
-Factory methods for easy creation:
+所有异常都提供工厂方法便于创建：
 
 ```csharp
-// Service exceptions
-throw ServiceException.CollectionFailed(
-    "HardwareService", "WMI query timeout");
-
-// Report exceptions
-throw ReportException.InvalidData(
-    "JSON content is empty");
-
-// WMI exceptions
-throw WmiException.AccessDenied(
-    "Win32_Processor", "SELECT * FROM Win32_Processor");
+throw ServiceException.CollectionFailed("HardwareService", "WMI timeout");
+throw ReportException.InvalidData("JSON content is empty");
+throw WmiException.AccessDenied("Win32_Processor");
 ```
-
-**Exception Propagation Strategy**:
-1. **Service Layer**: Catch and wrap original exceptions, add context
-2. **ViewModel**: Handle user-visible exceptions, log
-3. **Global**: UnhandledException handling to prevent crashes
-
-## Performance Optimizations
-
-| Optimization | Implementation | Effect |
-|-------------|---------------|--------|
-| Hardware Monitor Cache | `HardwareMonitorProvider` singleton | Reduces 90% initialization time |
-| Event Log Filtering | XML server-side queries | Reduces 95% data transfer |
-| Log Buffering | `StreamWriter` + batch flush | Reduces 80% I/O operations |
-| JSON Serialization | System.Text.Json | 2-3x faster than Newtonsoft |
-| Chart Rendering | ScottPlot Skia backend | Smooth real-time updates |
-
-## Security Considerations
-
-- **WMI Queries**: No direct user input concatenation, prevents injection
-- **Admin Privileges**: Sensitive operations detect permissions and gracefully degrade
-- **Log Sanitization**: Automatically removes usernames and other sensitive info from paths
-- **File Access**: Uses restricted file access modes

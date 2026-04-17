@@ -88,7 +88,8 @@ git commit -m "feat(monitor): add GPU memory monitoring
 - [Documentation](https://lessup.github.io/dig-your-windows/)
 - [GitHub Discussions](https://github.com/LessUp/dig-your-windows/discussions)
 - [GitHub Issues](https://github.com/LessUp/dig-your-windows/issues)
+- [Contributing Guide (GitHub)](https://github.com/LessUp/dig-your-windows/blob/main/CONTRIBUTING.md)
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the [MIT License](LICENSE).
+By contributing, you agree that your contributions will be licensed under the [MIT License](https://github.com/LessUp/dig-your-windows/blob/main/LICENSE).

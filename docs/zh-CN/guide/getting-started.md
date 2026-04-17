@@ -1,313 +1,262 @@
-# 快速开始
+# Getting Started
 
-本指南帮助你快速搭建开发环境并运行 DigYourWindows。
+This guide will help you set up and run DigYourWindows on your Windows machine.
 
-## 环境要求
+## Prerequisites
 
-### 必需依赖
+Before you begin, ensure you have:
 
-| 依赖项 | 版本要求 | 用途 | 下载链接 |
-|--------|----------|------|----------|
-| Windows | 10/11 (Build 19041+) | 运行平台 | - |
-| .NET SDK | 10.0.x | 构建和运行 | [下载](https://dotnet.microsoft.com/download) |
-| IDE（可选）| VS 2022 / Rider / VS Code | 开发调试 | - |
+- **Windows 10/11** (Build 19041 or later)
+- **.NET 10.0 SDK** (for building from source)
+- **Administrator privileges** (for full feature access)
 
-### 验证安装
+## Installation Options
 
-::: code-group
+### Option 1: Download Release (Recommended)
 
-```powershell [PowerShell]
-# 检查 .NET 版本（应显示 10.0.x）
-dotnet --version
+Download the latest installer from [GitHub Releases](https://github.com/LessUp/dig-your-windows/releases):
 
-# 检查 Windows 版本
-[Environment]::OSVersion.Version
-```
+| Version | Size | Requirements | Best For |
+|---------|------|--------------|----------|
+| `DigYourWindows_Setup.exe` | ~5MB | Downloads .NET if needed | Most users |
+| FDD (Framework-Dependent) | ~60MB | Requires .NET 10 Runtime | Users with .NET installed |
+| SCD (Self-Contained) | ~180MB | No dependencies | Offline use |
 
-```cmd [CMD]
-# 检查 .NET 版本
-dotnet --version
+#### Installation Steps
 
-# 检查 Windows 版本
-ver
-```
+1. Download the installer
+2. Run `DigYourWindows_Setup.exe`
+3. Follow the installation wizard
+4. Launch DigYourWindows from Start Menu
 
-:::
-
-## 获取源码
-
-### 方式一：克隆仓库（推荐）
+### Option 2: Build from Source
 
 ```powershell
-# 使用 HTTPS
+# Clone repository
 git clone https://github.com/LessUp/dig-your-windows.git
-
-# 或使用 SSH
-git clone git@github.com:LessUp/dig-your-windows.git
-
-# 进入项目目录
 cd dig-your-windows
-```
 
-### 方式二：下载 ZIP
+# Restore dependencies
+dotnet restore
 
-```powershell
-# 下载最新源码
-Invoke-WebRequest -Uri "https://github.com/LessUp/dig-your-windows/archive/refs/heads/master.zip" -OutFile "dig-your-windows.zip"
-
-# 解压
-Expand-Archive -Path "dig-your-windows.zip" -DestinationPath "."
-```
-
-## 构建项目
-
-### 1. 还原依赖
-
-```powershell
-dotnet restore DigYourWindows.slnx
-```
-
-::: tip NuGet 配置
-项目使用 NuGet 官方源。如需配置代理或私有源，请编辑 `NuGet.Config`。
-:::
-
-### 2. 编译项目
-
-::: code-group
-
-```powershell [Debug 版本]
-dotnet build DigYourWindows.slnx
-```
-
-```powershell [Release 版本]
-dotnet build DigYourWindows.slnx -c Release
-```
-
-:::
-
-构建输出位置：
-- Debug: `src/DigYourWindows.UI/bin/Debug/net10.0-windows/`
-- Release: `src/DigYourWindows.UI/bin/Release/net10.0-windows/`
-
-## 运行应用
-
-### 基本运行
-
-```powershell
+# Build and run
 dotnet run --project src/DigYourWindows.UI/DigYourWindows.UI.csproj
 ```
 
-### 管理员权限运行
+> ⚠️ **Note**: Some features (GPU monitoring, SMART data) require administrator privileges.
 
-::: warning 重要提示
-以下功能需要管理员权限才能正常工作：
-- GPU 温度/负载监控
-- 磁盘 SMART 数据读取
-- 部分硬件信息采集
-:::
+## First Run
 
-#### 方式一：右键以管理员身份运行
+1. **Launch the application**:
+   - From Start Menu, or
+   - Run `DigYourWindows.UI.exe`, or
+   - Use `dotnet run`
 
-1. 打开资源管理器，导航到 `src/DigYourWindows.UI/bin/Debug/net10.0-windows/`
-2. 右键点击 `DigYourWindows.UI.exe`
-3. 选择"以管理员身份运行"
+2. **Run diagnostics**:
+   - Click "Run Diagnostics" button
+   - Wait for data collection (typically 5-15 seconds)
 
-#### 方式二：VS Code 配置
+3. **Review results**:
+   - View hardware information on dashboard
+   - Check event log analysis
+   - Review reliability records
+   - See health score and recommendations
 
-在 `.vscode/launch.json` 中添加管理员配置：
+4. **Export reports** (optional):
+   - Click "Export" button
+   - Choose JSON or HTML format
+   - Select save location
 
-```json
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Run as Admin",
-      "type": "coreclr",
-      "request": "launch",
-      "program": "${workspaceFolder}/src/DigYourWindows.UI/bin/Debug/net10.0-windows/DigYourWindows.UI.dll",
-      "args": [],
-      "cwd": "${workspaceFolder}",
-      "stopAtEntry": false,
-      "console": "internalConsole",
-      "windows": {
-        "runAsAdministrator": true
-      }
-    }
-  ]
-}
-```
+## Administrator Privileges
 
-#### 方式三：Visual Studio
+Some features require administrator privileges:
 
-1. 在 Visual Studio 中打开项目
-2. 右键点击 `DigYourWindows.UI` 项目 → "属性"
-3. 转到"调试"选项卡
-4. 勾选"启用本机代码调试"（可选）
-5. 启动 Visual Studio 时选择"以管理员身份运行"
+- ✅ GPU temperature/load monitoring
+- ✅ Disk SMART data reading
+- ✅ Some hardware information collection
 
-## 运行测试
+### How to Run as Administrator
 
-### 运行所有测试
+**Method 1**: Right-click shortcut
+- Right-click `DigYourWindows.UI.exe`
+- Select "Run as administrator"
 
-```powershell
-dotnet test DigYourWindows.slnx
-```
+**Method 2**: Configure in Visual Studio
+- Open project in Visual Studio
+- Edit `.vscode/launch.json`
+- Add `"runAsAdministrator": true`
 
-### 详细输出
+## Troubleshooting
 
-```powershell
-dotnet test DigYourWindows.slnx --logger "console;verbosity=detailed"
-```
+### "Administrator privileges required" message
 
-### 过滤测试
+**Solution**: Run the application as administrator (see above).
 
-```powershell
-# 按类名过滤
-dotnet test --filter "FullyQualifiedName~ReportServiceTests"
+### Missing .NET Runtime
 
-# 按方法名过滤
-dotnet test --filter "FullyQualifiedName~SerializeToJson"
-```
+**Solution**: 
+- Download the self-contained version (SCD), OR
+- Install .NET Desktop Runtime 10 from [Microsoft](https://dotnet.microsoft.com/download)
 
-### 代码覆盖率
+### Windows Defender warning
 
-```powershell
-# 收集覆盖率数据
-dotnet test --collect:"XPlat Code Coverage"
+**Solution**: 
+- This is common for unsigned applications
+- Add an exception in Windows Defender
+- Or build from source yourself
 
-# 使用 ReportGenerator 生成 HTML 报告
-dotnet tool install -g dotnet-reportgenerator-globaltool
-reportgenerator -reports:**/coverage.cobertura.xml -targetdir:coverage
-```
+## Next Steps
 
-覆盖率报告位置：`tests/DigYourWindows.Tests/TestResults/{guid}/coverage.cobertura.xml`
+- 📖 Read the [Architecture Overview](./architecture.md)
+- 🧪 Learn about [Testing](./testing.md)
+- 🤝 Check out the [Contributing Guide](https://github.com/LessUp/dig-your-windows/blob/main/CONTRIBUTING.md)
+- 📋 Review [Specifications](https://github.com/LessUp/dig-your-windows/tree/main/specs)
+# Using DigYourWindows
 
-## 发布应用
+This tutorial walks you through the main features of DigYourWindows.
 
-### 使用发布脚本（推荐）
+## Table of Contents
 
-```powershell
-# 生成框架依赖 (FDD) 和自包含 (SCD) 两个版本
-.\scripts\publish.ps1
-```
+1. [Dashboard Overview](#dashboard-overview)
+2. [Running Diagnostics](#running-diagnostics)
+3. [Viewing Hardware Information](#viewing-hardware-information)
+4. [Analyzing Event Logs](#analyzing-event-logs)
+5. [Checking Reliability Records](#checking-reliability-records)
+6. [Understanding Health Scores](#understanding-health-scores)
+7. [Exporting Reports](#exporting-reports)
 
-输出目录：
-- `artifacts/publish/FDD/` — 框架依赖版本（64MB，需要 .NET Runtime）
-- `artifacts/publish/SCD/` — 自包含版本（185MB，无需依赖）
+## Dashboard Overview
 
-### 构建安装程序
+When you launch DigYourWindows, you'll see the main dashboard with:
 
-::: info 前置要求
-需要安装 [Inno Setup 6](https://jrsoftware.org/isinfo.php)
-:::
+- **System Info**: Computer name, OS version, processor, memory
+- **Quick Stats**: Current CPU/GPU metrics
+- **Action Buttons**: Run Diagnostics, Export, Settings
 
-```powershell
-.\scripts\build-installer.ps1
-```
+## Running Diagnostics
 
-输出：`artifacts/installer/DigYourWindows_Setup.exe`
+1. Click **"Run Diagnostics"** button
+2. Progress indicator shows collection status:
+   - Collecting hardware information
+   - Reading event logs
+   - Analyzing reliability data
+   - Calculating health scores
+3. Wait for completion (typically 5-15 seconds)
+4. Results display automatically
 
-### 手动发布
+> 💡 **Tip**: You can cancel collection at any time using the Cancel button.
 
-#### 框架依赖版本
+## Viewing Hardware Information
 
-```powershell
-dotnet publish src/DigYourWindows.UI/DigYourWindows.UI.csproj `
-  -c Release `
-  -o artifacts/publish/FDD
-```
+### CPU Information
 
-#### 自包含版本
+The CPU section shows:
+- Model name and specifications
+- Core and thread count
+- Real-time temperature and load
+- Current and base frequency
 
-```powershell
-dotnet publish src/DigYourWindows.UI/DigYourWindows.UI.csproj `
-  -c Release `
-  -r win-x64 `
-  --self-contained true `
-  -p:PublishSingleFile=true `
-  -o artifacts/publish/SCD
-```
+### Memory
 
-## 发布新版本
+Memory information includes:
+- Total and available memory
+- Usage percentage
+- Memory type and speed
 
-### 自动发布流程
+### Disks
 
-推送 `v*` 格式的 Git tag 会自动触发 GitHub Actions 构建并发布：
+For each disk, you'll see:
+- Model and interface type (NVMe/SATA)
+- Health status
+- Temperature (if supported)
+- SMART data (requires admin)
 
-```powershell
-# 1. 更新版本号（Directory.Build.props）
-# 2. 更新 CHANGELOG.md
+### GPU
 
-# 3. 创建并推送 tag
-git add .
-git commit -m "chore(release): prepare for v1.1.0"
-git tag v1.1.0
-git push origin master
-git push origin v1.1.0
-```
+GPU monitoring displays:
+- Graphics card model
+- Temperature and load
+- VRAM usage
+- Clock speeds (if supported)
 
-GitHub Actions 会自动：
-1. 🏗️ 构建 FDD 和 SCD 版本
-2. 📦 创建安装程序
-3. 📝 创建 GitHub Release
-4. ⬆️ 上传构建产物
+## Analyzing Event Logs
 
-### 手动发布
+The Event Log Analysis section shows:
 
-参见 [GitHub Releases](https://github.com/LessUp/dig-your-windows/releases) 页面，手动上传构建产物。
+- **System Errors**: Critical system failures
+- **System Warnings**: Potential issues
+- **Application Errors**: Software crashes
+- **Application Warnings**: Application issues
 
-## 故障排除
+### Filtering Events
 
-### 常见问题
+You can filter by:
+- Date range (default: last 7 days)
+- Severity (Error/Warning)
+- Source application
 
-#### Q: 提示"无法启动程序，因为计算机中丢失 xxx.dll"
+## Checking Reliability Records
 
-**解决方案:**
-```powershell
-# 重新还原依赖
-dotnet restore --force
+Windows Reliability Monitor data displays:
+- Stability index trend (0-10 scale)
+- Historical events timeline
+- Critical events list
 
-# 清理并重新构建
-dotnet clean
-dotnet build
-```
+## Understanding Health Scores
 
-#### Q: GPU 温度显示 N/A
+### Overall Score
 
-**解决方案:**
-1. 以管理员身份运行应用
-2. 更新显卡驱动
-3. 检查 LibreHardwareMonitor 是否支持你的 GPU
+Composite score from 0-100 based on:
+- **Stability Score**: System crash frequency
+- **Performance Score**: Resource utilization
+- **Memory Score**: RAM health
+- **Disk Score**: Storage condition
 
-#### Q: 构建时出现警告 MSB3270
+### Recommendations
 
-这是混合平台警告，不影响功能。如需消除，确保所有项目使用相同的目标平台。
+AI-generated suggestions include:
+- Category (CPU/GPU/Memory/Disk/System)
+- Priority level (Low/Medium/High/Critical)
+- Actionable advice
 
-#### Q: 测试失败：找不到测试宿主
+## Exporting Reports
 
-**解决方案:**
-```powershell
-# 重新安装测试 SDK
-dotnet new install Microsoft.NET.Test.Sdk
+### JSON Format
 
-# 或者清理后重新构建
-dotnet clean
-dotnet build
-```
+Best for:
+- Programmatic analysis
+- Data archival
+- Comparing over time
 
-### 日志位置
+**Steps**:
+1. Click "Export"
+2. Select "JSON"
+3. Choose save location
+4. File named: `DigYourWindows_Report_[date].json`
 
-应用日志保存在以下位置，可用于故障诊断：
+### HTML Format
 
-```
-%LOCALAPPDATA%\DigYourWindows\Logs\
-```
+Best for:
+- Sharing with others
+- Offline viewing
+- Printing
 
-日志文件命名格式：`DigYourWindows_YYYYMMDD.log`
+**Steps**:
+1. Click "Export"
+2. Select "HTML"
+3. Choose save location
+4. File named: `DigYourWindows_Report_[date].html`
 
-## 下一步
+> 📝 **Note**: HTML reports are self-contained with no external dependencies.
 
-- [项目架构](/zh-CN/guide/architecture) — 了解技术架构和设计决策
-- [测试指南](/zh-CN/guide/testing) — 学习如何编写和运行测试
-- [贡献指南](/zh-CN/guide/contributing) — 参与项目开发
-- [数据 Schema](/zh-CN/reference/data-schema) — 查看诊断数据格式
+## Theme Toggle
+
+Switch between Dark and Light themes:
+- Click theme toggle button (top-right)
+- Preference saved for next session
+
+## Next Steps
+
+- 🏗️ Learn about [Architecture](./architecture.md)
+- 📋 View [Specifications](https://github.com/LessUp/dig-your-windows/tree/main/specs)
+- 🤝 [Contribute](https://github.com/LessUp/dig-your-windows/blob/main/CONTRIBUTING.md)

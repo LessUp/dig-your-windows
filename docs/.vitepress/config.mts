@@ -14,28 +14,21 @@ export default defineConfig({
   
   // Clean URLs (no .html extension)
   cleanUrls: true,
-  
+
   // Last updated timestamp
   lastUpdated: true,
-  
+
   // Build optimization
   srcExclude: [
-    '**/diagnostic-data-schema.json',
-    '**/TEST_INFRASTRUCTURE_SETUP.md',
     '**/node_modules/**',
     '**/.vitepress/cache/**',
     '**/dist/**',
   ],
-  
-  // Ignore dead links (for external URLs and known patterns)
+
+  // Ignore dead links (for external URLs)
   ignoreDeadLinks: [
     /^https?:\/\/localhost/,
     /^https?:\/\/127\.0\.0\.1/,
-    /\/guide\/index$/,  // Index pages are handled by route config
-    /\/guide\/$/,       // Guide index without .md
-    /\.\/LICENSE$/,     // LICENSE file at repo root
-    /\/zh-CN\/guide\/$/, // Locale guide root
-    /\/en-US\/guide\/$/, // Locale guide root
   ],
   
   // Sitemap configuration
@@ -143,8 +136,8 @@ export default defineConfig({
       description: 'Windows Deep Diagnostics Tool — One-click hardware info collection, event log analysis, and system health scoring',
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Windows 10, Windows 11',
-      softwareVersion: '1.1.0',
-      license: 'https://github.com/LessUp/dig-your-windows/blob/main/LICENSE',
+      softwareVersion: '1.0.0',
+      license: 'https://github.com/LessUp/dig-your-windows/blob/master/LICENSE',
       url: 'https://lessup.github.io/dig-your-windows/',
       codeRepository: 'https://github.com/LessUp/dig-your-windows',
       programmingLanguage: ['C#', '.NET', 'WPF'],
@@ -307,7 +300,7 @@ export default defineConfig({
     },
     
     editLink: {
-      pattern: 'https://github.com/LessUp/dig-your-windows/edit/main/docs/:path',
+      pattern: 'https://github.com/LessUp/dig-your-windows/edit/master/docs/:path',
       text: 'Edit this page on GitHub',
     },
     
@@ -322,28 +315,28 @@ export default defineConfig({
     
     outline: {
       level: [2, 3],
-      label: 'On this page',
+      label: '目录',
     },
-    
+
     lastUpdated: {
-      text: 'Last updated',
+      text: '最后更新',
       formatOptions: {
         dateStyle: 'short',
         timeStyle: 'short',
       },
     },
-    
+
     docFooter: {
-      prev: 'Previous page',
-      next: 'Next page',
+      prev: '上一页',
+      next: '下一页',
     },
     
-    returnToTopLabel: 'Return to top',
-    sidebarMenuLabel: 'Menu',
-    langMenuLabel: 'Change language',
-    darkModeSwitchLabel: 'Appearance',
-    lightModeSwitchTitle: 'Switch to light theme',
-    darkModeSwitchTitle: 'Switch to dark theme',
+    returnToTopLabel: '回到顶部',
+    sidebarMenuLabel: '菜单',
+    langMenuLabel: '切换语言',
+    darkModeSwitchLabel: '外观',
+    lightModeSwitchTitle: '切换到浅色主题',
+    darkModeSwitchTitle: '切换到深色主题',
     externalLinkIcon: true,
     appearance: true,
   },

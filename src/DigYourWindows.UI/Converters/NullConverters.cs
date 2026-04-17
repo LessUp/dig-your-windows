@@ -36,7 +36,9 @@ namespace DigYourWindows.UI.Converters
 
         public object ConvertBack(object? value, System.Type targetType, object? parameter, CultureInfo culture)
         {
-            throw new System.NotImplementedException();
+            // This converter is only used for one-way binding (display purposes)
+            // Return DoNothing to indicate no conversion is needed
+            return System.Windows.DependencyProperty.UnsetValue;
         }
     }
 
@@ -63,7 +65,9 @@ namespace DigYourWindows.UI.Converters
 
         public object ConvertBack(object? value, System.Type targetType, object? parameter, CultureInfo culture)
         {
-            throw new System.NotImplementedException();
+            // This converter is only used for one-way binding (display purposes)
+            // Return UnsetValue to indicate no conversion is needed
+            return System.Windows.DependencyProperty.UnsetValue;
         }
     }
 }

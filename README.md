@@ -89,7 +89,17 @@ dig-your-windows/
 │   └── DigYourWindows.UI/       # WPF user interface
 ├── tests/
 │   └── DigYourWindows.Tests/    # Unit & property tests
-├── docs/                        # VitePress documentation (bilingual)
+├── specs/                       # Specification documents (SDD)
+│   ├── product/                 # Product requirements (PRD)
+│   ├── rfc/                     # Technical design documents
+│   ├── api/                     # API specifications
+│   ├── db/                      # Data model specifications
+│   └── testing/                 # Test strategy & BDD specs
+├── docs/                        # VitePress documentation site
+│   ├── setup/                   # Setup guides
+│   ├── tutorials/               # User tutorials
+│   ├── architecture/            # Architecture overview
+│   └── assets/                  # Static resources
 ├── installer/                   # Inno Setup scripts
 ├── scripts/                     # Build & release scripts
 └── changelog/                   # Detailed changelogs
@@ -120,13 +130,27 @@ Documentation is available in **English** and **简体中文**.
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](https://lessup.github.io/dig-your-windows/guide/contributing) for details.
+We welcome contributions! This project follows **Spec-Driven Development (SDD)** workflow.
+
+### Quick Start
+
+1. Read [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines
+2. Review existing [specifications](specs/) before starting work
+3. Create or update specs for new features
+4. Submit a Pull Request following conventional commits
+
+### Contributing Process
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+3. **Review/create specs** in `/specs/` directory
+4. Implement according to specs
+5. Write tests based on acceptance criteria
+6. Commit changes (`git commit -m 'feat: add amazing feature'`)
+7. Push to branch (`git push origin feature/amazing-feature`)
+8. Open a Pull Request
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the complete guide including SDD workflow instructions.
 
 ## 📦 Release Process
 
