@@ -1,262 +1,225 @@
-# Getting Started
+# 快速开始
 
-This guide will help you set up and run DigYourWindows on your Windows machine.
+本指南帮助你在 Windows 机器上安装和运行 DigYourWindows。
 
-## Prerequisites
+## 环境要求
 
-Before you begin, ensure you have:
+开始之前，请确保你有：
 
-- **Windows 10/11** (Build 19041 or later)
-- **.NET 10.0 SDK** (for building from source)
-- **Administrator privileges** (for full feature access)
+- **Windows 10/11**（Build 19041 或更高版本）
+- **.NET 10.0 SDK**（从源码构建需要）
+- **管理员权限**（完整功能访问需要）
 
-## Installation Options
+## 安装方式
 
-### Option 1: Download Release (Recommended)
+### 方式一：下载安装包（推荐）
 
-Download the latest installer from [GitHub Releases](https://github.com/LessUp/dig-your-windows/releases):
+从 [GitHub Releases](https://github.com/LessUp/dig-your-windows/releases) 下载最新版本：
 
-| Version | Size | Requirements | Best For |
-|---------|------|--------------|----------|
-| `DigYourWindows_Setup.exe` | ~5MB | Downloads .NET if needed | Most users |
-| FDD (Framework-Dependent) | ~60MB | Requires .NET 10 Runtime | Users with .NET installed |
-| SCD (Self-Contained) | ~180MB | No dependencies | Offline use |
+| 版本 | 大小 | 环境要求 | 适用场景 |
+|------|------|----------|----------|
+| `DigYourWindows_Setup.exe` | ~5MB | 自动下载 .NET | 大多数用户 |
+| FDD（框架依赖版） | ~60MB | 需要 .NET 10 Runtime | 已安装 .NET 的用户 |
+| SCD（独立版） | ~180MB | 无需依赖 | 离线使用 |
 
-#### Installation Steps
+#### 安装步骤
 
-1. Download the installer
-2. Run `DigYourWindows_Setup.exe`
-3. Follow the installation wizard
-4. Launch DigYourWindows from Start Menu
+1. 下载安装包
+2. 运行 `DigYourWindows_Setup.exe`
+3. 按照安装向导操作
+4. 从开始菜单启动 DigYourWindows
 
-### Option 2: Build from Source
+### 方式二：从源码构建
 
 ```powershell
-# Clone repository
+# 克隆仓库
 git clone https://github.com/LessUp/dig-your-windows.git
 cd dig-your-windows
 
-# Restore dependencies
+# 还原依赖
 dotnet restore
 
-# Build and run
+# 构建并运行
 dotnet run --project src/DigYourWindows.UI/DigYourWindows.UI.csproj
 ```
 
-> ⚠️ **Note**: Some features (GPU monitoring, SMART data) require administrator privileges.
+> ⚠️ **提示**：部分功能（GPU 监控、SMART 数据）需要管理员权限。
 
-## First Run
+## 首次使用
 
-1. **Launch the application**:
-   - From Start Menu, or
-   - Run `DigYourWindows.UI.exe`, or
-   - Use `dotnet run`
+1. **启动应用程序**：
+   - 从开始菜单启动，或
+   - 运行 `DigYourWindows.UI.exe`，或
+   - 使用 `dotnet run`
 
-2. **Run diagnostics**:
-   - Click "Run Diagnostics" button
-   - Wait for data collection (typically 5-15 seconds)
+2. **运行诊断**：
+   - 点击"运行诊断"按钮
+   - 等待数据采集完成（通常 5-15 秒）
 
-3. **Review results**:
-   - View hardware information on dashboard
-   - Check event log analysis
-   - Review reliability records
-   - See health score and recommendations
+3. **查看结果**：
+   - 在仪表板查看硬件信息
+   - 检查事件日志分析
+   - 查看可靠性记录
+   - 查看健康评分和优化建议
 
-4. **Export reports** (optional):
-   - Click "Export" button
-   - Choose JSON or HTML format
-   - Select save location
+4. **导出报告**（可选）：
+   - 点击"导出"按钮
+   - 选择 JSON 或 HTML 格式
+   - 选择保存位置
 
-## Administrator Privileges
+## 管理员权限
 
-Some features require administrator privileges:
+部分功能需要管理员权限：
 
-- ✅ GPU temperature/load monitoring
-- ✅ Disk SMART data reading
-- ✅ Some hardware information collection
+- ✅ GPU 温度/负载监控
+- ✅ 磁盘 SMART 数据读取
+- ✅ 部分硬件信息采集
 
-### How to Run as Administrator
+### 如何以管理员身份运行
 
-**Method 1**: Right-click shortcut
-- Right-click `DigYourWindows.UI.exe`
-- Select "Run as administrator"
+**方法一**：右键快捷方式
+- 右键点击 `DigYourWindows.UI.exe`
+- 选择"以管理员身份运行"
 
-**Method 2**: Configure in Visual Studio
-- Open project in Visual Studio
-- Edit `.vscode/launch.json`
-- Add `"runAsAdministrator": true`
+**方法二**：在 Visual Studio 中配置
+- 在 Visual Studio 中打开项目
+- 编辑 `.vscode/launch.json`
+- 添加 `"runAsAdministrator": true`
 
-## Troubleshooting
+## 功能使用
 
-### "Administrator privileges required" message
+### 仪表板概览
 
-**Solution**: Run the application as administrator (see above).
+启动 DigYourWindows 后，主界面显示：
 
-### Missing .NET Runtime
+- **系统信息**：计算机名、操作系统版本、处理器、内存
+- **实时数据**：当前 CPU/GPU 指标
+- **操作按钮**：运行诊断、导出、设置
 
-**Solution**: 
-- Download the self-contained version (SCD), OR
-- Install .NET Desktop Runtime 10 from [Microsoft](https://dotnet.microsoft.com/download)
+### 查看硬件信息
 
-### Windows Defender warning
+#### CPU 信息
 
-**Solution**: 
-- This is common for unsigned applications
-- Add an exception in Windows Defender
-- Or build from source yourself
+CPU 部分显示：
+- 型号名称和规格
+- 核心和线程数
+- 实时温度和负载
+- 当前频率和基准频率
 
-## Next Steps
+#### 内存
 
-- 📖 Read the [Architecture Overview](./architecture.md)
-- 🧪 Learn about [Testing](./testing.md)
-- 🤝 Check out the [Contributing Guide](https://github.com/LessUp/dig-your-windows/blob/main/CONTRIBUTING.md)
-- 📋 Review [Specifications](https://github.com/LessUp/dig-your-windows/tree/main/specs)
-# Using DigYourWindows
+内存信息包括：
+- 总内存和可用内存
+- 使用百分比
+- 内存类型和速度
 
-This tutorial walks you through the main features of DigYourWindows.
+#### 磁盘
 
-## Table of Contents
+每个磁盘显示：
+- 型号和接口类型（NVMe/SATA）
+- 健康状态
+- 温度（如支持）
+- SMART 数据（需要管理员权限）
 
-1. [Dashboard Overview](#dashboard-overview)
-2. [Running Diagnostics](#running-diagnostics)
-3. [Viewing Hardware Information](#viewing-hardware-information)
-4. [Analyzing Event Logs](#analyzing-event-logs)
-5. [Checking Reliability Records](#checking-reliability-records)
-6. [Understanding Health Scores](#understanding-health-scores)
-7. [Exporting Reports](#exporting-reports)
+#### GPU
 
-## Dashboard Overview
+GPU 监控显示：
+- 显卡型号
+- 温度和负载
+- 显存使用
+- 时钟频率（如支持）
 
-When you launch DigYourWindows, you'll see the main dashboard with:
+### 分析事件日志
 
-- **System Info**: Computer name, OS version, processor, memory
-- **Quick Stats**: Current CPU/GPU metrics
-- **Action Buttons**: Run Diagnostics, Export, Settings
+事件日志分析部分显示：
 
-## Running Diagnostics
+- **系统错误**：关键系统故障
+- **系统警告**：潜在问题
+- **应用程序错误**：软件崩溃
+- **应用程序警告**：应用程序问题
 
-1. Click **"Run Diagnostics"** button
-2. Progress indicator shows collection status:
-   - Collecting hardware information
-   - Reading event logs
-   - Analyzing reliability data
-   - Calculating health scores
-3. Wait for completion (typically 5-15 seconds)
-4. Results display automatically
+### 查看可靠性记录
 
-> 💡 **Tip**: You can cancel collection at any time using the Cancel button.
+Windows 可靠性监视器数据显示：
+- 稳定性指数趋势（0-10 刻度）
+- 历史事件时间线
+- 关键事件列表
 
-## Viewing Hardware Information
+### 理解健康评分
 
-### CPU Information
+#### 总分
 
-The CPU section shows:
-- Model name and specifications
-- Core and thread count
-- Real-time temperature and load
-- Current and base frequency
+基于以下维度的 0-100 综合评分：
+- **稳定性评分**：系统崩溃频率
+- **性能评分**：资源利用率
+- **内存评分**：RAM 健康状况
+- **磁盘评分**：存储状态
 
-### Memory
+#### 优化建议
 
-Memory information includes:
-- Total and available memory
-- Usage percentage
-- Memory type and speed
+AI 生成的建议包括：
+- 类别（CPU/GPU/内存/磁盘/系统）
+- 优先级（低/中/高/紧急）
+- 可操作的建议
 
-### Disks
+### 导出报告
 
-For each disk, you'll see:
-- Model and interface type (NVMe/SATA)
-- Health status
-- Temperature (if supported)
-- SMART data (requires admin)
+#### JSON 格式
 
-### GPU
+适用于：
+- 程序化分析
+- 数据归档
+- 随时间比较
 
-GPU monitoring displays:
-- Graphics card model
-- Temperature and load
-- VRAM usage
-- Clock speeds (if supported)
+**步骤**：
+1. 点击"导出"
+2. 选择"JSON"
+3. 选择保存位置
+4. 文件命名：`DigYourWindows_Report_[日期].json`
 
-## Analyzing Event Logs
+#### HTML 格式
 
-The Event Log Analysis section shows:
+适用于：
+- 分享给他人
+- 离线查看
+- 打印
 
-- **System Errors**: Critical system failures
-- **System Warnings**: Potential issues
-- **Application Errors**: Software crashes
-- **Application Warnings**: Application issues
+**步骤**：
+1. 点击"导出"
+2. 选择"HTML"
+3. 选择保存位置
+4. 文件命名：`DigYourWindows_Report_[日期].html`
 
-### Filtering Events
+> 📝 **注意**：HTML 报告是自包含的，无外部依赖。
 
-You can filter by:
-- Date range (default: last 7 days)
-- Severity (Error/Warning)
-- Source application
+### 主题切换
 
-## Checking Reliability Records
+在深色和浅色主题之间切换：
+- 点击主题切换按钮（右上角）
+- 偏好设置会保存到下次会话
 
-Windows Reliability Monitor data displays:
-- Stability index trend (0-10 scale)
-- Historical events timeline
-- Critical events list
+## 故障排除
 
-## Understanding Health Scores
+### "需要管理员权限"消息
 
-### Overall Score
+**解决方案**：以管理员身份运行应用程序（见上文）。
 
-Composite score from 0-100 based on:
-- **Stability Score**: System crash frequency
-- **Performance Score**: Resource utilization
-- **Memory Score**: RAM health
-- **Disk Score**: Storage condition
+### 缺少 .NET Runtime
 
-### Recommendations
+**解决方案**：
+- 下载独立版本（SCD），或
+- 从 [Microsoft](https://dotnet.microsoft.com/download) 安装 .NET Desktop Runtime 10
 
-AI-generated suggestions include:
-- Category (CPU/GPU/Memory/Disk/System)
-- Priority level (Low/Medium/High/Critical)
-- Actionable advice
+### Windows Defender 警告
 
-## Exporting Reports
+**解决方案**：
+- 这对于未签名的应用程序很常见
+- 在 Windows Defender 中添加例外
+- 或自行从源码构建
 
-### JSON Format
+## 下一步
 
-Best for:
-- Programmatic analysis
-- Data archival
-- Comparing over time
-
-**Steps**:
-1. Click "Export"
-2. Select "JSON"
-3. Choose save location
-4. File named: `DigYourWindows_Report_[date].json`
-
-### HTML Format
-
-Best for:
-- Sharing with others
-- Offline viewing
-- Printing
-
-**Steps**:
-1. Click "Export"
-2. Select "HTML"
-3. Choose save location
-4. File named: `DigYourWindows_Report_[date].html`
-
-> 📝 **Note**: HTML reports are self-contained with no external dependencies.
-
-## Theme Toggle
-
-Switch between Dark and Light themes:
-- Click theme toggle button (top-right)
-- Preference saved for next session
-
-## Next Steps
-
-- 🏗️ Learn about [Architecture](./architecture.md)
-- 📋 View [Specifications](https://github.com/LessUp/dig-your-windows/tree/main/specs)
-- 🤝 [Contribute](https://github.com/LessUp/dig-your-windows/blob/main/CONTRIBUTING.md)
+- 🏗️ 阅读 [项目架构](./architecture.md)
+- 🧪 了解 [测试指南](./testing.md)
+- 🤝 查看 [贡献指南](https://github.com/LessUp/dig-your-windows/blob/main/CONTRIBUTING.md)
+- 📋 查看 [规范文档](https://github.com/LessUp/dig-your-windows/tree/main/specs)

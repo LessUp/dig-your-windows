@@ -86,6 +86,111 @@ Some features require administrator privileges:
 - Edit `.vscode/launch.json`
 - Add `"runAsAdministrator": true`
 
+## Using DigYourWindows
+
+### Dashboard Overview
+
+When you launch DigYourWindows, you'll see the main dashboard with:
+
+- **System Info**: Computer name, OS version, processor, memory
+- **Real-time Stats**: Current CPU/GPU metrics
+- **Action Buttons**: Run Diagnostics, Export, Settings
+
+### Viewing Hardware Information
+
+#### CPU Information
+
+The CPU section shows:
+- Model name and specifications
+- Core and thread count
+- Real-time temperature and load
+- Current and base frequency
+
+#### Memory
+
+Memory information includes:
+- Total and available memory
+- Usage percentage
+- Memory type and speed
+
+#### Disks
+
+For each disk, you'll see:
+- Model and interface type (NVMe/SATA)
+- Health status
+- Temperature (if supported)
+- SMART data (requires admin)
+
+#### GPU
+
+GPU monitoring displays:
+- Graphics card model
+- Temperature and load
+- VRAM usage
+- Clock speeds (if supported)
+
+### Analyzing Event Logs
+
+The Event Log Analysis section shows:
+
+- **System Errors**: Critical system failures
+- **System Warnings**: Potential issues
+- **Application Errors**: Software crashes
+- **Application Warnings**: Application issues
+
+### Checking Reliability Records
+
+Windows Reliability Monitor data displays:
+- Stability index trend (0-10 scale)
+- Historical events timeline
+- Critical events list
+
+### Understanding Health Scores
+
+#### Overall Score
+
+Composite score from 0-100 based on:
+- **Stability Score**: System crash frequency
+- **Performance Score**: Resource utilization
+- **Memory Score**: RAM health
+- **Disk Score**: Storage condition
+
+### Exporting Reports
+
+#### JSON Format
+
+Best for:
+- Programmatic analysis
+- Data archival
+- Comparing over time
+
+**Steps**:
+1. Click "Export"
+2. Select "JSON"
+3. Choose save location
+4. File named: `DigYourWindows_Report_[date].json`
+
+#### HTML Format
+
+Best for:
+- Sharing with others
+- Offline viewing
+- Printing
+
+**Steps**:
+1. Click "Export"
+2. Select "HTML"
+3. Choose save location
+4. File named: `DigYourWindows_Report_[date].html`
+
+> 📝 **Note**: HTML reports are self-contained with no external dependencies.
+
+### Theme Toggle
+
+Switch between Dark and Light themes:
+- Click theme toggle button (top-right)
+- Preference saved for next session
+
 ## Troubleshooting
 
 ### "Administrator privileges required" message
@@ -107,156 +212,7 @@ Some features require administrator privileges:
 
 ## Next Steps
 
-- 📖 Read the [Architecture Overview](./architecture.md)
+- 🏗️ Read the [Architecture Overview](./architecture.md)
 - 🧪 Learn about [Testing](./testing.md)
 - 🤝 Check out the [Contributing Guide](https://github.com/LessUp/dig-your-windows/blob/main/CONTRIBUTING.md)
 - 📋 Review [Specifications](https://github.com/LessUp/dig-your-windows/tree/main/specs)
-# Using DigYourWindows
-
-This tutorial walks you through the main features of DigYourWindows.
-
-## Table of Contents
-
-1. [Dashboard Overview](#dashboard-overview)
-2. [Running Diagnostics](#running-diagnostics)
-3. [Viewing Hardware Information](#viewing-hardware-information)
-4. [Analyzing Event Logs](#analyzing-event-logs)
-5. [Checking Reliability Records](#checking-reliability-records)
-6. [Understanding Health Scores](#understanding-health-scores)
-7. [Exporting Reports](#exporting-reports)
-
-## Dashboard Overview
-
-When you launch DigYourWindows, you'll see the main dashboard with:
-
-- **System Info**: Computer name, OS version, processor, memory
-- **Quick Stats**: Current CPU/GPU metrics
-- **Action Buttons**: Run Diagnostics, Export, Settings
-
-## Running Diagnostics
-
-1. Click **"Run Diagnostics"** button
-2. Progress indicator shows collection status:
-   - Collecting hardware information
-   - Reading event logs
-   - Analyzing reliability data
-   - Calculating health scores
-3. Wait for completion (typically 5-15 seconds)
-4. Results display automatically
-
-> 💡 **Tip**: You can cancel collection at any time using the Cancel button.
-
-## Viewing Hardware Information
-
-### CPU Information
-
-The CPU section shows:
-- Model name and specifications
-- Core and thread count
-- Real-time temperature and load
-- Current and base frequency
-
-### Memory
-
-Memory information includes:
-- Total and available memory
-- Usage percentage
-- Memory type and speed
-
-### Disks
-
-For each disk, you'll see:
-- Model and interface type (NVMe/SATA)
-- Health status
-- Temperature (if supported)
-- SMART data (requires admin)
-
-### GPU
-
-GPU monitoring displays:
-- Graphics card model
-- Temperature and load
-- VRAM usage
-- Clock speeds (if supported)
-
-## Analyzing Event Logs
-
-The Event Log Analysis section shows:
-
-- **System Errors**: Critical system failures
-- **System Warnings**: Potential issues
-- **Application Errors**: Software crashes
-- **Application Warnings**: Application issues
-
-### Filtering Events
-
-You can filter by:
-- Date range (default: last 7 days)
-- Severity (Error/Warning)
-- Source application
-
-## Checking Reliability Records
-
-Windows Reliability Monitor data displays:
-- Stability index trend (0-10 scale)
-- Historical events timeline
-- Critical events list
-
-## Understanding Health Scores
-
-### Overall Score
-
-Composite score from 0-100 based on:
-- **Stability Score**: System crash frequency
-- **Performance Score**: Resource utilization
-- **Memory Score**: RAM health
-- **Disk Score**: Storage condition
-
-### Recommendations
-
-AI-generated suggestions include:
-- Category (CPU/GPU/Memory/Disk/System)
-- Priority level (Low/Medium/High/Critical)
-- Actionable advice
-
-## Exporting Reports
-
-### JSON Format
-
-Best for:
-- Programmatic analysis
-- Data archival
-- Comparing over time
-
-**Steps**:
-1. Click "Export"
-2. Select "JSON"
-3. Choose save location
-4. File named: `DigYourWindows_Report_[date].json`
-
-### HTML Format
-
-Best for:
-- Sharing with others
-- Offline viewing
-- Printing
-
-**Steps**:
-1. Click "Export"
-2. Select "HTML"
-3. Choose save location
-4. File named: `DigYourWindows_Report_[date].html`
-
-> 📝 **Note**: HTML reports are self-contained with no external dependencies.
-
-## Theme Toggle
-
-Switch between Dark and Light themes:
-- Click theme toggle button (top-right)
-- Preference saved for next session
-
-## Next Steps
-
-- 🏗️ Learn about [Architecture](./architecture.md)
-- 📋 View [Specifications](https://github.com/LessUp/dig-your-windows/tree/main/specs)
-- 🤝 [Contribute](https://github.com/LessUp/dig-your-windows/blob/main/CONTRIBUTING.md)

@@ -40,7 +40,7 @@ const baseConfig = defineConfig({
     priority: 0.7,
     transformItems: (items) => {
       return items.map((item) => {
-        if (item.url === 'index.md' || item.url === 'zh-CN/index.md') {
+        if (item.url === '' || item.url === 'zh-CN/' || item.url === 'en-US/') {
           return { ...item, priority: 1.0, changefreq: 'daily' }
         }
         if (item.url.includes('getting-started')) {
@@ -106,7 +106,7 @@ const baseConfig = defineConfig({
       description: 'Windows Deep Diagnostics Tool — One-click hardware info collection, event log analysis, and system health scoring',
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Windows 10, Windows 11',
-      softwareVersion: '1.0.0',
+      softwareVersion: '1.1.0',
       license: 'https://github.com/LessUp/dig-your-windows/blob/master/LICENSE',
       url: 'https://lessup.github.io/dig-your-windows/',
       codeRepository: 'https://github.com/LessUp/dig-your-windows',

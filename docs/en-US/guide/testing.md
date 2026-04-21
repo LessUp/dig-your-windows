@@ -1,85 +1,85 @@
-# 测试指南
+# Testing Guide
 
-本文档介绍 DigYourWindows 的测试策略和最佳实践。
+This document introduces the testing strategy and best practices for DigYourWindows.
 
-## 测试框架
+## Testing Frameworks
 
-| 依赖 | 版本 | 用途 |
-|------|------|------|
-| xUnit | 2.9.2 | 测试框架 |
-| FsCheck | 2.16.6 | 属性测试框架 |
-| FsCheck.Xunit | 2.16.6 | xUnit 集成 |
-| Microsoft.NET.Test.Sdk | 17.11.1 | 测试运行器 |
-| coverlet.collector | 6.0.2 | 代码覆盖率 |
+| Dependency | Version | Purpose |
+|------------|---------|---------|
+| xUnit | 2.9.2 | Test framework |
+| FsCheck | 2.16.6 | Property-based testing framework |
+| FsCheck.Xunit | 2.16.6 | xUnit integration |
+| Microsoft.NET.Test.Sdk | 17.11.1 | Test runner |
+| coverlet.collector | 6.0.2 | Code coverage |
 
-## 测试结构
+## Test Structure
 
 ```
 DigYourWindows.Tests/
-├── Unit/                           # 单元测试
-│   ├── ReportServiceTests.cs       # 报告服务测试
+├── Unit/                           # Unit tests
+│   ├── ReportServiceTests.cs       # Report service tests
 │   ├── DiagnosticCollectorServiceTests.cs
-│   └── PerformanceServiceTests.cs  # 性能分析测试
-├── Property/                       # 属性测试
+│   └── PerformanceServiceTests.cs  # Performance analysis tests
+├── Property/                       # Property tests
 │   └── ReportServicePropertyTests.cs
-├── Integration/                    # 集成测试（预留）
-├── FsCheckConfig.cs               # FsCheck 配置
-├── Usings.cs                      # 全局 using
+├── Integration/                    # Integration tests (reserved)
+├── FsCheckConfig.cs               # FsCheck configuration
+├── Usings.cs                      # Global usings
 └── DigYourWindows.Tests.csproj
 ```
 
-## 运行测试
+## Running Tests
 
-### 基本命令
+### Basic Commands
 
 ```powershell
-# 运行所有测试
+# Run all tests
 dotnet test DigYourWindows.slnx
 
-# Release 模式
+# Release mode
 dotnet test DigYourWindows.slnx -c Release
 
-# 详细输出
+# Verbose output
 dotnet test --logger "console;verbosity=detailed"
 ```
 
-### 过滤测试
+### Filtering Tests
 
 ```powershell
-# 按类名过滤
+# Filter by class name
 dotnet test --filter "FullyQualifiedName~ReportServiceTests"
 
-# 按方法名过滤
+# Filter by method name
 dotnet test --filter "FullyQualifiedName~SerializeToJson_ThenDeserialize"
 
-# 按类别过滤
+# Filter by category
 dotnet test --filter "Category=Unit"
 ```
 
-### 代码覆盖率
+### Code Coverage
 
 ```powershell
-# 收集覆盖率
+# Collect coverage
 dotnet test --collect:"XPlat Code Coverage"
 
-# 生成报告（需要 reportgenerator 工具）
+# Generate report (requires reportgenerator tool)
 dotnet tool install -g dotnet-reportgenerator-globaltool
 reportgenerator -reports:**/coverage.cobertura.xml -targetdir:coverage
 ```
 
-## 单元测试
+## Unit Tests
 
-### 测试命名规范
+### Test Naming Convention
 
 ```
 [MethodName]_[Scenario]_[ExpectedResult]
 ```
 
-示例：
+Examples:
 - `SerializeToJson_ThenDeserialize_ShouldPreserveSelectedFields`
 - `CollectAsync_WhenCanceled_ShouldThrowOperationCanceledException`
 
-### 测试示例
+### Test Example
 
 ```csharp
 public class ReportServiceTests
@@ -106,7 +106,7 @@ public class ReportServiceTests
 }
 ```
 
-### 使用 Stub/Mock
+### Using Stub/Mock
 
 ```csharp
 private sealed class StubHardwareService : IHardwareService
@@ -133,23 +133,23 @@ private sealed class SpyLogService : ILogService
 }
 ```
 
-## 属性测试
+## Property-Based Testing
 
-### 配置
+### Configuration
 
-`FsCheckConfig.cs` 定义了默认配置：
+`FsCheckConfig.cs` defines the default configuration:
 
 ```csharp
 public static class FsCheckConfig
 {
     public static Configuration Default => new Configuration
     {
-        MaxNbOfTest = 100,    // 最少 100 次迭代
+        MaxNbOfTest = 100,    // Minimum 100 iterations
         QuietOnSuccess = true
     };
 }
 
-// 自定义特性
+// Custom attribute
 public class PropertyTestAttribute : PropertyAttribute
 {
     public PropertyTestAttribute()
@@ -160,7 +160,7 @@ public class PropertyTestAttribute : PropertyAttribute
 }
 ```
 
-### 测试示例
+### Test Example
 
 ```csharp
 public class ReportServicePropertyTests
@@ -201,48 +201,48 @@ public class ReportServicePropertyTests
 }
 ```
 
-## 测试覆盖的需求
+## Test Coverage Requirements
 
-| 需求 ID | 说明 | 测试类型 |
-|---------|------|----------|
-| 2.1 | Schema 验证和数据解析 | 单元测试 |
-| 2.2 | HTML 报告生成验证 | 单元测试 |
-| 2.3 | 性能评分范围验证 | 单元测试 |
-| 2.4 | 畸形输入处理 | 单元测试 |
-| 2.5 | JSON 序列化往返 | 属性测试 |
+| Requirement ID | Description | Test Type |
+|---------------|-------------|-----------|
+| 2.1 | Schema validation and data parsing | Unit test |
+| 2.2 | HTML report generation validation | Unit test |
+| 2.3 | Performance score range validation | Unit test |
+| 2.4 | Malformed input handling | Unit test |
+| 2.5 | JSON serialization round-trip | Property test |
 
-## 最佳实践
+## Best Practices
 
-### 1. 测试隔离
+### 1. Test Isolation
 
-每个测试应该独立运行，不依赖其他测试的状态：
+Each test should run independently, not depending on other tests' state:
 
 ```csharp
-// Good: 每个测试创建新实例
+// Good: Each test creates a new instance
 [Fact]
 public void Test1()
 {
-    var service = new ReportService();  // 新实例
+    var service = new ReportService();  // New instance
     // ...
 }
 ```
 
-### 2. 测试边界条件
+### 2. Test Boundary Conditions
 
 ```csharp
 [Theory]
-[InlineData(0, "未知")]
-[InlineData(-1, "未知")]
-[InlineData(90, "优秀")]
-[InlineData(89, "良好")]
-[InlineData(50, "一般")]
+[InlineData(0, "Unknown")]
+[InlineData(-1, "Unknown")]
+[InlineData(90, "Excellent")]
+[InlineData(89, "Good")]
+[InlineData(50, "Fair")]
 public void GetHealthGrade_ShouldReturnCorrectGrade(int score, string expectedGrade)
 {
     // Test boundary conditions
 }
 ```
 
-### 3. 测试异常路径
+### 3. Test Exception Paths
 
 ```csharp
 [Fact]
@@ -256,23 +256,23 @@ public async Task CollectAsync_WhenCanceled_ShouldThrowOperationCanceledExceptio
 }
 ```
 
-### 4. 避免过度 Mock
+### 4. Avoid Over-Mocking
 
-对于简单的数据转换，优先使用真实对象：
+For simple data transformations, prefer using real objects:
 
 ```csharp
-// Good: 直接使用真实 ReportService
+// Good: Use real ReportService directly
 var service = new ReportService();
 
-// 避免: 过度 Mock 简单逻辑
+// Avoid: Over-mocking simple logic
 var mockService = new Mock<IReportService>();
 mockService.Setup(s => s.SerializeToJson(It.IsAny<DiagnosticData>()))
            .Returns("{}");
 ```
 
-## CI 集成
+## CI Integration
 
-测试在 CI 流水线中自动运行：
+Tests run automatically in the CI pipeline:
 
 ```yaml
 # .github/workflows/ci.yml
