@@ -9,7 +9,13 @@ namespace DigYourWindows.UI.Converters
     /// </summary>
     public class StringToBrushConverter : IValueConverter
     {
-        private static readonly SolidColorBrush DefaultBrush = new(Colors.Gray);
+        private static readonly SolidColorBrush DefaultBrush;
+
+        static StringToBrushConverter()
+        {
+            DefaultBrush = new SolidColorBrush(Colors.Gray);
+            DefaultBrush.Freeze();
+        }
 
         public object Convert(object? value, System.Type targetType, object? parameter, CultureInfo culture)
         {
@@ -18,7 +24,9 @@ namespace DigYourWindows.UI.Converters
                 try
                 {
                     var color = (Color)ColorConverter.ConvertFromString(colorString);
-                    return new SolidColorBrush(color);
+                    var brush = new SolidColorBrush(color);
+                    brush.Freeze();
+                    return brush;
                 }
                 catch (FormatException)
                 {

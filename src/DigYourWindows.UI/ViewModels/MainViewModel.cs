@@ -241,6 +241,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _cpuMonitorTimer.Tick -= CpuMonitorTimer_Tick;
         _loadCts?.Cancel();
         _loadCts?.Dispose();
+        ReliabilityTrendPlot.Dispose();
+        NetworkTrafficPlot.Dispose();
+        _networkHistoryTimes.Clear();
+        _networkHistoryDownload.Clear();
+        _networkHistoryUpload.Clear();
         GC.SuppressFinalize(this);
     }
 

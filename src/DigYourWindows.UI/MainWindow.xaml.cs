@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using DigYourWindows.UI.ViewModels;
 using Wpf.Ui.Controls;
 
@@ -19,10 +19,16 @@ public partial class MainWindow : FluentWindow
 
     private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
-        // 窗口加载完成后自动加载数据
-        if (DataContext is MainViewModel viewModel)
+        try
         {
-            await viewModel.LoadDataCommand.ExecuteAsync(null);
+            if (DataContext is MainViewModel viewModel)
+            {
+                await viewModel.LoadDataCommand.ExecuteAsync(null);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"加载数据失败: {ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

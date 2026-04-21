@@ -120,19 +120,7 @@ public sealed class FileLogService : ILogService, IDisposable
 
     private void RotateLogFile(DateTime newDate)
     {
-        try
-        {
-            _writer.Dispose();
-        }
-        catch (IOException)
-        {
-            // Dispose failure is non-critical
-        }
-        catch (ObjectDisposedException)
-        {
-            // Already disposed
-        }
-
+        _writer.Dispose();
         _currentLogFileDate = newDate;
         var newLogPath = GetLogFilePath(newDate);
         _writer = CreateWriter(newLogPath);

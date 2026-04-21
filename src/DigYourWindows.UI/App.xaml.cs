@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using DigYourWindows.Core.Services;
 using DigYourWindows.UI.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,6 +36,8 @@ public partial class App : Application
 
     private static void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<IConfigurationService, ConfigurationService>();
+
         services.AddSingleton<MainWindow>();
         services.AddSingleton<MainViewModel>();
 

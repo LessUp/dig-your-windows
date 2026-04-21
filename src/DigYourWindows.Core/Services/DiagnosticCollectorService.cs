@@ -37,6 +37,9 @@ public class DiagnosticCollectorService : IDiagnosticCollectorService
         IProgress<DiagnosticCollectionProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
+        if (daysBack <= 0)
+            daysBack = 1;
+
         var warnings = new List<string>();
         const int stepCount = 4;
 

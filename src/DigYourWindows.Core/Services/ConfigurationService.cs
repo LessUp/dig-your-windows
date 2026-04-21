@@ -61,7 +61,6 @@ public sealed class ConfigurationService : IConfigurationService
     {
         try
         {
-            // Try to load from the assembly location first
             var assemblyPath = typeof(ConfigurationService).Assembly.Location;
             var assemblyDir = Path.GetDirectoryName(assemblyPath);
             var configPath = Path.Combine(assemblyDir ?? ".", "appsettings.json");
@@ -72,12 +71,11 @@ public sealed class ConfigurationService : IConfigurationService
                 return JsonSerializer.Deserialize<ApplicationConfiguration>(json) ?? CreateDefault();
             }
 
-            // Fall back to default configuration
             return CreateDefault();
         }
-        catch
+        catch (Exception ex)
         {
-            // If configuration loading fails, use defaults
+            System.Diagnostics.Debug.WriteLine($"Configuration load failed: {ex.Message}");
             return CreateDefault();
         }
     }

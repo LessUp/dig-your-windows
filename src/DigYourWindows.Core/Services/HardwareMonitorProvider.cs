@@ -21,8 +21,13 @@ public sealed class HardwareMonitorProvider : IHardwareMonitorProvider
     {
         get
         {
-            ObjectDisposedException.ThrowIf(_disposed, this);
-            return _computer!;
+            lock (_lock)
+            {
+                ObjectDisposedException.ThrowIf(_disposed, this);
+                if (_computer is null)
+                    throw new ObjectDisposedException(nameof(HardwareMonitorProvider));
+                return _computer;
+            }
         }
     }
 
