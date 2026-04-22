@@ -32,7 +32,7 @@ public class LogServiceTests : IDisposable
     }
 
     [Fact]
-    public void Info_WithValidMessage_ShouldNotThrow()
+    public void InfoWithValidMessageShouldNotThrow()
     {
         // Arrange
         var message = "Test info message";
@@ -43,7 +43,7 @@ public class LogServiceTests : IDisposable
     }
 
     [Fact]
-    public void Warn_WithValidMessage_ShouldNotThrow()
+    public void WarnWithValidMessageShouldNotThrow()
     {
         // Arrange
         var message = "Test warning message";
@@ -54,7 +54,7 @@ public class LogServiceTests : IDisposable
     }
 
     [Fact]
-    public void LogError_WithMessageOnly_ShouldNotThrow()
+    public void LogErrorWithMessageOnlyShouldNotThrow()
     {
         // Arrange
         var message = "Test error message";
@@ -65,7 +65,7 @@ public class LogServiceTests : IDisposable
     }
 
     [Fact]
-    public void LogError_WithMessageAndException_ShouldNotThrow()
+    public void LogErrorWithMessageAndExceptionShouldNotThrow()
     {
         // Arrange
         var message = "Test error message with exception";
@@ -77,7 +77,7 @@ public class LogServiceTests : IDisposable
     }
 
     [Fact]
-    public void LogError_WithNullException_ShouldNotThrow()
+    public void LogErrorWithNullExceptionShouldNotThrow()
     {
         // Arrange
         var message = "Test error message with null exception";
@@ -88,7 +88,7 @@ public class LogServiceTests : IDisposable
     }
 
     [Fact]
-    public void MultipleSequentialLogs_ShouldNotThrow()
+    public void MultipleSequentialLogsShouldNotThrow()
     {
         // Act & Assert - should not throw
         for (int i = 0; i < 100; i++)
@@ -98,7 +98,7 @@ public class LogServiceTests : IDisposable
     }
 
     [Fact]
-    public void ConcurrentLogs_ShouldBeThreadSafe()
+    public async Task ConcurrentLogsShouldBeThreadSafe()
     {
         // Arrange
         const int threadCount = 10;
@@ -131,14 +131,14 @@ public class LogServiceTests : IDisposable
             });
         }
 
-        Task.WaitAll(tasks);
+        await Task.WhenAll(tasks);
 
         // Assert - no exceptions should have occurred
         Assert.Empty(exceptions);
     }
 
     [Fact]
-    public void Dispose_ShouldNotThrow()
+    public void DisposeShouldNotThrow()
     {
         // Act & Assert - should not throw
         var exception = Record.Exception(() => _logService.Dispose());
@@ -146,7 +146,7 @@ public class LogServiceTests : IDisposable
     }
 
     [Fact]
-    public void Dispose_CalledMultipleTimes_ShouldNotThrow()
+    public void DisposeCalledMultipleTimesShouldNotThrow()
     {
         // Act & Assert - should not throw
         _logService.Dispose();
