@@ -11,7 +11,7 @@ public class NullConvertersTests
     private readonly CultureInfo _culture = CultureInfo.InvariantCulture;
 
     [Fact]
-    public void NullToEmptyStringConverter_WithNullValue_ShouldReturnEmptyString()
+    public void NullToEmptyStringConverterWithNullValueShouldReturnEmptyString()
     {
         // Arrange
         var converter = new NullToEmptyStringConverter();
@@ -24,7 +24,7 @@ public class NullConvertersTests
     }
 
     [Fact]
-    public void NullToEmptyStringConverter_WithValue_ShouldReturnStringRepresentation()
+    public void NullToEmptyStringConverterWithValueShouldReturnStringRepresentation()
     {
         // Arrange
         var converter = new NullToEmptyStringConverter();
@@ -37,7 +37,7 @@ public class NullConvertersTests
     }
 
     [Fact]
-    public void NullToEmptyStringConverter_WithNumber_ShouldReturnStringRepresentation()
+    public void NullToEmptyStringConverterWithNumberShouldReturnStringRepresentation()
     {
         // Arrange
         var converter = new NullToEmptyStringConverter();
@@ -50,7 +50,7 @@ public class NullConvertersTests
     }
 
     [Fact]
-    public void NullToEmptyStringConverter_ConvertBack_ShouldReturnValueAsIs()
+    public void NullToEmptyStringConverterConvertBackShouldReturnValueAsIs()
     {
         // Arrange
         var converter = new NullToEmptyStringConverter();
@@ -63,7 +63,7 @@ public class NullConvertersTests
     }
 
     [Fact]
-    public void NullToPlaceholderConverter_WithNullValue_ShouldReturnDefaultPlaceholder()
+    public void NullToPlaceholderConverterWithNullValueShouldReturnDefaultPlaceholder()
     {
         // Arrange
         var converter = new NullToPlaceholderConverter();
@@ -76,7 +76,7 @@ public class NullConvertersTests
     }
 
     [Fact]
-    public void NullToPlaceholderConverter_WithNullValueAndParameter_ShouldReturnParameterAsPlaceholder()
+    public void NullToPlaceholderConverterWithNullValueAndParameterShouldReturnParameterAsPlaceholder()
     {
         // Arrange
         var converter = new NullToPlaceholderConverter();
@@ -89,7 +89,7 @@ public class NullConvertersTests
     }
 
     [Fact]
-    public void NullToPlaceholderConverter_WithEmptyString_ShouldReturnDefaultPlaceholder()
+    public void NullToPlaceholderConverterWithEmptyStringShouldReturnDefaultPlaceholder()
     {
         // Arrange
         var converter = new NullToPlaceholderConverter();
@@ -102,7 +102,7 @@ public class NullConvertersTests
     }
 
     [Fact]
-    public void NullToPlaceholderConverter_WithValue_ShouldReturnValue()
+    public void NullToPlaceholderConverterWithValueShouldReturnValue()
     {
         // Arrange
         var converter = new NullToPlaceholderConverter();
@@ -115,7 +115,7 @@ public class NullConvertersTests
     }
 
     [Fact]
-    public void NullToPlaceholderConverter_ConvertBack_ShouldReturnDependencyPropertyUnsetValue()
+    public void NullToPlaceholderConverterConvertBackShouldReturnDependencyPropertyUnsetValue()
     {
         // Arrange
         var converter = new NullToPlaceholderConverter();
@@ -128,7 +128,7 @@ public class NullConvertersTests
     }
 
     [Fact]
-    public void NullableDoubleToStringConverter_WithDoubleValue_ShouldReturnFormattedString()
+    public void NullableDoubleToStringConverterWithDoubleValueShouldReturnFormattedString()
     {
         // Arrange
         var converter = new NullableDoubleToStringConverter();
@@ -141,7 +141,7 @@ public class NullConvertersTests
     }
 
     [Fact]
-    public void NullableDoubleToStringConverter_WithDoubleValueAndDefaultFormat_ShouldReturnIntegerString()
+    public void NullableDoubleToStringConverterWithDoubleValueAndDefaultFormatShouldReturnIntegerString()
     {
         // Arrange
         var converter = new NullableDoubleToStringConverter();
@@ -154,7 +154,7 @@ public class NullConvertersTests
     }
 
     [Fact]
-    public void NullableDoubleToStringConverter_WithNullValue_ShouldReturnPlaceholder()
+    public void NullableDoubleToStringConverterWithNullValueShouldReturnPlaceholder()
     {
         // Arrange
         var converter = new NullableDoubleToStringConverter();
@@ -167,7 +167,7 @@ public class NullConvertersTests
     }
 
     [Fact]
-    public void NullableDoubleToStringConverter_WithNonDoubleValue_ShouldReturnToString()
+    public void NullableDoubleToStringConverterWithNonDoubleValueShouldReturnToString()
     {
         // Arrange
         var converter = new NullableDoubleToStringConverter();
@@ -180,7 +180,7 @@ public class NullConvertersTests
     }
 
     [Fact]
-    public void NullableDoubleToStringConverter_ConvertBack_ShouldReturnDependencyPropertyUnsetValue()
+    public void NullableDoubleToStringConverterConvertBackShouldReturnDependencyPropertyUnsetValue()
     {
         // Arrange
         var converter = new NullableDoubleToStringConverter();
@@ -197,7 +197,7 @@ public class NullConvertersTests
     [InlineData(100.0, "F0", "100")]
     [InlineData(99.99, "F1", "100.0")]
     [InlineData(3.14159, "F2", "3.14")]
-    public void NullableDoubleToStringConverter_WithVariousInputs_ShouldFormatCorrectly(
+    public void NullableDoubleToStringConverterWithVariousInputsShouldFormatCorrectly(
         double value, string format, string expected)
     {
         // Arrange
