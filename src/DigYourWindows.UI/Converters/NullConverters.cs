@@ -15,7 +15,7 @@ namespace DigYourWindows.UI.Converters
 
         public object ConvertBack(object? value, System.Type targetType, object? parameter, CultureInfo culture)
         {
-            return value;
+            return value ?? string.Empty;
         }
     }
 

@@ -19,7 +19,7 @@ public class ConvertersTests
         var converter = new CountToVisibilityConverter();
 
         // Act
-        var result = converter.Convert(5, typeof(Visibility), null, CultureInfo.CurrentCulture);
+        var result = converter.Convert(5, typeof(Visibility), null!, CultureInfo.CurrentCulture);
 
         // Assert
         Assert.Equal(Visibility.Visible, result);
