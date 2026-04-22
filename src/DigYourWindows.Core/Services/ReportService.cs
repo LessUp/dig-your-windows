@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -102,7 +103,7 @@ public class ReportService : IReportService
         sb.AppendLine("    </style>");
         sb.AppendLine("</head>");
         sb.AppendLine("<body>");
-        sb.AppendLine($"    <h1 class='mb-4'>Windows 诊断报告 - {collectedAt.ToLocalTime():yyyy-MM-dd HH:mm:ss}</h1>");
+        sb.AppendLine(CultureInfo.InvariantCulture, $"    <h1 class='mb-4'>Windows 诊断报告 - {collectedAt.ToLocalTime():yyyy-MM-dd HH:mm:ss}</h1>");
     }
 
     private static void AppendOverviewSection(StringBuilder sb, HardwareData hardware)
@@ -111,10 +112,10 @@ public class ReportService : IReportService
         sb.AppendLine("        <div class='card-header'><h3>系统概览</h3></div>");
         sb.AppendLine("        <div class='card-body'>");
         sb.AppendLine("            <div class='row'>");
-        sb.AppendLine($"                <div class='col-md-3'><strong>计算机名:</strong> {WebUtility.HtmlEncode(hardware.ComputerName)}</div>");
-        sb.AppendLine($"                <div class='col-md-3'><strong>操作系统:</strong> {WebUtility.HtmlEncode(hardware.OsVersion)}</div>");
-        sb.AppendLine($"                <div class='col-md-3'><strong>CPU:</strong> {WebUtility.HtmlEncode(hardware.CpuName)}</div>");
-        sb.AppendLine($"                <div class='col-md-3'><strong>内存:</strong> {hardware.TotalMemoryMB} MB</div>");
+        sb.AppendLine(CultureInfo.InvariantCulture, $"                <div class='col-md-3'><strong>计算机名:</strong> {WebUtility.HtmlEncode(hardware.ComputerName)}</div>");
+        sb.AppendLine(CultureInfo.InvariantCulture, $"                <div class='col-md-3'><strong>操作系统:</strong> {WebUtility.HtmlEncode(hardware.OsVersion)}</div>");
+        sb.AppendLine(CultureInfo.InvariantCulture, $"                <div class='col-md-3'><strong>CPU:</strong> {WebUtility.HtmlEncode(hardware.CpuName)}</div>");
+        sb.AppendLine(CultureInfo.InvariantCulture, $"                <div class='col-md-3'><strong>内存:</strong> {hardware.TotalMemoryMB} MB</div>");
         sb.AppendLine("            </div>");
         sb.AppendLine("        </div>");
         sb.AppendLine("    </div>");
@@ -180,11 +181,11 @@ public class ReportService : IReportService
 
         sb.AppendLine("                <div class='col-md-3'>");
         sb.AppendLine("                    <div class='card text-center p-3'>");
-        sb.AppendLine($"                        <h5>{encodedTitle}</h5>");
-        sb.AppendLine($"                        <div class='{classAttribute}'{colorAttribute}>{encodedValue}</div>");
+        sb.AppendLine(CultureInfo.InvariantCulture, $"                        <h5>{encodedTitle}</h5>");
+        sb.AppendLine(CultureInfo.InvariantCulture, $"                        <div class='{classAttribute}'{colorAttribute}>{encodedValue}</div>");
         if (encodedBadge is not null)
         {
-            sb.AppendLine($"                        <span class='badge bg-secondary'>{encodedBadge}</span>");
+            sb.AppendLine(CultureInfo.InvariantCulture, $"                        <span class='badge bg-secondary'>{encodedBadge}</span>");
         }
         sb.AppendLine("                    </div>");
         sb.AppendLine("                </div>");
@@ -216,14 +217,14 @@ public class ReportService : IReportService
     private static void AppendEventsSection(StringBuilder sb, List<LogEventData> events, int daysBackForEvents, int maxEvents)
     {
         sb.AppendLine("    <div class='card'>");
-        sb.AppendLine($"        <div class='card-header'><h3>错误日志 (最近{daysBackForEvents}天) - {events.Count} 条</h3></div>");
+        sb.AppendLine(CultureInfo.InvariantCulture, $"        <div class='card-header'><h3>错误日志 (最近{daysBackForEvents}天) - {events.Count} 条</h3></div>");
         sb.AppendLine("        <div class='card-body'>");
         sb.AppendLine("            <table class='table table-sm table-striped'>");
         sb.AppendLine("                <thead><tr><th>时间</th><th>来源</th><th>类型</th><th>ID</th><th>消息</th></tr></thead>");
         sb.AppendLine("                <tbody>");
         foreach (var evt in events.Take(Math.Max(0, maxEvents)))
         {
-            sb.AppendLine($"                    <tr><td>{evt.TimeGenerated:yyyy-MM-dd HH:mm}</td><td>{WebUtility.HtmlEncode(evt.SourceName)}</td><td>{WebUtility.HtmlEncode(evt.EventType)}</td><td>{evt.EventId}</td><td>{WebUtility.HtmlEncode(TruncateMessage(evt.Message))}</td></tr>");
+            sb.AppendLine(CultureInfo.InvariantCulture, $"                    <tr><td>{evt.TimeGenerated:yyyy-MM-dd HH:mm}</td><td>{WebUtility.HtmlEncode(evt.SourceName)}</td><td>{WebUtility.HtmlEncode(evt.EventType)}</td><td>{evt.EventId}</td><td>{WebUtility.HtmlEncode(TruncateMessage(evt.Message))}</td></tr>");
         }
         sb.AppendLine("                </tbody>");
         sb.AppendLine("            </table>");
