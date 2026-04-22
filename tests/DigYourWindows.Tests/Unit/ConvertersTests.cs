@@ -13,7 +13,7 @@ public class ConvertersTests
     #region CountToVisibilityConverter Tests
 
     [Fact]
-    public void CountToVisibilityConverter_PositiveCount_ReturnsVisible()
+    public void CountToVisibilityConverterPositiveCountReturnsVisible()
     {
         // Arrange
         var converter = new CountToVisibilityConverter();
@@ -26,7 +26,7 @@ public class ConvertersTests
     }
 
     [Fact]
-    public void CountToVisibilityConverter_ZeroCount_ReturnsCollapsed()
+    public void CountToVisibilityConverterZeroCountReturnsCollapsed()
     {
         // Arrange
         var converter = new CountToVisibilityConverter();
@@ -39,7 +39,7 @@ public class ConvertersTests
     }
 
     [Fact]
-    public void CountToVisibilityConverter_NegativeCount_ReturnsCollapsed()
+    public void CountToVisibilityConverterNegativeCountReturnsCollapsed()
     {
         // Arrange
         var converter = new CountToVisibilityConverter();
@@ -52,7 +52,7 @@ public class ConvertersTests
     }
 
     [Fact]
-    public void CountToVisibilityConverter_NonIntValue_ReturnsCollapsed()
+    public void CountToVisibilityConverterNonIntValueReturnsCollapsed()
     {
         // Arrange
         var converter = new CountToVisibilityConverter();
@@ -65,20 +65,20 @@ public class ConvertersTests
     }
 
     [Fact]
-    public void CountToVisibilityConverter_NullValue_ReturnsCollapsed()
+    public void CountToVisibilityConverterNullValueReturnsCollapsed()
     {
         // Arrange
         var converter = new CountToVisibilityConverter();
 
         // Act
-        var result = converter.Convert(null, typeof(Visibility), null!, CultureInfo.CurrentCulture);
+        var result = converter.Convert(null!, typeof(Visibility), null!, CultureInfo.CurrentCulture);
 
         // Assert
         Assert.Equal(Visibility.Collapsed, result);
     }
 
     [Fact]
-    public void CountToVisibilityConverter_ConvertBack_ThrowsNotImplemented()
+    public void CountToVisibilityConverterConvertBackThrowsNotImplemented()
     {
         // Arrange
         var converter = new CountToVisibilityConverter();
@@ -93,13 +93,13 @@ public class ConvertersTests
     #region StringToBrushConverter Tests
 
     [Fact]
-    public void StringToBrushConverter_ValidHexColor_ReturnsCorrectBrush()
+    public void StringToBrushConverterValidHexColorReturnsCorrectBrush()
     {
         // Arrange
         var converter = new StringToBrushConverter();
 
         // Act
-        var result = converter.Convert("#FF0000", typeof(Brush), null, CultureInfo.CurrentCulture) as SolidColorBrush;
+        var result = converter.Convert("#FF0000", typeof(Brush), null!, CultureInfo.CurrentCulture) as SolidColorBrush;
 
         // Assert
         Assert.NotNull(result);
@@ -109,13 +109,13 @@ public class ConvertersTests
     }
 
     [Fact]
-    public void StringToBrushConverter_ValidNamedColor_ReturnsCorrectBrush()
+    public void StringToBrushConverterValidNamedColorReturnsCorrectBrush()
     {
         // Arrange
         var converter = new StringToBrushConverter();
 
         // Act
-        var result = converter.Convert("Red", typeof(Brush), null, CultureInfo.CurrentCulture) as SolidColorBrush;
+        var result = converter.Convert("Red", typeof(Brush), null!, CultureInfo.CurrentCulture) as SolidColorBrush;
 
         // Assert
         Assert.NotNull(result);
@@ -123,13 +123,13 @@ public class ConvertersTests
     }
 
     [Fact]
-    public void StringToBrushConverter_InvalidColor_ReturnsDefaultGrayBrush()
+    public void StringToBrushConverterInvalidColorReturnsDefaultGrayBrush()
     {
         // Arrange
         var converter = new StringToBrushConverter();
 
         // Act
-        var result = converter.Convert("invalid-color", typeof(Brush), null, CultureInfo.CurrentCulture) as SolidColorBrush;
+        var result = converter.Convert("invalid-color", typeof(Brush), null!, CultureInfo.CurrentCulture) as SolidColorBrush;
 
         // Assert
         Assert.NotNull(result);
@@ -137,13 +137,13 @@ public class ConvertersTests
     }
 
     [Fact]
-    public void StringToBrushConverter_NullValue_ReturnsDefaultGrayBrush()
+    public void StringToBrushConverterNullValueReturnsDefaultGrayBrush()
     {
         // Arrange
         var converter = new StringToBrushConverter();
 
         // Act
-        var result = converter.Convert(null, typeof(Brush), null, CultureInfo.CurrentCulture) as SolidColorBrush;
+        var result = converter.Convert(null, typeof(Brush), null!, CultureInfo.CurrentCulture) as SolidColorBrush;
 
         // Assert
         Assert.NotNull(result);
@@ -151,13 +151,13 @@ public class ConvertersTests
     }
 
     [Fact]
-    public void StringToBrushConverter_EmptyString_ReturnsDefaultGrayBrush()
+    public void StringToBrushConverterEmptyStringReturnsDefaultGrayBrush()
     {
         // Arrange
         var converter = new StringToBrushConverter();
 
         // Act
-        var result = converter.Convert("", typeof(Brush), null, CultureInfo.CurrentCulture) as SolidColorBrush;
+        var result = converter.Convert("", typeof(Brush), null!, CultureInfo.CurrentCulture) as SolidColorBrush;
 
         // Assert
         Assert.NotNull(result);
@@ -165,13 +165,13 @@ public class ConvertersTests
     }
 
     [Fact]
-    public void StringToBrushConverter_WhitespaceString_ReturnsDefaultGrayBrush()
+    public void StringToBrushConverterWhitespaceStringReturnsDefaultGrayBrush()
     {
         // Arrange
         var converter = new StringToBrushConverter();
 
         // Act
-        var result = converter.Convert("   ", typeof(Brush), null, CultureInfo.CurrentCulture) as SolidColorBrush;
+        var result = converter.Convert("   ", typeof(Brush), null!, CultureInfo.CurrentCulture) as SolidColorBrush;
 
         // Assert
         Assert.NotNull(result);
@@ -179,7 +179,7 @@ public class ConvertersTests
     }
 
     [Fact]
-    public void StringToBrushConverter_ConvertBack_ThrowsNotImplemented()
+    public void StringToBrushConverterConvertBackThrowsNotImplemented()
     {
         // Arrange
         var converter = new StringToBrushConverter();
@@ -187,7 +187,7 @@ public class ConvertersTests
 
         // Act & Assert
         Assert.Throws<NotImplementedException>(() =>
-            converter.ConvertBack(brush, typeof(string), null, CultureInfo.CurrentCulture));
+            converter.ConvertBack(brush, typeof(string), null!, CultureInfo.CurrentCulture));
     }
 
     #endregion

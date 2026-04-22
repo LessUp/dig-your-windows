@@ -6,7 +6,7 @@ namespace DigYourWindows.Tests.Unit;
 public class DiagnosticCollectorServiceTests
 {
     [Fact]
-    public async Task CollectAsync_WhenCanceled_ShouldThrowOperationCanceledException()
+    public async Task CollectAsyncWhenCanceledShouldThrowOperationCanceledException()
     {
         using var cts = new CancellationTokenSource();
         var service = new DiagnosticCollectorService(

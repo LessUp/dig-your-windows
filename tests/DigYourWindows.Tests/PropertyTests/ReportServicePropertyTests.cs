@@ -6,7 +6,7 @@ namespace DigYourWindows.Tests.PropertyTests;
 public class ReportServicePropertyTests
 {
     [PropertyTest]
-    public void SerializeDeserialize_RoundTripPreservesHardwareCoreFields(
+    public void SerializeDeserializeRoundTripPreservesHardwareCoreFields(
         NonEmptyString computerName,
         NonEmptyString osVersion,
         NonEmptyString cpuBrand,

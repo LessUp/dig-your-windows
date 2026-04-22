@@ -23,7 +23,7 @@ public class ServiceIntegrationTests
     private readonly StubLogService _log = new();
 
     [Fact]
-    public void ReportService_SerializePerformanceAnalysisResult_ShouldRoundtripCorrectly()
+    public void ReportServiceSerializePerformanceAnalysisResultShouldRoundtripCorrectly()
     {
         // Arrange
         var reportService = new ReportService();

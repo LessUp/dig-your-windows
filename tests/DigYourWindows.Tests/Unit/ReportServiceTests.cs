@@ -6,7 +6,7 @@ namespace DigYourWindows.Tests.Unit;
 public class ReportServiceTests
 {
     [Fact]
-    public void SerializeToJson_ThenDeserialize_ShouldPreserveSelectedFields()
+    public void SerializeToJsonThenDeserializeShouldPreserveSelectedFields()
     {
         var service = new ReportService();
         var collectedAt = new DateTime(2025, 1, 2, 3, 4, 5, DateTimeKind.Utc);
