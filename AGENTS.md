@@ -1,122 +1,87 @@
-# Project Philosophy: Spec-Driven Development (SDD)
+# DigYourWindows Agent Guide
 
-本项目严格遵循**规范驱动开发（Spec-Driven Development）**范式。所有的代码实现必须以 `/specs` 目录下的规范文档为唯一事实来源（Single Source of Truth）。
+Spec-Driven Development (SDD) workflow for a .NET 10 WPF Windows diagnostics application.
 
-## Directory Context (目录说明)
+## Mandatory Workflow: Spec-First
 
-### 规范文档 (`/specs/`)
-- `/specs/product/` - 产品功能定义与验收标准 (PRD)
-- `/specs/rfc/` - 技术设计与架构方案 (RFCs)
-- `/specs/api/` - API 接口定义（如 OpenAPI.yaml）
-- `/specs/db/` - 数据库/数据模型定义
-- `/specs/testing/` - BDD 测试用例规范
+**Before writing any code**, check `/specs/` for existing requirements. If implementing a new feature:
 
-### 用户文档 (`/docs/`)
-- `/docs/zh-CN/` - 中文文档（主语言）
-  - `/guide/` - 用户指南（快速开始、架构、测试、贡献、FAQ）
-  - `/reference/` - 参考资料（数据 Schema）
-- `/docs/en-US/` - English documentation (mirrors zh-CN structure)
-- `/docs/public/` - VitePress 静态资源（图片、图标、manifest）
-- `/docs/.vitepress/` - VitePress 配置和主题
-- `/docs/index.md` - 首页（自动重定向到 zh-CN）
+1. **Review specs** in `/specs/product/`, `/specs/rfc/`, `/specs/api/`, `/specs/db/`
+2. **Create/update specs** before coding (RFC for architecture, product/ for features)
+3. **Wait for user confirmation** on spec changes before implementing
+4. **Write tests** against spec acceptance criteria
+5. **No gold-plating**: Do not add features beyond spec definition
 
-### 其他关键目录
-- `/src/` - 源代码
-  - `DigYourWindows.Core/` - 核心业务逻辑（服务、模型、异常）
-  - `DigYourWindows.UI/` - WPF 界面（MVVM、转换器、XAML）
-- `/tests/` - 测试代码（Unit、Property、Integration）
-- `/changelog/` - 历史变更日志条目（已弃用，使用根 `CHANGELOG.md`）
-- `/scripts/` - 构建和自动化脚本
-- `/installer/` - Inno Setup 安装包配置
-- `/specs/` - 规范文档（SDD 核心）
+If user instructions conflict with existing specs, **stop and ask** whether to update the spec first.
 
-## AI Agent Workflow Instructions (AI 工作流指令)
+## Build & Test Commands
 
-当你（AI）被要求开发一个新功能、修改现有功能或修复 Bug 时，**必须严格按照以下工作流执行，不可跳过任何步骤**：
+```powershell
+# Use .slnx (new XML solution format), NOT .sln
+dotnet restore DigYourWindows.slnx
+dotnet build DigYourWindows.slnx -c Release --no-restore
+dotnet test DigYourWindows.slnx -c Release --no-restore
 
-### Step 1: 审查与分析 (Review Specs)
-- 在编写任何代码之前，首先阅读 `/specs` 目录下相关的产品文档、RFC 和 API 定义
-- 检查以下目录：
-  - `/specs/product/` - 了解功能需求和验收标准
-  - `/specs/rfc/` - 了解技术设计决策
-  - `/specs/api/` - 了解接口定义
-  - `/specs/db/` - 了解数据模型
-- **如果用户指令与现有 Spec 冲突**：立即停止编码，并指出冲突点，询问用户是否需要先更新 Spec
-- **如果不存在相关 Spec**：提议创建相应的 Spec 文档，不要直接开始编码
+# Filtered testing
+dotnet test --filter "FullyQualifiedName~ReportServiceTests"
+dotnet test --filter "Category=Unit"
 
-### Step 2: 规范优先 (Spec-First Update)
-- 如果这是一个新功能，或者需要改变现有的接口/数据库结构，**必须首先提议修改或创建相应的 Spec 文档**：
-  - 新产品功能 → 创建 `/specs/product/<feature-name>.md`
-  - 新 API 端点 → 更新 `/specs/api/openapi.yaml` 或创建新的 API spec
-  - 新数据模型 → 更新 `/specs/db/` 规范
-  - 架构变更 → 创建 `/specs/rfc/<NNNN-description>.md`
-- **等待用户确认 Spec 的修改后**，才能进入代码编写阶段
-- **维护 Spec 版本**，跟踪变更
+# With coverage
+dotnet test --collect:"XPlat Code Coverage"
+```
 
-### Step 3: 代码实现 (Implementation)
-- 编写代码时，**必须 100% 遵守 Spec 中的定义**，包括：
-  - 变量命名约定
-  - API 路径和 HTTP 方法
-  - 数据类型和验证规则
-  - HTTP 状态码
-  - 错误响应格式
-- **No Gold-Plating**：不要在代码中擅自添加 Spec 中未定义的功能
-- **遵循 RFC 决策**：参考 `/specs/rfc/` 文档中的技术决策
-- **保持代码质量**：遵循项目约定（C# 命名、MVVM 模式等）
+## Project Structure
 
-### Step 4: 测试验证 (Test against Spec)
-- 根据 `/specs` 中的**验收标准（Acceptance Criteria）**编写单元测试和集成测试
-- 确保测试用例**覆盖 Spec 中描述的所有边界情况**
-- 对于 BDD 风格的特性，参考 `/specs/testing/` 规范
-- 运行 `dotnet test` 验证所有测试通过
-- 如果需求变更，同步更新测试规范
+| Directory | Purpose | Output |
+|-----------|---------|--------|
+| `src/DigYourWindows.Core/` | Business logic, services, models | Class library |
+| `src/DigYourWindows.UI/` | WPF application (MVVM, XAML) | `WinExe` |
+| `tests/DigYourWindows.Tests/` | xUnit + FsCheck property tests | Test project |
+| `specs/` | **SDD source of truth** - PRDs, RFCs, API specs | Markdown |
+| `docs/` | VitePress user documentation (zh-CN primary, en-US mirror) | Markdown |
+| `scripts/` | PowerShell build/publish scripts | `.ps1` |
+| `installer/` | Inno Setup installer config | `.iss` |
 
-## Code Generation Rules
+## Technical Constraints
 
-1. **API 变更**：任何对外部暴露的 API 变更，必须同步修改 `/specs/api/` 文档
-2. **数据模型变更**：任何数据结构变更，必须更新 `/specs/db/` 规范
-3. **架构决策**：记录重大技术决策到 `/specs/rfc/`
-4. **禁止违反规范**：绝不编写与现有规范相矛盾的代码
-5. **参考规范**：遇到不确定的技术细节，查阅 `/specs/rfc/` 下的架构约定，不要自行捏造设计模式
-6. **测试覆盖**：确保测试验证 Spec 验收标准
+- **Target**: `net10.0-windows10.0.19041.0` (Windows 10 Build 19041+ only)
+- **UI**: WPF with WPF-UI 4.0 (Fluent Design), ScottPlot 5.1 for charts
+- **MVVM**: CommunityToolkit.Mvvm 8.4 (source generators, no manual `INotifyPropertyChanged`)
+- **Hardware**: LibreHardwareMonitorLib 0.9.4 (requires admin for GPU/ SMART)
+- **Testing**: xUnit + FsCheck for property-based testing
 
-## 项目约定
+## Code Conventions
 
-### C# 命名约定
-| 类型 | 约定 | 示例 |
-|------|------|------|
-| 类 | PascalCase | `DiagnosticService` |
-| 方法 | PascalCase | `GetHardwareInfo()` |
-| 属性 | PascalCase | `ComputerName` |
-| 字段 (private) | _camelCase | `_logService` |
-| 参数 | camelCase | `cancellationToken` |
-| 接口 | IPascalCase | `IHardwareService` |
+From `Directory.Build.props`: implicit usings enabled, nullable reference types enforced, warnings treated as errors.
 
-### 提交信息约定 (Conventional Commits)
+| Type | Convention | Example |
+|------|------------|---------|
+| Classes | PascalCase | `DiagnosticService` |
+| Methods | PascalCase | `GetHardwareInfo()` |
+| Properties | PascalCase | `ComputerName` |
+| Private fields | _camelCase | `_logService` |
+| Interfaces | IPascalCase | `IHardwareService` |
+
+## Commit Convention
+
 ```
 <type>(<scope>): <description>
 
-[optional body]
+types: feat, fix, docs, refactor, test, chore
+scopes: core, ui, specs, docs, tests, build
 ```
-类型：`feat`, `fix`, `docs`, `refactor`, `test`, `chore`
 
-### 构建与测试命令
+## Documentation
+
+- **Specs** (`/specs/`): Technical requirements and design decisions
+- **User docs** (`/docs/`): VitePress site, bilingual (zh-CN primary)
+- Do not duplicate spec content in user docs—link instead
+
+## Release
+
+Push `v*` tag to trigger automated release with FDD and SCD artifacts:
+
 ```powershell
-# 构建
-dotnet build
-
-# 运行所有测试
-dotnet test
-
-# 运行并收集覆盖率
-dotnet test --collect:"XPlat Code Coverage"
-
-# 运行特定测试
-dotnet test --filter "FullyQualifiedName~ReportServiceTests"
+git tag v1.1.0
+git push origin v1.1.0
 ```
-
-## 为什么要这样声明？
-
-- **防范 AI 幻觉**：AI 很容易在没有上下文的情况下"自由发挥"。强制它第一步读取 /specs 可以锚定其思考范围
-- **约束修改路径**：声明了"修改代码前先改 Spec"，保证了文档与代码永远同步（Document-Code Synchronization）
-- **提高 PR 质量**：当 AI 帮你生成 Pull Request 时，它的实现会与业务逻辑高度一致，因为它是根据你在 Spec 中定义的验收标准来进行开发的
