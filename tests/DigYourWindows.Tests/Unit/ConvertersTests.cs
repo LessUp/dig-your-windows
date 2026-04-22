@@ -32,7 +32,7 @@ public class ConvertersTests
         var converter = new CountToVisibilityConverter();
 
         // Act
-        var result = converter.Convert(0, typeof(Visibility), null, CultureInfo.CurrentCulture);
+        var result = converter.Convert(0, typeof(Visibility), null!, CultureInfo.CurrentCulture);
 
         // Assert
         Assert.Equal(Visibility.Collapsed, result);
@@ -45,7 +45,7 @@ public class ConvertersTests
         var converter = new CountToVisibilityConverter();
 
         // Act
-        var result = converter.Convert(-1, typeof(Visibility), null, CultureInfo.CurrentCulture);
+        var result = converter.Convert(-1, typeof(Visibility), null!, CultureInfo.CurrentCulture);
 
         // Assert
         Assert.Equal(Visibility.Collapsed, result);
@@ -58,7 +58,7 @@ public class ConvertersTests
         var converter = new CountToVisibilityConverter();
 
         // Act
-        var result = converter.Convert("not an int", typeof(Visibility), null, CultureInfo.CurrentCulture);
+        var result = converter.Convert("not an int", typeof(Visibility), null!, CultureInfo.CurrentCulture);
 
         // Assert
         Assert.Equal(Visibility.Collapsed, result);
@@ -71,7 +71,7 @@ public class ConvertersTests
         var converter = new CountToVisibilityConverter();
 
         // Act
-        var result = converter.Convert(null, typeof(Visibility), null, CultureInfo.CurrentCulture);
+        var result = converter.Convert(null, typeof(Visibility), null!, CultureInfo.CurrentCulture);
 
         // Assert
         Assert.Equal(Visibility.Collapsed, result);
@@ -85,7 +85,7 @@ public class ConvertersTests
 
         // Act & Assert
         Assert.Throws<NotImplementedException>(() =>
-            converter.ConvertBack(Visibility.Visible, typeof(int), null, CultureInfo.CurrentCulture));
+            converter.ConvertBack(Visibility.Visible, typeof(int), null!, CultureInfo.CurrentCulture));
     }
 
     #endregion

@@ -8,7 +8,7 @@ namespace DigYourWindows.Tests.Unit;
 public class ConfigurationServiceTests
 {
     [Fact]
-    public void ConfigurationService_ShouldProvideDefaultValues()
+    public void ConfigurationServiceShouldProvideDefaultValues()
     {
         // Arrange & Act
         var config = new ConfigurationService();
@@ -22,7 +22,7 @@ public class ConfigurationServiceTests
     }
 
     [Fact]
-    public void ConfigurationService_MaxLogFiles_ShouldBePositive()
+    public void ConfigurationServiceMaxLogFilesShouldBePositive()
     {
         // Arrange & Act
         var config = new ConfigurationService();
@@ -32,7 +32,7 @@ public class ConfigurationServiceTests
     }
 
     [Fact]
-    public void ConfigurationService_MaxLogFileSizeBytes_ShouldBePositive()
+    public void ConfigurationServiceMaxLogFileSizeBytesShouldBePositive()
     {
         // Arrange & Act
         var config = new ConfigurationService();
@@ -42,7 +42,7 @@ public class ConfigurationServiceTests
     }
 
     [Fact]
-    public void ConfigurationService_NetworkHistoryCapacity_ShouldBePositive()
+    public void ConfigurationServiceNetworkHistoryCapacityShouldBePositive()
     {
         // Arrange & Act
         var config = new ConfigurationService();
@@ -52,7 +52,7 @@ public class ConfigurationServiceTests
     }
 
     [Fact]
-    public void ConfigurationService_TimerIntervalSeconds_ShouldBePositive()
+    public void ConfigurationServiceTimerIntervalSecondsShouldBePositive()
     {
         // Arrange & Act
         var config = new ConfigurationService();
@@ -62,7 +62,7 @@ public class ConfigurationServiceTests
     }
 
     [Fact]
-    public void ConfigurationService_EventMessageMaxLength_ShouldBePositive()
+    public void ConfigurationServiceEventMessageMaxLengthShouldBePositive()
     {
         // Arrange & Act
         var config = new ConfigurationService();

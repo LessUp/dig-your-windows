@@ -1,7 +1,7 @@
 using DigYourWindows.Core.Models;
 using DigYourWindows.Core.Services;
 
-namespace DigYourWindows.Tests.Property;
+namespace DigYourWindows.Tests.PropertyTests;
 
 public class ReportServicePropertyTests
 {
