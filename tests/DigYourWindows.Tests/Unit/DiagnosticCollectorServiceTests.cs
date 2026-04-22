@@ -20,7 +20,7 @@ public class DiagnosticCollectorServiceTests
     }
 
     [Fact]
-    public async Task CollectAsync_WhenHardwareStepFails_ShouldReturnWarningAndContinue()
+    public async Task CollectAsyncWhenHardwareStepFailsShouldReturnWarningAndContinue()
     {
         var expectedAnalysis = new PerformanceAnalysisData { SystemHealthScore = 88d };
         var service = new DiagnosticCollectorService(
@@ -53,7 +53,7 @@ public class DiagnosticCollectorServiceTests
     }
 
     [Fact]
-    public async Task CollectAsync_WhenPerformanceStepFails_ShouldReturnDefaultAnalysisAndWarning()
+    public async Task CollectAsyncWhenPerformanceStepFailsShouldReturnDefaultAnalysisAndWarning()
     {
         var service = new DiagnosticCollectorService(
             new StubHardwareService(_ => new HardwareData { ComputerName = "TEST-PC" }),
@@ -72,7 +72,7 @@ public class DiagnosticCollectorServiceTests
     }
 
     [Fact]
-    public async Task CollectAsync_ShouldReportProgressInExpectedOrderAndAssembleData()
+    public async Task CollectAsyncShouldReportProgressInExpectedOrderAndAssembleData()
     {
         var hardware = new HardwareData { ComputerName = "TEST-PC" };
         var reliability = new[]

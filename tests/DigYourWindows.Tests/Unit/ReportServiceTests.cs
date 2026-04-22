@@ -114,7 +114,7 @@ public class ReportServiceTests
     }
 
     [Fact]
-    public void SerializeToJson_ShouldIncludeDiskSmartProperty()
+    public void SerializeToJsonShouldIncludeDiskSmartProperty()
     {
         var service = new ReportService();
 
@@ -142,7 +142,7 @@ public class ReportServiceTests
     }
 
     [Fact]
-    public void GenerateHtmlReport_ShouldContainKeySectionsAndTruncateLongEventMessage()
+    public void GenerateHtmlReportShouldContainKeySectionsAndTruncateLongEventMessage()
     {
         var service = new ReportService();
         var collectedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -172,7 +172,7 @@ public class ReportServiceTests
     }
 
     [Fact]
-    public void GenerateHtmlReport_WithNegativeMaxEvents_ShouldRenderNoEventRows()
+    public void GenerateHtmlReportWithNegativeMaxEventsShouldRenderNoEventRows()
     {
         var service = new ReportService();
         var data = CreateDiagnosticData(new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc));
@@ -184,7 +184,7 @@ public class ReportServiceTests
     }
 
     [Fact]
-    public void GenerateHtmlReport_WithoutRecommendationsGpuAndUptime_ShouldHideGpuAndShowUnknownUptime()
+    public void GenerateHtmlReportWithoutRecommendationsGpuAndUptimeShouldHideGpuAndShowUnknownUptime()
     {
         var service = new ReportService();
         var data = CreateDiagnosticData(
@@ -201,7 +201,7 @@ public class ReportServiceTests
     }
 
     [Fact]
-    public void GenerateHtmlReport_ShouldHtmlEncodeSpecialCharacters()
+    public void GenerateHtmlReportShouldHtmlEncodeSpecialCharacters()
     {
         var service = new ReportService();
         var data = CreateDiagnosticData(

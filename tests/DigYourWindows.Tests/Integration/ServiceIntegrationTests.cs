@@ -100,7 +100,7 @@ public class ServiceIntegrationTests
     }
 
     [Fact]
-    public void ReportService_GenerateHtmlReport_WithPerformanceAnalysis_ShouldContainAllSections()
+    public void ReportServiceGenerateHtmlReportWithPerformanceAnalysisShouldContainAllSections()
     {
         // Arrange
         var reportService = new ReportService();
@@ -153,7 +153,7 @@ public class ServiceIntegrationTests
     }
 
     [Fact]
-    public void PerformanceService_WithHighEndSystem_ShouldProduceExcellentScore()
+    public void PerformanceServiceWithHighEndSystemShouldProduceExcellentScore()
     {
         // Arrange
         var performanceService = new PerformanceService(
