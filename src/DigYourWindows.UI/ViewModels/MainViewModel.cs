@@ -241,8 +241,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _cpuMonitorTimer.Tick -= CpuMonitorTimer_Tick;
         _loadCts?.Cancel();
         _loadCts?.Dispose();
-        ReliabilityTrendPlot.Dispose();
-        NetworkTrafficPlot.Dispose();
+        // WpfPlot does not implement IDisposable, so no explicit disposal needed
         _networkHistoryTimes.Clear();
         _networkHistoryDownload.Clear();
         _networkHistoryUpload.Clear();
