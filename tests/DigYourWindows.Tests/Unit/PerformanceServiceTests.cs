@@ -24,7 +24,7 @@ public class PerformanceServiceTests
     }
 
     [Fact]
-    public void AnalyzeSystemPerformance_PoorSystem_ShouldReturnLowGradeAndRecommendations()
+    public void AnalyzeSystemPerformancePoorSystemShouldReturnLowGradeAndRecommendations()
     {
         var hardware = new HardwareData
         {
@@ -88,7 +88,7 @@ public class PerformanceServiceTests
     }
 
     [Fact]
-    public void AnalyzeSystemPerformance_HighEndSystem_ShouldReturnExcellentGradeAndNoRecommendations()
+    public void AnalyzeSystemPerformanceHighEndSystemShouldReturnExcellentGradeAndNoRecommendations()
     {
         var hardware = new HardwareData
         {
@@ -123,7 +123,7 @@ public class PerformanceServiceTests
     [InlineData(4, 60)]
     [InlineData(8, 75)]
     [InlineData(16, 90)]
-    public void AnalyzeSystemPerformance_MemoryThresholds_ShouldReturnExpectedMemoryScores(int memoryGb, double expectedScore)
+    public void AnalyzeSystemPerformanceMemoryThresholdsShouldReturnExpectedMemoryScores(int memoryGb, double expectedScore)
     {
         var service = CreateService();
         var analysis = service.AnalyzeSystemPerformance(
@@ -135,7 +135,7 @@ public class PerformanceServiceTests
     }
 
     [Fact]
-    public void AnalyzeSystemPerformance_FourGbMemory_ShouldAddUpgradeRecommendation()
+    public void AnalyzeSystemPerformanceFourGbMemoryShouldAddUpgradeRecommendation()
     {
         var service = CreateService();
         var analysis = service.AnalyzeSystemPerformance(CreateHardware(totalMemoryGb: 4), [], []);
@@ -147,7 +147,7 @@ public class PerformanceServiceTests
     [InlineData(10, 30, "严重不足")]
     [InlineData(25, 60, "不足")]
     [InlineData(50, 75, null)]
-    public void AnalyzeSystemPerformance_DiskFreeThresholds_ShouldReturnExpectedDiskScores(int freePercent, double expectedScore, string? expectedMessageFragment)
+    public void AnalyzeSystemPerformanceDiskFreeThresholdsShouldReturnExpectedDiskScores(int freePercent, double expectedScore, string? expectedMessageFragment)
     {
         var service = CreateService();
         var analysis = service.AnalyzeSystemPerformance(
@@ -168,7 +168,7 @@ public class PerformanceServiceTests
     }
 
     [Fact]
-    public void AnalyzeSystemPerformance_ReliabilityThresholdBoundary_ShouldOnlyWarnAboveFifty()
+    public void AnalyzeSystemPerformanceReliabilityThresholdBoundaryShouldOnlyWarnAboveFifty()
     {
         var service = CreateService();
         var fiftyRecords = Enumerable.Range(0, 50).Select(_ => new ReliabilityRecordData()).ToList();
@@ -184,7 +184,7 @@ public class PerformanceServiceTests
     }
 
     [Fact]
-    public void AnalyzeSystemPerformance_UnknownUptime_ShouldPreserveNullSystemUptime()
+    public void AnalyzeSystemPerformanceUnknownUptimeShouldPreserveNullSystemUptime()
     {
         var service = CreateService(new StubSystemInfoProvider { UptimeDays = null });
         var analysis = service.AnalyzeSystemPerformance(CreateHardware(), [], []);

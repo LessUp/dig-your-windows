@@ -19,7 +19,7 @@ public class NetworkMonitorServiceTests
     private readonly StubLogService _log = new();
 
     [Fact]
-    public void GetTotalBytes_ShouldReturnNonNegativeValues()
+    public void GetTotalBytesShouldReturnNonNegativeValues()
     {
         // Arrange
         var service = new NetworkMonitorService(_log);
@@ -33,7 +33,7 @@ public class NetworkMonitorServiceTests
     }
 
     [Fact]
-    public void GetTotalBytes_CalledMultipleTimes_ShouldReturnIncreasingOrSameValues()
+    public void GetTotalBytesCalledMultipleTimesShouldReturnIncreasingOrSameValues()
     {
         // Arrange
         var service = new NetworkMonitorService(_log);
@@ -48,7 +48,7 @@ public class NetworkMonitorServiceTests
     }
 
     [Fact]
-    public void GetTotalBytes_ShouldNotLogWarningsUnderNormalConditions()
+    public void GetTotalBytesShouldNotLogWarningsUnderNormalConditions()
     {
         // Arrange
         var service = new NetworkMonitorService(_log);
@@ -63,7 +63,7 @@ public class NetworkMonitorServiceTests
     }
 
     [Fact]
-    public void GetTotalBytes_ReturnedTuple_ShouldHaveCorrectStructure()
+    public void GetTotalBytesReturnedTupleShouldHaveCorrectStructure()
     {
         // Arrange
         var service = new NetworkMonitorService(_log);

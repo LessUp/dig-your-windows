@@ -24,7 +24,7 @@ public class LogServiceTests : IDisposable
         _logService = CreateTestLogService();
     }
 
-    private FileLogService CreateTestLogService()
+    private static FileLogService CreateTestLogService()
     {
         // Use reflection to set the log directory since the constructor uses a fixed path
         var service = new FileLogService();
@@ -157,6 +157,7 @@ public class LogServiceTests : IDisposable
     public void Dispose()
     {
         _logService.Dispose();
+        GC.SuppressFinalize(this);
 
         // Clean up test directory
         try
