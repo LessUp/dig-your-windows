@@ -1,8 +1,9 @@
-# Testing Strategy Specification
+# Testing Specification
 
-**Status**: Accepted  
-**Date**: 2026-04-17  
-**Version**: 1.0.0
+> **Domain**: testing
+> **Version**: 1.0.0
+> **Status**: accepted
+> **Last Updated**: 2026-04-17
 
 ## Overview
 
@@ -26,6 +27,7 @@
 **最低覆盖率**：80% 行覆盖率
 
 **示例结构**：
+
 ```csharp
 public class ReportServiceTests
 {
@@ -66,6 +68,7 @@ public class ReportServiceTests
 - 收集和过滤逻辑
 
 **示例结构**：
+
 ```csharp
 public class DiagnosticDataProperties
 {
@@ -193,6 +196,7 @@ dotnet test --filter "FullyQualifiedName~ReportServiceTests"
 **推荐**：Moq 或手动 mock 实现
 
 **示例**：
+
 ```csharp
 public class MockHardwareMonitorProvider : IHardwareMonitorProvider
 {
@@ -207,6 +211,7 @@ public class MockHardwareMonitorProvider : IHardwareMonitorProvider
 **原则**：使用工厂方法创建测试数据，而非硬编码值。
 
 **示例**：
+
 ```csharp
 public static class TestDataProvider
 {
@@ -237,7 +242,7 @@ public static class TestDataProvider
 6. Run property tests
 7. Collect coverage
 
-## Related Documents
+## References
 
-- [RFC-0001: Core Architecture](../rfc/0001-core-architecture.md)
-- [Data Schema Specification](../db/data-schema.md)
+- [Architecture Specification](../architecture/spec.md)
+- [Data Specification](../data/spec.md)

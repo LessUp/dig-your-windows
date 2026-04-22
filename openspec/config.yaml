@@ -1,0 +1,34 @@
+# OpenSpec Configuration for DigYourWindows
+# https://github.com/Fission-AI/OpenSpec
+
+schema: spec-driven
+
+context: |
+  Tech stack: .NET 10.0, WPF, WPF-UI 4.0
+  MVVM: CommunityToolkit.Mvvm 8.4
+  Hardware: LibreHardwareMonitorLib 0.9.4
+  Charts: ScottPlot 5.1
+  Testing: xUnit 2.9 + FsCheck 2.16
+  Coverage requirement: 80% minimum
+
+domains:
+  - name: architecture
+    description: Core architecture and design decisions
+  - name: data
+    description: Data models and validation schemas
+  - name: export
+    description: Report export functionality
+  - name: hardware
+    description: Hardware monitoring specifications
+  - name: testing
+    description: Testing strategy and coverage requirements
+  - name: features
+    description: Product features and user stories
+
+rules:
+  proposal:
+    - Include impact assessment on existing code
+    - Identify affected domains
+  specs:
+    - Use Given/When/Then format for scenarios
+    - All requirements must have at least one scenario

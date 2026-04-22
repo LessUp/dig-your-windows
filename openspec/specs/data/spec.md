@@ -1,8 +1,9 @@
-# Data Schema Specification
+# Data Specification
 
-**Status**: Accepted  
-**Date**: 2026-04-17  
-**Version**: 1.0.0
+> **Domain**: data
+> **Version**: 1.0.0
+> **Status**: accepted
+> **Last Updated**: 2026-04-17
 
 ## Overview
 
@@ -26,6 +27,7 @@
 ```
 
 **字段**：
+
 | 字段 | 类型 | 必需 | 描述 |
 |------|------|------|------|
 | `timestamp` | string (ISO 8601) | 是 | 收集时间戳（UTC） |
@@ -50,6 +52,7 @@
 ```
 
 **字段**：
+
 | 字段 | 类型 | 必需 | 描述 |
 |------|------|------|------|
 | `computerName` | string | 是 | 计算机名 |
@@ -77,6 +80,7 @@
 ```
 
 **字段**：
+
 | 字段 | 类型 | 必需 | 单位 | 描述 |
 |------|------|------|------|------|
 | `name` | string | 是 | - | CPU 型号 |
@@ -107,6 +111,7 @@
 ```
 
 **字段**：
+
 | 字段 | 类型 | 必需 | 单位 | 描述 |
 |------|------|------|------|------|
 | `total` | integer | 是 | bytes | 总物理内存 |
@@ -135,6 +140,7 @@
 ```
 
 **字段**：
+
 | 字段 | 类型 | 必需 | 描述 |
 |------|------|------|------|
 | `model` | string | 是 | 磁盘型号 |
@@ -163,6 +169,7 @@
 ```
 
 **字段**：
+
 | 字段 | 类型 | 必需 | 单位 | 描述 |
 |------|------|------|------|------|
 | `name` | string | 是 | - | GPU 型号 |
@@ -193,6 +200,7 @@
 ```
 
 **字段**：
+
 | 字段 | 类型 | 必需 | 描述 |
 |------|------|------|------|
 | `timeCreated` | string (ISO 8601) | 是 | 事件时间戳 |
@@ -218,6 +226,7 @@
 ```
 
 **字段**：
+
 | 字段 | 类型 | 必需 | 描述 |
 |------|------|------|------|
 | `overallScore` | integer | 是 | 总体健康分 (0-100) |
@@ -239,6 +248,7 @@
 ```
 
 **字段**：
+
 | 字段 | 类型 | 必需 | 描述 |
 |------|------|------|------|
 | `category` | string | 是 | 类别 (CPU/GPU/Memory/Disk/System) |
@@ -262,7 +272,7 @@
 3. **无云上传**：所有数据保持本地
 4. **日志清洗**：日志中删除用户名和路径
 
-## Related Documents
+## References
 
-- [RFC-0001: Core Architecture](../rfc/0001-core-architecture.md)
-- [API Specification: Report Export](../api/report-export.md)
+- [Architecture Specification](../architecture/spec.md)
+- [Export Specification](../export/spec.md)

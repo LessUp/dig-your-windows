@@ -1,11 +1,11 @@
-# RFC-0001: Core Architecture
+# Architecture Specification
 
-**Status**: Accepted  
-**Date**: 2026-04-17  
-**Author**: LessUp Team  
-**Category**: Architecture
+> **Domain**: architecture
+> **Version**: 1.0.0
+> **Status**: accepted
+> **Last Updated**: 2026-04-17
 
-## Summary
+## Overview
 
 本文档描述 DigYourWindows 的核心架构。这是一个使用 .NET 10.0 和 WPF 构建的 Windows 深度诊断工具。
 
@@ -91,7 +91,7 @@ public sealed class HardwareMonitorProvider : IHardwareMonitorProvider, IDisposa
 {
     private readonly object _lock = new();
     private Computer? _computer;
-    
+
     public Computer Computer { get; }
     public void Dispose() { /* thread-safe cleanup */ }
 }
@@ -118,10 +118,10 @@ public IEnumerable<LogEvent> GetErrorEvents(string logName, DateTime cutoffDate)
         </Select>
       </Query>
     </QueryList>";
-    
+
     using var reader = new EventLogReader(
         new EventLogQuery(logName, PathType.LogName, queryXml));
-    
+
     for (var entry = reader.ReadEvent(); entry != null; entry = reader.ReadEvent())
     {
         yield return MapToLogEvent(entry);
@@ -183,7 +183,7 @@ private static void ConfigureServices(IServiceCollection services)
     // UI & ViewModels
     services.AddSingleton<MainWindow>();
     services.AddSingleton<MainViewModel>();
-    
+
     // Core Services (all singleton)
     services.AddSingleton<ILogService>(provider => new FileLogService(GetLogDirectory()));
     services.AddSingleton<IHardwareMonitorProvider, HardwareMonitorProvider>();
@@ -229,8 +229,8 @@ private static void ConfigureServices(IServiceCollection services)
 - **日志脱敏**：自动移除路径中的用户名等敏感信息
 - **文件访问**：使用受限的文件访问模式
 
-## Related Documents
+## References
 
-- [Data Schema Specification](../db/data-schema.md)
-- [API Specification](../api/report-export.md)
-- [Testing Strategy](../testing/test-strategy.md)
+- [Data Specification](../data/spec.md)
+- [Export Specification](../export/spec.md)
+- [Testing Specification](../testing/spec.md)

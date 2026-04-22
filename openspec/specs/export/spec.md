@@ -1,8 +1,9 @@
-# API Specification: Report Export
+# Export Specification
 
-**Status**: Accepted  
-**Date**: 2026-04-17  
-**Version**: 1.0.0
+> **Domain**: export
+> **Version**: 1.0.0
+> **Status**: accepted
+> **Last Updated**: 2026-04-17
 
 ## Overview
 
@@ -17,6 +18,7 @@
 #### 接口: ReportService.ExportToJson()
 
 **方法签名**：
+
 ```csharp
 public Task<string> ExportToJson(DiagnosticData data)
 ```
@@ -28,6 +30,7 @@ public Task<string> ExportToJson(DiagnosticData data)
 - `string`: JSON 格式的诊断报告
 
 **示例输出**：
+
 ```json
 {
   "version": "1.0.0",
@@ -42,6 +45,7 @@ public Task<string> ExportToJson(DiagnosticData data)
 ```
 
 **元数据字段**：
+
 | 字段 | 类型 | 必需 | 描述 |
 |------|------|------|------|
 | `version` | string | 是 | 导出格式版本 |
@@ -56,6 +60,7 @@ public Task<string> ExportToJson(DiagnosticData data)
 #### 接口: ReportService.ExportToHtml()
 
 **方法签名**：
+
 ```csharp
 public Task<string> ExportToHtml(DiagnosticData data)
 ```
@@ -67,6 +72,7 @@ public Task<string> ExportToHtml(DiagnosticData data)
 - `string`: 完整的 HTML 文档
 
 **HTML 结构**：
+
 ```html
 <!DOCTYPE html>
 <html>
@@ -159,7 +165,7 @@ DigYourWindows_Report_[YYYY-MM-DD]_[HH-mm-ss].[json|html]
 | HTML 导出 | < 1000ms | 包括模板渲染 |
 | 文件写入 | < 200ms | 取决于存储介质 |
 
-## Related Documents
+## References
 
-- [Data Schema Specification](../db/data-schema.md)
-- [RFC-0001: Core Architecture](../rfc/0001-core-architecture.md)
+- [Data Specification](../data/spec.md)
+- [Architecture Specification](../architecture/spec.md)
