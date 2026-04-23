@@ -8,6 +8,9 @@ import './styles/custom.css'
 import HomeFeatures from './components/HomeFeatures.vue'
 import DocFooter from './components/DocFooter.vue'
 import BackToTop from './components/BackToTop.vue'
+import GitHubStats from './components/GitHubStats.vue'
+import DownloadButtons from './components/DownloadButtons.vue'
+import VersionBadge from './components/VersionBadge.vue'
 
 export default {
   extends: DefaultTheme,
@@ -27,6 +30,9 @@ export default {
     // Register global components
     app.component('HomeFeatures', HomeFeatures)
     app.component('BackToTop', BackToTop)
+    app.component('GitHubStats', GitHubStats)
+    app.component('DownloadButtons', DownloadButtons)
+    app.component('VersionBadge', VersionBadge)
     
     // Handle route navigation after page load
     router.onAfterRouteChanged = (to) => {
@@ -68,6 +74,12 @@ export default {
             const baseUrl = 'https://lessup.github.io/dig-your-windows'
             const cleanPath = route.path.replace(/\.html$/, '').replace(/\/index$/, '/')
             canonical.setAttribute('href', `${baseUrl}${cleanPath}`)
+          }
+          
+          // Update document title language
+          const title = document.title
+          if (currentLang === 'zh-CN' && !title.includes('中文')) {
+            // Title already in Chinese or generic
           }
         }
       },

@@ -3,10 +3,13 @@
         "ms-dotnettools.csdevkit",
         "ms-dotnettools.csharp",
         "ms-dotnettools.vscode-dotnet-runtime",
+        "github.copilot",
+        "github.copilot-chat",
         "EditorConfig.EditorConfig",
         "streetsidesoftware.code-spell-checker",
         "eamodio.gitlens",
         "mhutchie.git-graph",
-        "yzhang.markdown-all-in-one"
+        "yzhang.markdown-all-in-one",
+        "davidanson.vscode-markdownlint"
     ]
 }

@@ -24,6 +24,8 @@ domains:
     description: Testing strategy and coverage requirements
   - name: features
     description: Product features and user stories
+  - name: workflow
+    description: Development process, branching strategy, AI tool collaboration
 
 rules:
   proposal:

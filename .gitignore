@@ -41,5 +41,4 @@ docs/.vitepress/cache/
 *.swp
 .DS_Store
 Thumbs.db
-*.slnx
-*.slnx
+CLAUDE.local.md

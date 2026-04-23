@@ -25,11 +25,21 @@
 | 📋 **事件日志分析** | 自动提取 System/Application 错误和警告日志 |
 | 📈 **可靠性记录** | Windows 可靠性监视器数据可视化趋势 |
 | ✅ **健康评分** | 综合评估稳定性、性能、内存、磁盘健康 |
-| 💡 **智能建议** | 根据分析结果自动生成针对性优化建议 |
+| 💡 **智能建议** | 基于规则引擎自动生成针对性优化建议 |
 | 📄 **报告导出** | 支持 HTML 和 JSON 格式导出，离线查看 |
 | 🎨 **主题切换** | 深色/浅色主题一键切换 |
 
 ## 🚀 快速开始
+
+### 系统要求
+
+| 组件 | 最低配置 | 推荐配置 |
+|------|----------|----------|
+| 操作系统 | Windows 10 (Build 19041+) | Windows 11 |
+| 内存 | 4 GB | 8 GB+ |
+| 磁盘空间 | 200 MB | 500 MB+ |
+| 显示器 | 1280x720 | 1920x1080+ |
+| 运行权限 | 标准用户 | 管理员（完整硬件访问）|
 
 ### 环境要求
 
@@ -117,6 +127,19 @@ dotnet test --collect:"XPlat Code Coverage"
 dotnet test --filter "FullyQualifiedName~ReportServiceTests"
 ```
 
+## 🗺️ 路线图
+
+- [x] 硬件信息采集（CPU、GPU、内存、磁盘、网络）
+- [x] 实时监控仪表盘与图表
+- [x] 事件日志分析与可靠性记录
+- [x] 系统健康评分算法
+- [x] HTML/JSON 报告导出
+- [x] 深色/浅色主题切换
+- [ ] 命令行模式（CLI）
+- [ ] 便携模式（无需安装）
+- [ ] 多语言报告导出
+- [ ] 性能基准对比
+
 ## 📚 文档
 
 - [📖 快速开始指南](https://lessup.github.io/dig-your-windows/zh-CN/guide/getting-started)
@@ -124,6 +147,9 @@ dotnet test --filter "FullyQualifiedName~ReportServiceTests"
 - [🧪 测试指南](https://lessup.github.io/dig-your-windows/zh-CN/guide/testing)
 - [📊 数据 Schema 参考](https://lessup.github.io/dig-your-windows/zh-CN/reference/data-schema)
 - [❓ 常见问题](https://lessup.github.io/dig-your-windows/zh-CN/guide/faq)
+- [📝 更新日志](CHANGELOG.md)
+
+> 💡 **离线访问**：文档也可在仓库的 `/docs` 目录中查看。
 
 文档提供 **English** 和 **简体中文** 两种语言。
 
@@ -169,6 +195,10 @@ GitHub Actions 将自动构建并发布双语 Release 说明。
 - ✅ 不会上传任何数据到外部服务器
 - ✅ 所有操作使用本地文件系统
 - ✅ 开源可审计
+
+## ⭐ Star 历史
+
+[![Star History Chart](https://api.star-history.com/svg?repos=LessUp/dig-your-windows&type=Date)](https://star-history.com/#LessUp/dig-your-windows&Date)
 
 ## 📄 许可证
 

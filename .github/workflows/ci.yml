@@ -44,4 +44,12 @@ jobs:
         run: dotnet build DigYourWindows.slnx -c Release --no-restore
 
       - name: Test
-        run: dotnet test DigYourWindows.slnx -c Release --no-restore
+        run: dotnet test DigYourWindows.slnx -c Release --no-restore --collect:"XPlat Code Coverage" --results-directory coverage
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7

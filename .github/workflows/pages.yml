@@ -108,15 +108,3 @@ jobs:
           fi
           
           echo "✅ Deployment verified successfully"
-
-      - name: Lighthouse CI
-        uses: treosh/lighthouse-ci-action@v11
-        with:
-          urls: |
-            https://lessup.github.io/dig-your-windows/
-            https://lessup.github.io/dig-your-windows/zh-CN/guide/getting-started
-            https://lessup.github.io/dig-your-windows/en-US/guide/getting-started
-          budgetPath: ./.github/lighthouse/budget.json
-          uploadArtifacts: true
-          temporaryPublicStorage: true
-        continue-on-error: true

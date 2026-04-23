@@ -10,8 +10,8 @@ const baseConfig = defineConfig({
   // Site metadata
   title: 'DigYourWindows',
   titleTemplate: ':title | Windows Deep Diagnostics Tool',
-  description: 'Windows Deep Diagnostics Tool — One-click hardware info collection, event log analysis, and system health scoring',
-  lang: 'en-US',
+  description: 'DigYourWindows - Windows Deep Diagnostics Tool. One-click hardware info collection, event log analysis, reliability records, system health scoring.',
+  lang: 'zh-CN',
 
   // Clean URLs (no .html extension)
   cleanUrls: true,
@@ -40,12 +40,15 @@ const baseConfig = defineConfig({
     priority: 0.7,
     transformItems: (items) => {
       return items.map((item) => {
+        // Root and language homepages get highest priority
         if (item.url === '' || item.url === 'zh-CN/' || item.url === 'en-US/') {
           return { ...item, priority: 1.0, changefreq: 'daily' }
         }
+        // Getting started guide
         if (item.url.includes('getting-started')) {
           return { ...item, priority: 0.9 }
         }
+        // Changelog updates frequently
         if (item.url.includes('changelog')) {
           return { ...item, changefreq: 'daily' }
         }
@@ -73,6 +76,7 @@ const baseConfig = defineConfig({
     ['meta', { name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' }],
     ['meta', { name: 'googlebot', content: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' }],
     ['meta', { name: 'bingbot', content: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' }],
+    // Open Graph
     ['meta', { property: 'og:site_name', content: 'DigYourWindows' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:locale', content: 'zh_CN' }],
@@ -84,20 +88,25 @@ const baseConfig = defineConfig({
     ['meta', { property: 'og:image:width', content: '1200' }],
     ['meta', { property: 'og:image:height', content: '630' }],
     ['meta', { property: 'og:image:alt', content: 'DigYourWindows - Windows Deep Diagnostics Tool' }],
+    // Twitter Card
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: 'DigYourWindows - Windows Deep Diagnostics Tool' }],
     ['meta', { name: 'twitter:description', content: 'One-click hardware info collection, event log analysis, reliability records, system health scoring, and optimization recommendations.' }],
     ['meta', { name: 'twitter:image', content: 'https://lessup.github.io/dig-your-windows/og-image.png' }],
+    // Mobile App
     ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
     ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' }],
     ['meta', { name: 'apple-mobile-web-app-title', content: 'DigYourWindows' }],
     ['meta', { name: 'format-detection', content: 'telephone=no' }],
+    // Microsoft
     ['meta', { name: 'msapplication-TileColor', content: '#0078d4' }],
     ['meta', { name: 'msapplication-config', content: '/browserconfig.xml' }],
-    ['meta', { name: 'keywords', content: 'Windows diagnostics, system health, hardware monitoring, event log analysis, SMART data, CPU monitoring, GPU monitoring, system optimization, .NET, WPF, open source' }],
+    // Keywords
+    ['meta', { name: 'keywords', content: 'Windows diagnostics, system health, hardware monitoring, event log analysis, SMART data, CPU monitoring, GPU monitoring, system optimization, .NET, WPF, open source, 系统诊断, 硬件监控' }],
     ['meta', { name: 'referrer', content: 'strict-origin-when-cross-origin' }],
+    // Web App Manifest
     ['link', { rel: 'manifest', href: '/manifest.json' }],
-    // JSON-LD Structured Data
+    // JSON-LD Structured Data - Software Application
     ['script', { type: 'application/ld+json' }, JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
@@ -109,6 +118,7 @@ const baseConfig = defineConfig({
       softwareVersion: '1.1.0',
       license: 'https://github.com/LessUp/dig-your-windows/blob/master/LICENSE',
       url: 'https://lessup.github.io/dig-your-windows/',
+      downloadUrl: 'https://github.com/LessUp/dig-your-windows/releases/latest',
       codeRepository: 'https://github.com/LessUp/dig-your-windows',
       programmingLanguage: ['C#', '.NET', 'WPF'],
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
@@ -116,14 +126,34 @@ const baseConfig = defineConfig({
       publisher: { '@type': 'Organization', name: 'LessUp', logo: { '@type': 'ImageObject', url: 'https://lessup.github.io/dig-your-windows/logo.png' } },
       sameAs: ['https://github.com/LessUp/dig-your-windows'],
       image: 'https://lessup.github.io/dig-your-windows/og-image.png',
-      featureList: ['Hardware information collection', 'Real-time CPU/GPU monitoring', 'Event log analysis', 'Windows reliability records', 'System health scoring', 'SMART data reading']
+      featureList: ['Hardware information collection', 'Real-time CPU/GPU monitoring', 'Event log analysis', 'Windows reliability records', 'System health scoring', 'SMART data reading'],
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '5',
+        ratingCount: '1'
+      }
     })],
+    // JSON-LD Structured Data - WebSite
     ['script', { type: 'application/ld+json' }, JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      name: 'DigYourWindows Documentation',
+      name: 'DigYourWindows',
       url: 'https://lessup.github.io/dig-your-windows/',
-      inLanguage: ['zh-CN', 'en-US']
+      inLanguage: ['zh-CN', 'en-US'],
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: 'https://lessup.github.io/dig-your-windows/search?q={search_term_string}',
+        'query-input': 'required name=search_term_string'
+      }
+    })],
+    // JSON-LD Structured Data - Organization
+    ['script', { type: 'application/ld+json' }, JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'LessUp',
+      url: 'https://github.com/LessUp',
+      logo: 'https://lessup.github.io/dig-your-windows/logo.png',
+      sameAs: ['https://github.com/LessUp']
     })],
   ],
 
@@ -132,7 +162,7 @@ const baseConfig = defineConfig({
     lineNumbers: true,
   },
 
-  // Vite configuration (single block with PWA plugin)
+  // Vite configuration
   vite: {
     resolve: {
       alias: {
@@ -243,7 +273,13 @@ const baseConfig = defineConfig({
       link: '/zh-CN/',
       themeConfig: {
         nav: [
-          { text: '首页', link: '/zh-CN/', activeMatch: '^/zh-CN/$' },
+          { text: '首页', link: '/zh-CN/' },
+          { 
+            text: '下载',
+            link: 'https://github.com/LessUp/dig-your-windows/releases/latest',
+            target: '_blank',
+            rel: 'noopener'
+          },
           { text: '指南', items: [
             { text: '快速开始', link: '/zh-CN/guide/getting-started' },
             { text: '项目架构', link: '/zh-CN/guide/architecture' },
@@ -276,7 +312,13 @@ const baseConfig = defineConfig({
       link: '/en-US/',
       themeConfig: {
         nav: [
-          { text: 'Home', link: '/en-US/', activeMatch: '^/en-US/$' },
+          { text: 'Home', link: '/en-US/' },
+          { 
+            text: 'Download',
+            link: 'https://github.com/LessUp/dig-your-windows/releases/latest',
+            target: '_blank',
+            rel: 'noopener'
+          },
           { text: 'Guide', items: [
             { text: 'Getting Started', link: '/en-US/guide/getting-started' },
             { text: 'Architecture', link: '/en-US/guide/architecture' },

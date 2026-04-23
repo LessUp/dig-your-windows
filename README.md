@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Release](https://img.shields.io/github/v/release/LessUp/dig-your-windows)](https://github.com/LessUp/dig-your-windows/releases)
 [![Downloads](https://img.shields.io/github/downloads/LessUp/dig-your-windows/total)](https://github.com/LessUp/dig-your-windows/releases)
-[![Tests](https://img.shields.io/badge/Tests-67%20cases-green)](https://github.com/LessUp/dig-your-windows/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/Tests-passing-green)](https://github.com/LessUp/dig-your-windows/actions/workflows/ci.yml)
 
 English | [简体中文](README.zh-CN.md)
 
@@ -26,11 +26,21 @@ English | [简体中文](README.zh-CN.md)
 | 📋 **Event Log Analysis** | Auto-extract System/Application errors and warnings |
 | 📈 **Reliability Records** | Windows Reliability Monitor data with trend visualization |
 | ✅ **Health Scoring** | Comprehensive stability, performance, memory, disk assessment |
-| 💡 **Smart Recommendations** | AI-generated targeted optimization suggestions |
+| 💡 **Smart Recommendations** | Rule-based intelligent optimization suggestions |
 | 📄 **Report Export** | HTML and JSON formats with offline viewing |
 | 🎨 **Theme Support** | Dark/Light theme instant toggle |
 
 ## 🚀 Quick Start
+
+### System Requirements
+
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| OS | Windows 10 (Build 19041+) | Windows 11 |
+| RAM | 4 GB | 8 GB+ |
+| Disk | 200 MB free space | 500 MB+ |
+| Display | 1280x720 | 1920x1080+ |
+| Privileges | Standard user | Administrator (for full hardware access) |
 
 ### Prerequisites
 
@@ -89,18 +99,15 @@ dig-your-windows/
 │   ├── DigYourWindows.Core/     # Core business logic (services, models, exceptions)
 │   └── DigYourWindows.UI/       # WPF user interface (MVVM, converters, XAML)
 ├── tests/
-│   └── DigYourWindows.Tests/    # Unit (64), Property (0), Integration (3) tests
-├── specs/                       # Specification documents (SDD)
-│   ├── product/                 # Product requirements (PRD)
-│   ├── rfc/                     # Technical design documents
-│   ├── api/                     # API specifications
-│   ├── db/                      # Data model specifications
-│   └── testing/                 # Test strategy & BDD specs
+│   └── DigYourWindows.Tests/    # Unit, Property (FsCheck), Integration tests
+├── openspec/                    # OpenSpec specification documents (source of truth)
+│   ├── specs/                   # Domain specifications (architecture, hardware, export…)
+│   └── changes/                 # Active change proposals
 ├── docs/                        # VitePress documentation site
-│   ├── zh-CN/                   # Chinese documentation
+│   ├── zh-CN/                   # Chinese documentation (primary)
 │   ├── en-US/                   # English documentation
 │   ├── public/                  # Static assets (images, icons)
-│   └── .vitepress/              # VitePress configuration
+│   └── .vitepress/              # VitePress configuration & theme
 ├── installer/                   # Inno Setup scripts
 └── scripts/                     # Build & release scripts
 ```
@@ -118,6 +125,19 @@ dotnet test --collect:"XPlat Code Coverage"
 dotnet test --filter "FullyQualifiedName~ReportServiceTests"
 ```
 
+## 🗺️ Roadmap
+
+- [x] Hardware information collection (CPU, GPU, RAM, Disk, Network)
+- [x] Real-time monitoring dashboard with charts
+- [x] Event log analysis and reliability records
+- [x] System health scoring algorithm
+- [x] HTML/JSON report export
+- [x] Dark/Light theme support
+- [ ] Command-line interface (CLI) mode
+- [ ] Portable mode (no installation required)
+- [ ] Multi-language report export
+- [ ] Performance benchmark comparison
+
 ## 📚 Documentation
 
 - [📖 Getting Started Guide](https://lessup.github.io/dig-your-windows/en-US/guide/getting-started)
@@ -125,6 +145,9 @@ dotnet test --filter "FullyQualifiedName~ReportServiceTests"
 - [🧪 Testing Guide](https://lessup.github.io/dig-your-windows/en-US/guide/testing)
 - [📊 Data Schema Reference](https://lessup.github.io/dig-your-windows/en-US/reference/data-schema)
 - [❓ FAQ](https://lessup.github.io/dig-your-windows/en-US/guide/faq)
+- [📝 Changelog](CHANGELOG.md)
+
+> 💡 **Offline Access**: Documentation is also available in the `/docs` directory of this repository.
 
 Documentation is available in **English** and **简体中文**.
 
@@ -170,6 +193,10 @@ This tool:
 - ✅ Does not upload any data to external servers
 - ✅ Uses local file system for all operations
 - ✅ Is open source and auditable
+
+## ⭐ Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=LessUp/dig-your-windows&type=Date)](https://star-history.com/#LessUp/dig-your-windows&Date)
 
 ## 📄 License
 

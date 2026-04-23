@@ -70,16 +70,17 @@ public class ReportServiceTests
 **示例结构**：
 
 ```csharp
-public class DiagnosticDataProperties
+public class PerformanceServicePropertyTests
 {
-    [Property]
-    public Property ScoreRangeIsValid(
-        int stabilityScore,
-        int performanceScore)
+    // [PropertyTest] is a custom attribute extending FsCheck.Xunit.PropertyAttribute
+    // It sets MaxTest = 100 and QuietOnSuccess = true. Use it instead of [Property].
+    [PropertyTest]
+    public void SystemHealthScore_IsAlwaysBetween0And100(
+        NonNegativeInt errorCount,
+        NonNegativeInt warningCount)
     {
-        return (stabilityScore >= 0 && stabilityScore <= 100 &&
-                performanceScore >= 0 && performanceScore <= 100)
-            .ToProperty();
+        var score = CalculateScore(errorCount.Get, warningCount.Get);
+        Assert.InRange(score, 0d, 100d);
     }
 }
 ```
@@ -107,16 +108,19 @@ public class DiagnosticDataProperties
 
 ```
 tests/DigYourWindows.Tests/
-├── Unit/                    # 单元测试
-│   ├── Services/
-│   ├── Models/
-│   └── Converters/
-├── Property/                # 属性测试
-│   ├── DataValidationProperties.cs
-│   └── SerializationProperties.cs
-├── Integration/             # 集成测试（条件执行）
-│   └── WmiIntegrationTests.cs
-└── FsCheckConfig.cs         # FsCheck 配置
+├── Unit/                                    # 单元测试（平铺结构）
+│   ├── PerformanceServiceTests.cs
+│   ├── ReportServiceTests.cs
+│   ├── ConfigurationServiceTests.cs
+│   ├── ConvertersTests.cs
+│   └── ...
+├── PropertyTests/                           # FsCheck 属性测试
+│   ├── ReportServicePropertyTests.cs
+│   └── ...
+├── Integration/                             # 集成测试（条件执行）
+│   └── ServiceIntegrationTests.cs
+├── FsCheckConfig.cs                         # FsCheck 配置 + [PropertyTest] 属性
+└── Usings.cs                                # global usings
 ```
 
 ### Test Naming Convention
@@ -193,7 +197,7 @@ dotnet test --filter "FullyQualifiedName~ReportServiceTests"
 
 ### Mock 实现
 
-**推荐**：Moq 或手动 mock 实现
+**推荐**：手动 mock 实现（项目不引入 Moq，避免额外依赖）
 
 **示例**：
 
