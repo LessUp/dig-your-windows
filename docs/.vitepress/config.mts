@@ -115,7 +115,7 @@ const baseConfig = defineConfig({
       description: 'Windows Deep Diagnostics Tool — One-click hardware info collection, event log analysis, and system health scoring',
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Windows 10, Windows 11',
-      softwareVersion: '1.1.0',
+      softwareVersion: '1.2.0',
       license: 'https://github.com/LessUp/dig-your-windows/blob/master/LICENSE',
       url: 'https://lessup.github.io/dig-your-windows/',
       downloadUrl: 'https://github.com/LessUp/dig-your-windows/releases/latest',
