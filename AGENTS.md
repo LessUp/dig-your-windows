@@ -121,3 +121,18 @@ scopes: core ui tests docs openspec build
 | **Claude Code** | Complex multi-file refactors, spec design, test generation |
 | **GLM / Qwen** | Executing openspec tasks.md items, routine bug fixes |
 
+## Known Limitations
+
+| Issue | Severity | Status |
+|-------|----------|--------|
+| `GetCpuBrandScore` Intel/AMD generation bonus regex unreachable | Low | Won't fix — changing scores would break report consistency |
+| Some services lack direct unit tests | Low | Property tests provide indirect coverage |
+
+## Final Status
+
+**v1.2.0** is the final stable release. Project enters low-maintenance mode after this version.
+- All planned features implemented
+- All known bugs fixed
+- Test coverage meets 80% threshold
+- Documentation complete and synchronized
+

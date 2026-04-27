@@ -43,7 +43,13 @@ docs/.vitepress/cache/
 Thumbs.db
 CLAUDE.local.md
 
-# BMad Method V6
-_bmad/
-_bmad-output/
+# BMad Method V6 (moved to docs/methodology/)
+# _bmad/
+# _bmad-output/
 .worktrees/
+
+# OMC (oh-my-claudecode) state
+.omc/
+
+# Temporary audit files
+PHASE1_AUDIT_FINDINGS.md

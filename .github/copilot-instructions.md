@@ -64,3 +64,19 @@ dotnet test --filter "Category=Unit"
 ## Commit Format
 
 `<type>(<scope>): <description>` — types: feat fix docs refactor test chore specs
+
+## Finalization Rules (v1.2.0)
+
+- ✅ Fix bugs in existing features
+- ✅ Improve test coverage (property tests)
+- ✅ Update docs to match implementation
+- ❌ No new features (CLI mode, benchmark, etc. cancelled)
+- ❌ No dependency upgrades unless security issue
+- ❌ No architecture changes
+
+## Known Limitations
+
+| Issue | Status |
+|-------|--------|
+| `GetCpuBrandScore` Intel/AMD generation bonus unreachable | Won't fix — breaks score consistency |
+| Some services lack direct unit tests | Property tests provide coverage |

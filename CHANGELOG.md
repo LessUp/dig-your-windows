@@ -9,6 +9,30 @@ For Chinese version, see [docs/zh-CN/changelog.md](docs/zh-CN/changelog.md).
 
 ---
 
+## [1.2.0] - 2026-04-27
+
+### Fixed
+- **HardwareMonitorProvider**: Resource leak on `Open()` failure - constructor now properly cleans up on exception
+- README path references (`specs/` → `openspec/specs/`)
+
+### Added
+- FsCheck property tests for `PerformanceService` scoring algorithm
+- FsCheck property tests for `DiagnosticData` serialization round-trips
+- FsCheck property tests for HTML report generation
+- Standard `CLAUDE.md` for public AI instructions
+- Known limitations documentation in AGENTS.md and copilot-instructions.md
+
+### Changed
+- Normalized BMAD directories to `docs/methodology/`
+- Clarified roadmap: portable mode superseded by FDD release
+- Enhanced CONTRIBUTING.md with docs site reference
+
+### Documentation
+- Aligned data specification with actual JSON export structure
+- Corrected `PerformanceAnalysisData` field names in feature spec
+
+---
+
 ## [1.1.0] - 2026-04-16
 
 ### Added

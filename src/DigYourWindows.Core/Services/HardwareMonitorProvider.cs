@@ -36,7 +36,15 @@ public sealed class HardwareMonitorProvider : IHardwareMonitorProvider
             IsCpuEnabled = true,
             IsGpuEnabled = true
         };
-        _computer.Open();
+        try
+        {
+            _computer.Open();
+        }
+        catch
+        {
+            _computer.Close();
+            throw;
+        }
     }
 
     public void Dispose()

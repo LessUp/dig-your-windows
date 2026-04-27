@@ -6,6 +6,25 @@ outline: deep
 
 ## 最新版本
 
+### [1.2.0] - 2026-04-27
+
+#### 修复
+- 🔧 **HardwareMonitorProvider** - 修复 `Open()` 失败时的资源泄漏问题
+- 📝 README 路径引用修正
+
+#### 新增
+- 🧪 PerformanceService 评分算法属性测试
+- 🧪 DiagnosticData 序列化往返属性测试
+- 🧪 HTML 报告生成属性测试
+- 📄 标准 `CLAUDE.md` 文件
+
+#### 变更
+- 📁 BMAD 目录规范化至 `docs/methodology/`
+- 📋 Roadmap 澄清：便携模式已被 FDD 版本替代
+- 📚 CONTRIBUTING.md 添加文档站引用
+
+---
+
 ### [1.1.0] - 2026-04-16
 
 #### 新增

@@ -134,7 +134,7 @@ dotnet test --filter "FullyQualifiedName~ReportServiceTests"
 - [x] HTML/JSON report export
 - [x] Dark/Light theme support
 - [ ] Command-line interface (CLI) mode
-- [ ] Portable mode (no installation required)
+- [ ] ~~Portable mode~~ (superseded by FDD release)
 - [ ] Multi-language report export
 - [ ] Performance benchmark comparison
 
@@ -158,7 +158,7 @@ We welcome contributions! This project follows **Spec-Driven Development (SDD)**
 ### Quick Start
 
 1. Read [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines
-2. Review existing [specifications](specs/) before starting work
+2. Review existing [specifications](openspec/specs/) before starting work
 3. Create or update specs for new features
 4. Submit a Pull Request following conventional commits
 
@@ -166,7 +166,7 @@ We welcome contributions! This project follows **Spec-Driven Development (SDD)**
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. **Review/create specs** in `/specs/` directory
+3. **Review/create specs** in `/openspec/specs/` directory
 4. Implement according to specs
 5. Write tests based on acceptance criteria
 6. Commit changes (`git commit -m 'feat: add amazing feature'`)

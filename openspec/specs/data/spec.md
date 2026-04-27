@@ -1,9 +1,9 @@
 # Data Specification
 
 > **Domain**: data
-> **Version**: 1.0.0
+> **Version**: 1.1.0
 > **Status**: accepted
-> **Last Updated**: 2026-04-17
+> **Last Updated**: 2026-04-27
 
 ## Overview
 
@@ -17,12 +17,34 @@
 
 ```json
 {
-  "timestamp": "2026-04-17T10:30:00Z",
-  "systemInfo": { ... },
-  "hardwareData": { ... },
-  "eventLogs": { ... },
-  "reliabilityRecords": [ ... ],
-  "performanceAnalysis": { ... }
+  "hardware": {
+    "computerName": "DESKTOP-ABC123",
+    "osVersion": "Windows 11 Pro 23H2",
+    "cpuBrand": "Intel Core i7-12700K",
+    "cpuCores": 12,
+    "totalMemory": 34359738368,
+    "disks": [...],
+    "diskSmart": [...],
+    "networkAdapters": [...],
+    "usbDevices": [...],
+    "gpus": [...]
+  },
+  "events": [...],
+  "reliability": [...],
+  "performance": {
+    "systemHealthScore": 85.5,
+    "stabilityScore": 90.0,
+    "performanceScore": 80.0,
+    "memoryUsageScore": 85.0,
+    "diskHealthScore": 88.0,
+    "systemUptimeDays": 3.5,
+    "criticalIssuesCount": 0,
+    "warningsCount": 2,
+    "recommendations": ["建议清理磁盘空间"],
+    "healthGrade": "良好",
+    "healthColor": "#17a2b8"
+  },
+  "collectedAt": "2026-04-27T10:30:00Z"
 }
 ```
 
@@ -30,12 +52,11 @@
 
 | 字段 | 类型 | 必需 | 描述 |
 |------|------|------|------|
-| `timestamp` | string (ISO 8601) | 是 | 收集时间戳（UTC） |
-| `systemInfo` | object | 是 | 系统信息 |
-| `hardwareData` | object | 是 | 硬件信息 |
-| `eventLogs` | object | 是 | 事件日志数据 |
-| `reliabilityRecords` | array | 是 | 可靠性监视器记录 |
-| `performanceAnalysis` | object | 是 | 性能分析结果 |
+| `hardware` | object | 是 | 硬件信息 |
+| `events` | array | 是 | 事件日志列表 |
+| `reliability` | array | 是 | 可靠性监视器记录 |
+| `performance` | object | 是 | 性能分析结果 |
+| `collectedAt` | string (ISO 8601) | 是 | 收集时间戳（UTC） |
 
 ## System Information
 
@@ -212,16 +233,21 @@
 
 ## Performance Analysis
 
-### PerformanceAnalysis
+### PerformanceAnalysisData
 
 ```json
 {
-  "overallScore": 85,
-  "stabilityScore": 90,
-  "performanceScore": 80,
-  "memoryScore": 85,
-  "diskScore": 88,
-  "recommendations": [ ... ]
+  "systemHealthScore": 85.5,
+  "stabilityScore": 90.0,
+  "performanceScore": 80.0,
+  "memoryUsageScore": 85.0,
+  "diskHealthScore": 88.0,
+  "systemUptimeDays": 3.5,
+  "criticalIssuesCount": 0,
+  "warningsCount": 2,
+  "recommendations": ["建议清理磁盘空间"],
+  "healthGrade": "良好",
+  "healthColor": "#17a2b8"
 }
 ```
 
@@ -229,32 +255,23 @@
 
 | 字段 | 类型 | 必需 | 描述 |
 |------|------|------|------|
-| `overallScore` | integer | 是 | 总体健康分 (0-100) |
-| `stabilityScore` | integer | 是 | 稳定性得分 (0-100) |
-| `performanceScore` | integer | 是 | 性能得分 (0-100) |
-| `memoryScore` | integer | 是 | 内存得分 (0-100) |
-| `diskScore` | integer | 是 | 磁盘得分 (0-100) |
-| `recommendations` | array | 是 | 优化建议 |
+| `systemHealthScore` | number | 是 | 系统健康总分 (0-100) |
+| `stabilityScore` | number | 是 | 稳定性得分 (0-100) |
+| `performanceScore` | number | 是 | 性能得分 (0-100) |
+| `memoryUsageScore` | number | 是 | 内存使用得分 (0-100) |
+| `diskHealthScore` | number | 是 | 磁盘健康得分 (0-100) |
+| `systemUptimeDays` | number | 否 | 系统运行天数 |
+| `criticalIssuesCount` | integer | 是 | 严重问题数量 |
+| `warningsCount` | integer | 是 | 警告数量 |
+| `recommendations` | array[string] | 是 | 优化建议列表 |
+| `healthGrade` | string | 是 | 健康等级 (优秀/良好/一般/较差/需要优化) |
+| `healthColor` | string | 是 | 健康等级颜色 (十六进制) |
 
-### Recommendation
-
-```json
-{
-  "category": "Disk",
-  "priority": "High",
-  "title": "Consider replacing aging disk",
-  "description": "Disk health indicates wear that may lead to failure"
-}
-```
-
-**字段**：
-
-| 字段 | 类型 | 必需 | 描述 |
-|------|------|------|------|
-| `category` | string | 是 | 类别 (CPU/GPU/Memory/Disk/System) |
-| `priority` | string | 是 | 优先级 (Low/Medium/High/Critical) |
-| `title` | string | 是 | 建议标题 |
-| `description` | string | 是 | 详细描述 |
+**评分权重**：
+- 稳定性得分权重: 40%
+- 性能得分权重: 30%
+- 内存得分权重: 15%
+- 磁盘得分权重: 15%
 
 ## Data Validation Rules
 
