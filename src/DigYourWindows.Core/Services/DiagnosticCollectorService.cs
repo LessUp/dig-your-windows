@@ -16,6 +16,7 @@ public class DiagnosticCollectorService : IDiagnosticCollectorService
     private readonly IReliabilityService _reliabilityService;
     private readonly IEventLogService _eventLogService;
     private readonly IPerformanceService _performanceService;
+    private readonly IHistoryStoreService _historyStoreService;
     private readonly ILogService _log;
 
     public DiagnosticCollectorService(
@@ -23,12 +24,14 @@ public class DiagnosticCollectorService : IDiagnosticCollectorService
         IReliabilityService reliabilityService,
         IEventLogService eventLogService,
         IPerformanceService performanceService,
+        IHistoryStoreService historyStoreService,
         ILogService log)
     {
         _hardwareService = hardwareService;
         _reliabilityService = reliabilityService;
         _eventLogService = eventLogService;
         _performanceService = performanceService;
+        _historyStoreService = historyStoreService;
         _log = log;
     }
 
@@ -99,6 +102,14 @@ public class DiagnosticCollectorService : IDiagnosticCollectorService
             Performance = analysis,
             CollectedAt = DateTime.UtcNow
         };
+
+        // Attempt to persist to history (non-blocking failure)
+        var saved = await _historyStoreService.SaveAsync(data, cancellationToken);
+        if (!saved)
+        {
+            warnings.Add("Failed to save diagnostic to local history. The result is still available in memory.");
+            _log.Warn("History save failed; warning added to result");
+        }
 
         return new DiagnosticCollectionResult(data, warnings);
     }

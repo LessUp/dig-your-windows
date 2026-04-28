@@ -8,6 +8,13 @@ namespace DigYourWindows.Core.Models;
 /// </summary>
 public record DiagnosticData
 {
+    /// <summary>
+    /// Unique identifier for this diagnostic result (used by history store).
+    /// If null, this diagnostic has not yet been persisted to history.
+    /// </summary>
+    [JsonIgnore]
+    public string? Id { get; set; }
+
     [JsonPropertyName("hardware")]
     public HardwareData Hardware { get; init; } = new();
 

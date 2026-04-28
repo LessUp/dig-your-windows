@@ -38,6 +38,17 @@ public partial class App : Application
     {
         services.AddSingleton<IConfigurationService, ConfigurationService>();
 
+        // History store (SQLite-backed persistence)
+        services.AddSingleton<IHistoryStoreService>(sp =>
+        {
+            var historyDbPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "DigYourWindows",
+                "history.db");
+            Directory.CreateDirectory(Path.GetDirectoryName(historyDbPath) ?? "");
+            return new SqliteHistoryStoreService(historyDbPath, sp.GetRequiredService<ILogService>());
+        });
+
         services.AddSingleton<MainWindow>();
         services.AddSingleton<MainViewModel>();
 

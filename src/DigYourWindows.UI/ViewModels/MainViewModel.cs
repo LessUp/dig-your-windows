@@ -19,6 +19,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly IReportService _reportService;
     private readonly ICpuMonitorService _cpuMonitorService;
     private readonly INetworkMonitorService _networkMonitorService;
+    private readonly IHistoryStoreService _historyStoreService;
     private readonly ILogService _log;
     private readonly DispatcherTimer _cpuMonitorTimer;
     private CancellationTokenSource? _loadCts;
@@ -66,6 +67,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private ApplicationTheme _currentTheme = ApplicationTheme.Dark;
 
+    [ObservableProperty]
+    private DiagnosticHistorySummary? _recentHistoryEntry;
+
+    [ObservableProperty]
+    private IReadOnlyList<DiagnosticHistorySummary> _historyList = Array.Empty<DiagnosticHistorySummary>();
+
+    [ObservableProperty]
+    private HistoryListViewModel? _historyListViewModel;
+
     public List<int> AvailableDays { get; } = new() { 1, 3, 7, 30 };
 
     public WpfPlot ReliabilityTrendPlot { get; } = new();
@@ -77,12 +87,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
         IReportService reportService,
         ICpuMonitorService cpuMonitorService,
         INetworkMonitorService networkMonitorService,
+        IHistoryStoreService historyStoreService,
         ILogService log)
     {
         _collectorService = collectorService;
         _reportService = reportService;
         _cpuMonitorService = cpuMonitorService;
         _networkMonitorService = networkMonitorService;
+        _historyStoreService = historyStoreService;
         _log = log;
 
         _cpuMonitorTimer = new DispatcherTimer
@@ -96,6 +108,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
         UpdateNetworkTraffic();
         UpdateReliabilityTrendPlot();
         UpdateNetworkTrafficPlot();
+
+        // Initialize history ViewModel
+        HistoryListViewModel = new HistoryListViewModel(_historyStoreService, _log);
     }
 
     private void CpuMonitorTimer_Tick(object? sender, EventArgs e)
@@ -655,6 +670,51 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             axis.Label.ForeColor = textColor;
             axis.TickLabelStyle.ForeColor = textColor;
+        }
+    }
+
+    /// <summary>
+    /// Initialize history loading on app startup.
+    /// Called from App.xaml.cs after MainViewModel is created.
+    /// </summary>
+    public async Task InitializeHistoryAsync()
+    {
+        try
+        {
+            RecentHistoryEntry = await _historyStoreService.GetMostRecentSummaryAsync();
+            var allSummaries = await _historyStoreService.ListSummariesAsync();
+            HistoryList = allSummaries;
+        }
+        catch (Exception ex)
+        {
+            _log.LogError($"Failed to initialize history in ViewModel: {ex.Message}", ex);
+        }
+    }
+
+    [RelayCommand]
+    public async Task ReloadHistoryEntryAsync(string? historyId)
+    {
+        if (string.IsNullOrEmpty(historyId))
+            return;
+
+        try
+        {
+            var record = await _historyStoreService.LoadByIdAsync(historyId);
+            if (record != null)
+            {
+                // Apply the loaded diagnostic data to the current display
+                HardwareInfo = record.DiagnosticData.Hardware;
+                PerformanceAnalysis = record.DiagnosticData.Performance;
+                ReliabilityRecords = new ObservableCollection<ReliabilityRecordData>(record.DiagnosticData.Reliability);
+                EventLogEntries = new ObservableCollection<LogEventData>(record.DiagnosticData.Events);
+                UpdateReliabilityTrendPlot();
+                StatusMessage = $"加载历史诊断: {record.Summary.CollectedAtUtc:G}";
+            }
+        }
+        catch (Exception ex)
+        {
+            _log.LogError($"Failed to reload history entry {historyId}: {ex.Message}", ex);
+            StatusMessage = $"加载历史失败: {ex.Message}";
         }
     }
 }

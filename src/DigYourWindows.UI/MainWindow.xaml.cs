@@ -23,7 +23,17 @@ public partial class MainWindow : FluentWindow
         {
             if (DataContext is MainViewModel viewModel)
             {
+                // Initialize history on startup
+                await viewModel.InitializeHistoryAsync();
+
+                // Load current diagnostic data
                 await viewModel.LoadDataCommand.ExecuteAsync(null);
+
+                // Load history list
+                if (viewModel.HistoryListViewModel != null)
+                {
+                    await viewModel.HistoryListViewModel.LoadHistoryCommand.ExecuteAsync(null);
+                }
             }
         }
         catch (Exception ex)
