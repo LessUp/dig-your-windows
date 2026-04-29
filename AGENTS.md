@@ -2,7 +2,7 @@
 
 **Project**: Windows深度诊断工具 | .NET 10 WPF | Spec-Driven Development (OpenSpec)
 **Repo**: `LessUp/dig-your-windows` | **Docs**: `https://lessup.github.io/dig-your-windows/`
-**Phase**: Finalization → v1.2.0 (bug fixes + test coverage only, no new features)
+**Status**: v1.2.0 Archive-Ready — 稳定、功能完整、维护模式
 
 ---
 
@@ -104,33 +104,16 @@ types: feat fix docs refactor test chore specs
 scopes: core ui tests docs openspec build
 ```
 
-## Finalization Rules (v1.2.0)
+## Maintenance Mode
 
-- ✅ Fix bugs found in existing features
-- ✅ Improve test coverage (property tests especially)
-- ✅ Update docs to match implementation
-- ❌ No new features (CLI mode, benchmark, etc. are cancelled)
-- ❌ No dependency upgrades unless fixing a security issue
-- ❌ No architecture changes
-
-## Tool-Model Division
-
-| Tool | Best For |
-|------|---------|
-| **GitHub Copilot CLI** | Planning, architecture review, spec writing, `/review` |
-| **Claude Code** | Complex multi-file refactors, spec design, test generation |
-| **GLM / Qwen** | Executing openspec tasks.md items, routine bug fixes |
-
-## Known Limitations
-
-| Issue | Severity | Status |
-|-------|----------|--------|
-| `GetCpuBrandScore` Intel/AMD generation bonus regex unreachable | Low | Won't fix — changing scores would break report consistency |
-| Some services lack direct unit tests | Low | Property tests provide indirect coverage |
+- ✅ Bug fixes only (no new features)
+- ✅ Security updates as needed
+- ✅ Documentation corrections
+- ❌ No new features or architecture changes
 
 ## Final Status
 
-**v1.2.0** is the final stable release. Project enters low-maintenance mode after this version.
+**v1.2.0** is the stable release. Project is in maintenance mode.
 - All planned features implemented
 - All known bugs fixed
 - Test coverage meets 80% threshold

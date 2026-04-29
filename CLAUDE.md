@@ -1,7 +1,7 @@
 # DigYourWindows — Claude Code Instructions
 
 **Project**: Windows Deep Diagnostics Tool | .NET 10 WPF | OpenSpec-Driven Development
-**Phase**: Finalization → v1.2.0 (stable archive-ready state)
+**Status**: v1.2.0 Archive-Ready — Stable, feature-complete, maintenance mode
 
 ---
 
@@ -57,15 +57,12 @@ dotnet test DigYourWindows.slnx -c Release   # All tests must pass
 dotnet test --collect:"XPlat Code Coverage"  # Coverage >= 80%
 ```
 
-## Finalization Rules (v1.2.0)
+## Maintenance Mode
 
-- ✅ Fix bugs in existing features
-- ✅ Improve test coverage (property tests)
-- ✅ Update docs to match implementation
-- ✅ Align specs with code
-- ❌ No new features (CLI mode, benchmark, etc. cancelled)
-- ❌ No dependency upgrades unless security issue
-- ❌ No architecture changes
+- ✅ Bug fixes only (no new features)
+- ✅ Security updates as needed
+- ✅ Documentation corrections
+- ❌ No new features or architecture changes
 
 ## Known Limitations
 

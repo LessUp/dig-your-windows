@@ -16,8 +16,7 @@ public class ReportServiceHtmlPropertyTests
     {
         public void Info(string message) { }
         public void Warn(string message) { }
-        public void Error(string message) { }
-        public void Debug(string message) { }
+        public void LogError(string message, Exception? exception = null) { }
     }
 
     [Property]
