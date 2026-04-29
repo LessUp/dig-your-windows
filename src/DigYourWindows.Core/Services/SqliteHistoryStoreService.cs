@@ -264,7 +264,7 @@ public sealed class SqliteHistoryStoreService : IHistoryStoreService
         return new DiagnosticHistorySummary
         {
             Id = reader.GetString(0),
-            CollectedAtUtc = DateTime.Parse(reader.GetString(1), styles: DateTimeStyles.AdjustToUniversal),
+            CollectedAtUtc = DateTime.Parse(reader.GetString(1), CultureInfo.InvariantCulture, styles: DateTimeStyles.AdjustToUniversal),
             ComputerName = reader.GetString(2),
             OsVersion = reader.GetString(3),
             CpuBrand = reader.GetString(4),
