@@ -1,3 +1,5 @@
+using DigYourWindows.Core.Models;
+
 namespace DigYourWindows.Core.Services;
 
 /// <summary>
